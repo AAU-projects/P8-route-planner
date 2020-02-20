@@ -24,7 +24,7 @@ void print_vector(std::vector<std::string> vector) {
 
 void sort_vector(std::vector<std::string> &vector, const int n) {
     std::sort(vector.begin(), vector.end(), [n](std::string a, std::string b) {
-        return a.substr(n) < b.substr(n);
+        return a.substr(n) < b.substr(n); 
     });
 }
 
