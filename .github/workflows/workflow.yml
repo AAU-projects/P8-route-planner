@@ -1,0 +1,29 @@
+name: Flutter-CI
+on: [push]
+jobs: 
+  test-and-build: 
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Java Setup
+      uses: actions/setup-java@v1
+      with:
+        java-version: '12.x'
+    - name: Flutter Setup
+      uses: subosito/flutter-action@v1
+      with:
+        flutter-version: '1.12.x'
+        channel: 'stable'
+    # Analyze Dart
+    - name: Analyze Dart
+      run: flutter analyze
+    # Get flutter packages
+    - name: Flutter Packages
+      run: flutter pub get
+    # Run tests
+    - name: Flutter Tests
+      run: flutter test
+    # Build 
+    - name: Build Apk
+      run: flutter build apk
