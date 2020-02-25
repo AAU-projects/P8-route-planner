@@ -15,15 +15,19 @@ jobs:
       with:
         flutter-version: '1.12.x'
         channel: 'stable'
-    # Analyze Dart
-    - name: Analyze Dart
-      run: flutter analyze
     # Get flutter packages
     - name: Flutter Packages
+      working-directory: route_app
       run: flutter pub get
+    # Analyze Dart
+    - name: Analyze Dart
+      working-directory: route_app
+      run: flutter analyze
     # Run tests
     - name: Flutter Tests
+      working-directory: route_app
       run: flutter test
     # Build 
     - name: Build Apk
+      working-directory: route_app
       run: flutter build apk
