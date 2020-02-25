@@ -17,17 +17,17 @@ jobs:
         channel: 'stable'
     # Get flutter packages
     - name: Flutter Packages
-      working-directory: route-app
+      working-directory: route_app
       run: flutter pub get
     # Analyze Dart
     - name: Analyze Dart
-      working-directory: route-app
+      working-directory: route_app
       run: flutter analyze
     # Run tests
     - name: Flutter Tests
-      working-directory: route-app
+      working-directory: route_app
       run: flutter test
     # Build 
     - name: Build Apk
-      working-directory: route-app
+      working-directory: route_app
       run: flutter build apk
