@@ -15,12 +15,12 @@ jobs:
       with:
         flutter-version: '1.12.x'
         channel: 'stable'
-    # Analyze Dart
-    - name: Analyze Dart
-      run: flutter analyze
     # Get flutter packages
     - name: Flutter Packages
       run: flutter pub get
+    # Analyze Dart
+    - name: Analyze Dart
+      run: flutter analyze
     # Run tests
     - name: Flutter Tests
       run: flutter test
