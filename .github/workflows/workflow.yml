@@ -13,7 +13,7 @@ jobs:
     - name: Flutter Setup
       uses: subosito/flutter-action@v1
       with:
-        flutter-version: 'v1.12.13+hotfix.8'
+        flutter-version: '1.12.x'
         channel: 'stable'
     # Analyze Dart
     - name: Analyze Dart
