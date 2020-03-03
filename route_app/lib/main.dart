@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:route_app/layout/router.dart';
 import 'package:route_app/locator.dart';
-import 'package:route_app/core/utils/environment.dart' as environment;
+//import 'package:route_app/core/utils/environment.dart' as environment;
 
 /// Is the app in debug mode
 const bool Debug = true;
@@ -9,15 +9,17 @@ const bool Debug = true;
 void main() {
   setupLocator();
 
-  if(Debug) {
-    environment.setFile('assets/environment.json').whenComplete(() {
+  /* if(Debug) {
+    environment.setFile('assets/environments.json').whenComplete(() {
       runApp(RouteApp());
     });
   } else {
-    environment.setFile('assets/environment.prod.json').whenComplete(() {
+    environment.setFile('assets/environments.prod.json').whenComplete(() {
       runApp(RouteApp());
     });
-  }
+  } */
+
+  runApp(RouteApp());
 }
 
 /// Main app class
@@ -27,9 +29,8 @@ class RouteApp extends StatelessWidget {
     return MaterialApp(
       title: 'Route App',
       theme: ThemeData(),
-      initialRoute: '/',
+      initialRoute: 'welcome',
       onGenerateRoute: Router.generateRoute,
     );
   }
-
 }

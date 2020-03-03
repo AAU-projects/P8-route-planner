@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:route_app/layout/screens/welcome.dart';
 
 /// App navigation class
 class Router {
@@ -12,6 +13,8 @@ class Router {
             child: Text('Route App'),
           ),
         ));
+      case 'welcome':
+        return MaterialPageRoute<dynamic>(builder: (_) => WelcomeScreen());
       default:
         return MaterialPageRoute<dynamic>(
           builder: (_) => Scaffold(
