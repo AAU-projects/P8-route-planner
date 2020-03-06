@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:route_app/layout/widgets/button.dart';
-import 'package:route_app/layout/router.dart';
 import '../constants/colors.dart' as color;
 
 /// Documentation
-class WelcomeScreen extends StatelessWidget {
+class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Container(
         decoration: BoxDecoration(
             image: DecorationImage(
-                image: AssetImage('assets/images/mapBG.png'),
+                image: AssetImage('assets/images/sorry.png'),
                 fit: BoxFit.cover)),
         child: Scaffold(
           backgroundColor: Colors.transparent,
@@ -25,23 +23,9 @@ class WelcomeScreen extends StatelessWidget {
                         alignment: Alignment.center,
                         height: constraints.maxHeight / 2,
                         width: MediaQuery.of(context).size.width / 2,
-                        child: const Text('Welcome to "App Name"',
+                        child: const Text('Login Screen"',
                             style:
                                 TextStyle(fontSize: 35.0, color: color.Text))),
-                    Container(
-                      alignment: Alignment.center,
-                      height: constraints.maxHeight / 2,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 50),
-                        child: Column(
-                          children: const <Widget>[
-                            Button(text: 'Register'),
-                            SizedBox(height: 25),
-                            Button(text: 'Login'),
-                          ],
-                        ),
-                      ),
-                    ),
                   ],
                 );
               },

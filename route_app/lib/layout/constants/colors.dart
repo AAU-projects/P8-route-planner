@@ -7,7 +7,7 @@ const Color Background = Color.fromARGB(255, 23, 38, 60);
 const Color Text = Color.fromARGB(255, 225, 227, 229);
 
 /// Button background color
-const Color ButtonBackground = Color.fromARGB(255, 25, 32, 43);
+const Color ButtonBackground = Color.fromARGB(255, 26, 32, 43);
 
 
 

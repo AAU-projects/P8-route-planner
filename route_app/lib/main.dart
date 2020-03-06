@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:route_app/layout/router.dart';
 import 'package:route_app/locator.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 //import 'package:route_app/core/utils/environment.dart' as environment;
 
 /// Is the app in debug mode
@@ -18,7 +20,7 @@ void main() {
       runApp(RouteApp());
     });
   } */
-
+  
   runApp(RouteApp());
 }
 
@@ -28,7 +30,11 @@ class RouteApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Route App',
-      theme: ThemeData(),
+      theme: ThemeData(
+        textTheme: GoogleFonts.robotoTextTheme(
+          Theme.of(context).textTheme,
+        ),
+      ),
       initialRoute: 'welcome',
       onGenerateRoute: Router.generateRoute,
     );
