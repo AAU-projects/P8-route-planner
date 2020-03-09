@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:route_app/layout/widgets/button.dart';
-import 'package:route_app/layout/router.dart';
 import '../constants/colors.dart' as color;
 
 /// Documentation
@@ -34,10 +33,10 @@ class WelcomeScreen extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.only(top: 50),
                         child: Column(
-                          children: const <Widget>[
-                            Button(text: 'Register'),
-                            SizedBox(height: 25),
-                            Button(text: 'Login'),
+                          children: <Widget>[
+                            Button(text: 'Register', onPressed: () => Navigator.pushNamed(context, '/register')),
+                            const SizedBox(height: 25),
+                            Button(text: 'Login', onPressed: () => Navigator.pushNamed(context, '/login')),
                           ],
                         ),
                       ),

@@ -10,7 +10,7 @@ class LoginScreen extends StatelessWidget {
       home: Container(
         decoration: BoxDecoration(
             image: DecorationImage(
-                image: AssetImage('assets/images/sorry.png'),
+                image: AssetImage('assets/images/mapBG.png'),
                 fit: BoxFit.cover)),
         child: Scaffold(
           backgroundColor: Colors.transparent,

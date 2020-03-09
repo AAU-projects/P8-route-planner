@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:route_app/layout/router.dart';
 import '../constants/colors.dart' as color;
 
 
@@ -10,10 +9,13 @@ class Button extends StatelessWidget {
   const Button({
     Key key,
     @required this.text,
+    @required this.onPressed,
   }) : super(key: key);
 
   /// Button text
   final String text;
+  /// onPressed method
+  final Function onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +24,7 @@ class Button extends StatelessWidget {
       width: 185.0,
       child: RaisedButton(
         onPressed: () {
+          onPressed();
         },
         child: Text(text, style: const TextStyle(fontSize: 20.0)),
         color: color.ButtonBackground,
