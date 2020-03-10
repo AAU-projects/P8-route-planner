@@ -34,14 +34,16 @@ class WelcomeScreen extends StatelessWidget {
                           Button(
                               text: 'Register',
                               onPressed: () {
-                                Navigator.of(context).pushNamed('/register');
-                              }),
+                                Navigator.pushNamed(context, '/register');
+                              },
+                              key: const Key('RegisterButton')),
                           const SizedBox(height: 25),
                           Button(
                               text: 'Login',
                               onPressed: () {
                                 Navigator.pushNamed(context, '/login');
-                              }),
+                              },
+                              key: const Key('LoginButton')),
                         ],
                       ),
                     ),

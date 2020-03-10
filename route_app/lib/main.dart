@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:route_app/layout/screens/login.dart';
-import 'package:route_app/layout/screens/register.dart';
-import 'package:route_app/layout/screens/welcome.dart';
 import 'package:route_app/core/utils/environment.dart' as environment;
+import 'package:route_app/routes.dart';
 import 'locator.dart';
 
 /// Is the app in debug mode
@@ -30,15 +28,7 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: 'App name',
       initialRoute: '/',
-      // ignore: always_specify_types
-      routes: {
-        // When navigating to "/" route, build the WelcomeScreen widget
-        '/': (_) => WelcomeScreen(),
-        // When navigating to "/login" route, build the LoginScreen widget
-        '/login': (_) => LoginScreen(),
-        // When navigating to "/register" route, build the RegisterScreen widget
-        '/register': (_) => RegisterScreen(),
-      },
+      routes: routes,
     );
   }
 }
