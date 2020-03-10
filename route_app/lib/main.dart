@@ -3,7 +3,6 @@ import 'package:route_app/layout/screens/login.dart';
 import 'package:route_app/layout/screens/register.dart';
 import 'package:route_app/layout/screens/welcome.dart';
 import 'package:route_app/core/utils/environment.dart' as environment;
-
 import 'locator.dart';
 
 /// Is the app in debug mode
@@ -13,7 +12,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   setupLocator();
 
-  if(Debug) {
+  if (Debug) {
     environment.setFile('assets/environments.json').whenComplete(() {
       runApp(App());
     });
@@ -29,8 +28,9 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Route planner',
+      title: 'App name',
       initialRoute: '/',
+      // ignore: always_specify_types
       routes: {
         // When navigating to "/" route, build the WelcomeScreen widget
         '/': (_) => WelcomeScreen(),
