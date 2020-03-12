@@ -19,13 +19,13 @@ class LocationScreen extends StatelessWidget {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text(locationModel.currentLocation,
+                Text(locationModel.lastKnownLocation,
                     style: const TextStyle(fontSize: 20.0)),
                 const SizedBox(height: 25.0),
                 Button(
                     text: 'Update',
                     onPressed: () {
-                      locationModel.updateCurrentLocation();
+                      locationModel.updateLastKnownLocation();
                     })
               ],
             );
