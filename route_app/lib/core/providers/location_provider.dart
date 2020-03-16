@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -10,30 +12,100 @@ class LocationModel extends ChangeNotifier {
 
   final Geolocator _geolocator = Geolocator();
   String _currentLocation = 'Loading';
+  Position _currentLocationObj;
   String _lastKnownLocation = 'N/A';
-
-  Future<bool> _initialize() async {
-    _currentLocation = await updateCurrentLocation();
-    _lastKnownLocation = await updateLastKnownLocation();
-    notifyListeners();
-    return true;
-  }
-
-  /// Update the current location
-  Future<String> updateCurrentLocation() async {
-      return _updateCurrentLocation(_getCurrentLocation());
-  }
-
-  /// Update the last known location
-  Future<String> updateLastKnownLocation() async {
-      return _updateLastKnownLocation(_getLastKnownLocation());
-  }
+  Position _lastKnownLocationObj;
+  Position _addressPosition;
+  String _positionAddress;
 
   /// Get current location
   String get currentLocation => _currentLocation;
 
   /// Get last known location
   String get lastKnownLocation => _lastKnownLocation;
+
+  /// Get current location object
+  Position get currentLocationObj => _currentLocationObj;
+
+  /// Get last known location object
+  Position get lastKnownLocationObj => _lastKnownLocationObj;
+
+  /// Get the position from an address
+  Position get addressPosition => _addressPosition;
+
+  /// Get the address from a position
+  String get positionAddress => _positionAddress;
+
+  /// Get Position the position stream
+  Stream<Position> positionStream() {
+    final LocationOptions locationOptions =
+        LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
+    return _geolocator.getPositionStream(locationOptions);
+  }
+
+  /// Update the current location, notifies screens to update
+  Future<bool> updateCurrentLocation() async {
+    final Position cPos = await _startCurrentLocationUpdate();
+    _currentLocation = cPos.toString();
+    _currentLocationObj = cPos;
+
+    notifyListeners();
+    return true;
+  }
+
+  /// Update the last known location, notifies screens to update
+  Future<bool> updateLastKnownLocation() async {
+    final Position lPos = await _startLastKnownLocationUpdate();
+    _lastKnownLocation = lPos.toString();
+    _lastKnownLocationObj = lPos;
+
+    notifyListeners();
+    return true;
+  }
+
+  /// Get a position from an address, notifies screens to update
+  Future<bool> updatePositionFromAddress(String addr) async {
+    _addressPosition = await _updatePositionFromAddress(addr);
+
+    notifyListeners();
+    return true;
+  }
+
+  /// Get an address from a position, notifies screens to update
+  Future<bool> updateAddressFromPosition(Position pos) async {
+    _positionAddress = await _updateAddressFromPosition(pos);
+
+    notifyListeners();
+    return true;
+  }
+
+  Future<bool> _initialize() async {
+    await updateCurrentLocation();
+    await updateLastKnownLocation();
+    return true;
+  }
+
+  Future<Position> _updatePositionFromAddress(String addr) {
+    return _geolocator.placemarkFromAddress(addr).then((List<Placemark> list) {
+      return list.first.position;
+    });
+  }
+
+  Future<String> _updateAddressFromPosition(Position pos) {
+    return _geolocator
+        .placemarkFromCoordinates(pos.latitude, pos.longitude)
+        .then((List<Placemark> list) {
+      return list.first.thoroughfare;
+    });
+  }
+
+  Future<Position> _startCurrentLocationUpdate() async {
+    return _updateCurrentLocation(_getCurrentLocation());
+  }
+
+  Future<Position> _startLastKnownLocationUpdate() async {
+    return _updateLastKnownLocation(_getLastKnownLocation());
+  }
 
   Future<Position> _getCurrentLocation() async {
     return _geolocator.getCurrentPosition(
@@ -45,18 +117,18 @@ class LocationModel extends ChangeNotifier {
         desiredAccuracy: LocationAccuracy.best);
   }
 
-  Future<String> _updateCurrentLocation(Future<Position> loc) async {
-    String result;
+  Future<Position> _updateCurrentLocation(Future<Position> loc) async {
+    Position result;
     await loc.then((Position value) {
-      result = value.toString();
+      result = value;
     });
     return result;
   }
 
-  Future<String> _updateLastKnownLocation(Future<Position> loc) async {
-    String result;
+  Future<Position> _updateLastKnownLocation(Future<Position> loc) async {
+    Position result;
     await loc.then((Position value) {
-      result = value.toString();
+      result = value;
     });
     return result;
   }

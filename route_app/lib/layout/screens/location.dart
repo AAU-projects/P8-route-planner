@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
@@ -19,13 +21,17 @@ class LocationScreen extends StatelessWidget {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text(locationModel.lastKnownLocation,
+                Text(locationModel.positionAddress.toString(),
                     style: const TextStyle(fontSize: 20.0)),
                 const SizedBox(height: 25.0),
                 Button(
                     text: 'Update',
                     onPressed: () {
-                      locationModel.updateLastKnownLocation();
+                      locationModel
+                          .updatePositionFromAddress('Selma lagerløfs vej 300');
+                      sleep(const Duration(seconds: 3));
+                      locationModel.updateAddressFromPosition(
+                          locationModel.addressPosition);
                     })
               ],
             );
