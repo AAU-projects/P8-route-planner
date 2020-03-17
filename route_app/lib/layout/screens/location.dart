@@ -8,13 +8,13 @@ import 'package:route_app/layout/widgets/button.dart';
 class LocationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<LocationModel>(
-      create: (_) => LocationModel(),
+    return ChangeNotifierProvider<LocationProvider>(
+      create: (_) => LocationProvider(),
       child: Scaffold(
         backgroundColor: Colors.white,
         body: Center(
-          child: Container(child: Consumer<LocationModel>(builder:
-              (BuildContext context, LocationModel locationModel,
+          child: Container(child: Consumer<LocationProvider>(builder:
+              (BuildContext context, LocationProvider locationModel,
                   Widget child) {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,

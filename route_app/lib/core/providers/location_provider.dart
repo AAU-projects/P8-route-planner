@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 /// Location model which can be used in a 'ChangeNotifier' provider.
-class LocationModel extends ChangeNotifier {
+class LocationProvider extends ChangeNotifier {
   /// Class Constructor
-  LocationModel() {
+  LocationProvider() {
     _initialize();
   }
 
