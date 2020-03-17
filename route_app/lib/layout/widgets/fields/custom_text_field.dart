@@ -1,25 +1,31 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
+import 'package:route_app/core/providers/form_provider.dart';
 import '../../constants/colors.dart' as color;
 
-/// DOCUMENT THIS
+/// Custom text field matching the app's design guidelines.
+/// 
+/// Can have optional icon
+/// Have Accept and Error states based on the provided validator (optional)
 class CustomTextField extends StatefulWidget {
 
    /// Textfield constructor
-  CustomTextField({
+  const CustomTextField({
     Key key, 
     @required this.hint, 
+    @required this.controller,
     this.helper,
     this.icon,
     this.errorText,
-    this.validator
+    this.validator,
+    this.provider
   }) : super(key: key);
 
   /// The hint text to display in the textfield
   final String hint;
   
-  /// DOCUMENT THIS
+  /// Helper text to display under textfield
   final String helper;
 
   /// The suffix icon to display
@@ -31,7 +37,11 @@ class CustomTextField extends StatefulWidget {
   /// The validator to use for input validation
   final Function validator;
 
-  String _input;
+  /// Text controler to retrive the input of the textfield
+  final TextEditingController controller;
+
+  ///
+  final FormProvider provider;
 
   @override
   _CustomTextFieldState createState() => _CustomTextFieldState();
@@ -39,46 +49,76 @@ class CustomTextField extends StatefulWidget {
 
 /// Custom text field with specific color coding depending on the input
 class _CustomTextFieldState extends State<CustomTextField> {
+  // Boolean to check if the input is valid (checked using the validator)
   bool _valid = true;
-  bool _lastFocus = false;
+  // Boolean to check if input is valid and the user has removed focus
   bool _completed = false;
+  bool _lastFocus = false;
+  String _input;
   final FocusNode _node = FocusNode();
 
   @override
   void initState() {
     super.initState();
+    widget.provider.register(widget.hint, false);
     _node.addListener(onFocusChange);
   }
 
+  @override
+  void dispose() {
+    _node.removeListener(onFocusChange);
+    _node.dispose();
+    super.dispose();
+  }
+
+  // Validates the input of the textfield if the focus changes
   void onFocusChange() {
     if (_lastFocus != _node.hasFocus) {
       if (_lastFocus && !_node.hasFocus) {
-        _valid = widget.validator(widget._input);
+        if (_input != null) {
+          validateInput(_input);
+        }
       }
-      setState(() { _lastFocus = _node.hasFocus; });
+      setState(() { 
+        _lastFocus = _node.hasFocus;
+      });
     }
   }
 
+  // Validate the input using the given validator
   void validateInput(String input) {
     setState(() { 
       _valid = widget.validator(input); 
+
+      if (_input != null) {
+        if (_input.isNotEmpty) {
+          _completed = _valid;
+          widget.provider.changeStatus(widget.hint, _valid);
+        }
+        else {
+          _completed = false;
+        }
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.icon != null? _iconField() : _field();
+    return _field();
   }
 
-  Widget _iconField() {
+  Widget _field() {
     return SizedBox(
-      height: 100.0,
+      height: 85.0,
       width: 250.0,
       child: TextField(
+        controller: widget.controller,
         focusNode: _node,
-        onChanged: (String value) {widget._input = value;},
+        onChanged: (String value) {_input = value;},
+        textAlignVertical: TextAlignVertical.center,
         style: TextStyle( color: Colors.white, fontSize: 13),
         decoration: InputDecoration(
+          contentPadding: const EdgeInsets.all(20.0),
           enabled: true,
           filled: true,
           fillColor: color.TextFieldBG,
@@ -86,14 +126,17 @@ class _CustomTextFieldState extends State<CustomTextField> {
           hintText: widget.hint,
           errorText: _valid? null : widget.errorText,
           errorStyle: TextStyle(color: color.ErrorColor, fontSize: 10),
-          suffixIcon: Icon(
-            widget.icon, 
-            color: _completed
-            ? color.CorrectColor 
-            : _valid
-              ? color.NeturalGrey
-              : color.ErrorColor
-          ),
+          suffixIcon: widget.icon != null
+            ? Icon(
+                widget.icon, 
+                size: 20.0,
+                color: _completed
+                ? color.CorrectColor 
+                : _valid
+                  ? color.NeturalGrey
+                  : color.ErrorColor
+            )
+            : null,
           hintStyle: TextStyle(color: color.NeturalGrey, fontSize: 13),
           helperStyle: TextStyle(color: color.NeturalGrey, fontSize: 10),
           focusedBorder: UnderlineInputBorder(
@@ -101,24 +144,11 @@ class _CustomTextFieldState extends State<CustomTextField> {
               ? BorderSide(color: color.CorrectColor) 
               : BorderSide(color: Colors.white)
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _field() {
-    return SizedBox(
-      height: 55.0,
-      width: 250.0,
-      child: TextField(
-        onSubmitted: (String value) {validateInput(value);},
-        decoration: InputDecoration(
-          enabled: true,
-          filled: true,
-          fillColor: color.TextFieldBG,
-          helperText: 'NO ICON',
-          hintText: widget.hint,
-          errorText: 'Hej'
+          enabledBorder: UnderlineInputBorder(
+            borderSide: _completed
+              ? BorderSide(color: color.CorrectColor) 
+              : BorderSide(color: color.NeturalGrey)
+          ),
         ),
       ),
     );

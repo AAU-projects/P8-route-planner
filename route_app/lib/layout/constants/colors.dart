@@ -20,3 +20,6 @@ const Color NeturalGrey = Color.fromARGB(255, 168, 168, 168);
 
 /// Dark background color for textfield
 const Color TextFieldBG = Color.fromARGB(255, 30, 39, 51);
+
+/// Custom button inactive color
+const Color CustomButtonInactive = Color.fromARGB(255, 25, 33, 43);
