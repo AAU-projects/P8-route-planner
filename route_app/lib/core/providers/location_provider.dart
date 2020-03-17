@@ -1,6 +1,5 @@
 import 'dart:async';
-
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 /// Location model which can be used in a 'ChangeNotifier' provider.
@@ -17,6 +16,7 @@ class LocationModel extends ChangeNotifier {
   Position _lastKnownLocationObj;
   Position _addressPosition;
   String _positionAddress;
+  double _distanceOut;
 
   /// Get current location
   String get currentLocation => _currentLocation;
@@ -35,6 +35,9 @@ class LocationModel extends ChangeNotifier {
 
   /// Get the address from a position
   String get positionAddress => _positionAddress;
+
+  /// Get the distance output
+  double get distanceOut => _distanceOut;
 
   /// Get Position the position stream
   Stream<Position> positionStream() {
@@ -76,6 +79,14 @@ class LocationModel extends ChangeNotifier {
     _positionAddress = await _updateAddressFromPosition(pos);
 
     notifyListeners();
+    return true;
+  }
+
+  /// Get the distance between two positions
+  Future<bool> updateDistanceBetweenPositions(
+      Position pos1, Position pos2) async {
+    await _geolocator.distanceBetween(
+        pos1.latitude, pos1.longitude, pos2.latitude, pos2.longitude);
     return true;
   }
 
