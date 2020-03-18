@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
 import 'package:route_app/core/providers/form_provider.dart';
 import '../../constants/colors.dart' as color;
 
@@ -31,13 +30,13 @@ class CustomTextField extends StatefulWidget {
   /// The suffix icon to display
   final IconData icon;
 
-  /// The text to diplay on errors
+  /// The text to display on errors
   final String errorText;
 
   /// The validator to use for input validation
   final Function validator;
 
-  /// Text controler to retrive the input of the textfield
+  /// Text controller to retrieve the input of the textfield
   final TextEditingController controller;
 
   ///

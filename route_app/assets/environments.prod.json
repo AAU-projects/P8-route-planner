@@ -1,1 +1,4 @@
-{}
+{
+  "SERVER_URL": "server.ronsholt.me/dev/api/v1/",
+  "DATABASE_VERSION": 1
+}

@@ -3,13 +3,12 @@ import 'package:flutter/material.dart';
 ///
 class FormProvider with ChangeNotifier {
 
-  Map<String, bool> _fields = <String, bool>{};
-  bool _accept = false;
+  final Map<String, bool> _fields = <String, bool>{};
 
-  /// 
-  bool get accept => _accept;
+  /// Is the form valid, have all the registered fields returned true
+  bool get accept => _fields.values.every((bool value) => value);
 
-  /// 
+  /// Register a required field
   void register(String name, bool value) {
     if (_fields.containsKey(name)) {
       throw Exception('name already exists! To change value use changeStatus');
@@ -18,26 +17,13 @@ class FormProvider with ChangeNotifier {
     }
   }
 
-  ///
+  /// Change the status of a field
   void changeStatus(String name, bool value) {
     if (_fields.containsKey(name)) {
-      _fields.update(name, (bool value) => value);
-      _accept = _updateAccept();
-      print(_accept.toString());
-      print(_fields);
+      _fields.update(name, (bool old) => value);
       notifyListeners();
-      print(name + ' : ' + value.toString());
     } else {
       throw Exception('name dont exists! Register the field first!');
     }
-  }
-
-  bool _updateAccept() {
-    for (bool value in _fields.values) {
-      if (!value) {
-        return false;
-      }
-    }
-    return true;
   }
 }
