@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:route_app/layout/screens/login.dart';
+import 'package:route_app/layout/screens/register.dart';
 import 'package:route_app/layout/widgets/button.dart';
 import '../constants/colors.dart' as color;
+import '../utils/routeAnimations.dart';
 
 /// Inital screen to choose between the screens: login and register
 class WelcomeScreen extends StatelessWidget {
@@ -34,14 +37,18 @@ class WelcomeScreen extends StatelessWidget {
                           Button(
                               text: 'Register',
                               onPressed: () {
-                                Navigator.pushNamed(context, '/register');
+                                Navigator.push<dynamic>(
+                                  context, 
+                                  SlideFromRightRoute(widget: RegisterScreen()));
                               },
                               key: const Key('RegisterButton')),
                           const SizedBox(height: 25),
                           Button(
                               text: 'Login',
                               onPressed: () {
-                                Navigator.pushNamed(context, '/login');
+                                Navigator.push<dynamic>(
+                                  context, 
+                                  SlideFromRightRoute(widget: LoginScreen()));
                               },
                               key: const Key('LoginButton')),
                         ],

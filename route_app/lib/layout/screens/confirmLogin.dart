@@ -1,25 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
-import 'package:route_app/core/providers/form_provider.dart';
-import 'package:route_app/layout/screens/welcome.dart';
-import 'package:route_app/layout/utils/routeAnimations.dart';
-import 'package:route_app/layout/widgets/buttons/custom_button.dart';
-import 'package:route_app/layout/widgets/fields/custom_text_field.dart';
+import '../../core/providers/form_provider.dart';
 import '../constants/colors.dart' as color;
 import '../constants/validators.dart' as validators;
+import '../widgets/fields/custom_text_field.dart';
+import '../widgets/buttons/custom_button.dart';
 
 /// Documentation
-class RegisterScreen extends StatelessWidget {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _licenseController = TextEditingController();
+class ConfirmLoginScreen extends StatelessWidget {
+  final TextEditingController _pinController = TextEditingController();
 
-  void _onPressRegister() {
-    print('Register pressed');
+  void _onPressedConfirm() {
+    print('Confirm pressed');
   }
 
   @override
   Widget build(BuildContext context) {
+    final String email = ModalRoute.of(context).settings.arguments.toString();
+
     return Scaffold(
       backgroundColor: color.Background,
       body: Center(
@@ -36,36 +35,34 @@ class RegisterScreen extends StatelessWidget {
                         children: <Widget>[
                           Container(
                               alignment: Alignment.center,
-                              height: constraints.maxHeight / 6,
-                              child: const Text('REGISTER',
+                              height: constraints.maxHeight / 12,
+                              child: const Text('CONFIRM LOGIN',
                                   style: TextStyle(
                                       fontSize: 35.0, color: color.Text))),
+                          Container(
+                              alignment: Alignment.center,
+                              height: constraints.maxHeight / 6,
+                              width: constraints.maxWidth / 2,
+                              child: Text('''Please enter the 4-digit code sent to $email''',
+                                  style: const TextStyle(
+                                      fontSize: 15.0, 
+                                      color: color.Text))),
                           CustomTextField(
-                              hint: 'Enter email',
-                              icon: Icons.mail,
-                              helper: 'Email',
-                              validator: validators.email,
-                              errorText: 'Invalid email',
-                              controller: _emailController,
-                              provider: formProvider),
-                          CustomTextField(
-                              hint: 'Enter license plate',
-                              icon: Icons.directions_car,
-                              helper: 'License plate',
-                              validator: validators.licensePlate,
-                              errorText: 'Invalid license plate',
-                              controller: _licenseController,
+                              hint: 'Enter PIN',
+                              icon: Icons.lock,
+                              helper: 'PIN',
+                              validator: validators.pin,
+                              errorText: 'Invalid pin',
+                              controller: _pinController,
                               provider: formProvider),
                           CustomButton(
-                              onPressed: _onPressRegister,
-                              buttonText: 'Register',
+                              onPressed: _onPressedConfirm,
+                              buttonText: 'Confirm',
                               provider: formProvider),
                           GestureDetector(
                             onTap: () {
-                                Navigator.push<dynamic>(
-                                context, 
-                                SlideFromLeftRoute(widget: WelcomeScreen()));
-                              },
+                              Navigator.pushNamed(context, '/');
+                            },
                             child: Container(
                               padding: const EdgeInsets.all(10),
                               child: const Text('Cancel',
