@@ -2,6 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:route_app/core/models/user_model.dart';
+import 'package:route_app/core/services/database.dart';
+import 'package:route_app/core/services/interfaces/API/auth.dart';
+import 'package:route_app/core/services/interfaces/API/user.dart';
+import 'package:route_app/core/services/interfaces/http.dart';
+import 'package:route_app/locator.dart';
 import '../../core/providers/form_provider.dart';
 import '../constants/colors.dart' as color;
 import '../constants/validators.dart' as validators;
@@ -13,9 +19,14 @@ class LoginScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _licenseController = TextEditingController();
 
+  final AuthAPI auth = locator.get<AuthAPI>();
+  final UserAPI user = locator.get<UserAPI>();
+
   ///
   void test() {
-    print('Test');
+    auth.login('7328', email: 'lukasronsholt@gmail.com').then((_) {
+      user.activeUser.then(print);
+    });
   }
 
   @override

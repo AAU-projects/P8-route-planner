@@ -14,6 +14,12 @@ class Response {
 
 /// Http client interface
 abstract class Http {
+  /// Get the stored JWT token
+  Future<String> get token;
+
+  /// Clear old JWT tokens and set a new
+  Future<bool> setToken(String token, String expire);
+
   /// Send a GET request to the provided [url]
   Future<Response> get(String url);
 

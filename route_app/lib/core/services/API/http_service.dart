@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:route_app/core/services/database.dart';
-import 'package:route_app/core/services/API/http.dart';
+import 'package:route_app/core/services/interfaces/http.dart';
 import 'package:route_app/locator.dart';
 import 'package:http/http.dart' as http;
 
@@ -40,32 +40,36 @@ class HttpService implements Http {
     return headers;
   }
 
-  /// Get the stored JWT token
+  @override
   Future<String> get token async {
     final List<Map<String, dynamic>> result =
-      await _db.query(_tokenTable, columns: <String>['jwt'], limit:1);
+      await _db.query(_tokenTable, limit:1);
 
     if (result.isNotEmpty) {
-      if (result.first.containsKey('jwt')) {
-        return result.first.values.first;
+      if (result.first.containsKey('JWT')) {
+        if (DateTime.now().isBefore(DateTime.parse(result.first['expire']))) {
+          return result.first['JWT'];
+        }
       }
     }
-
     return null;
   }
 
-  /// Clear old JWT tokens and set a new
-  Future<int> setToken(String value) async {
+  @override
+  Future<bool> setToken(String token, String expire) async {
     // Delete all old tokens
     await _db.delete(_tokenTable, where: '1');
 
     // Row to insert
     final Map<String, dynamic> row = <String, String>{
-      'jwt': value
+      'JWT': token,
+      'expire': expire
     };
 
     // Store new token
-    return _db.insert(_tokenTable, row);
+    return _db.insert(_tokenTable, row).then((int value) {
+      return value > 0;
+    });
   }
 
   @override
@@ -134,6 +138,11 @@ class HttpService implements Http {
     res = res.timeout(_timeout);
 
     return res.then((http.Response value) {
+
+      if (value.statusCode != 200) {
+        throw '''[${value.statusCode}] ${jsonDecode(value.body)['title']}''';
+      }
+
       Map<String, dynamic> json;
       // Ensure all headers are in lowercase
       final Map<String, String> headers = value.headers.map(
@@ -142,7 +151,13 @@ class HttpService implements Http {
       // Only decode if content is json
       if (headers.containsKey('content-type') 
        && headers['content-type'].toLowerCase().contains('application/json')) {
-        json = jsonDecode(value.body);
+        if (!(jsonDecode(value.body) is Map)) {
+          json = <String, dynamic>{
+            'result': jsonDecode(value.body)
+          };
+        } else {
+          json = jsonDecode(value.body);
+        }
       }
 
       return Response(value, json);

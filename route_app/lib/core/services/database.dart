@@ -37,11 +37,47 @@ class DatabaseService {
     final Directory documentDirectory = await
     getApplicationDocumentsDirectory();
     final String path = join(documentDirectory.path, _databaseName);
-    return openDatabase(path, version: _databaseVersion, onCreate: _onCreate);
+    return openDatabase(
+        path,
+        version: _databaseVersion,
+        onCreate: _onCreate,
+        onUpgrade: _onVersionChange);
+  }
+
+  Future<void> _onVersionChange(Database db, int oldV, int newV) async {
+    final List<String> oldTables = <String>[];
+
+    _getTables(db).then((List<Map<String, dynamic>> tables) {
+      // ignore: avoid_function_literals_in_foreach_calls
+      tables.forEach((Map<String, dynamic> table) {
+        oldTables.add(table.values.first);
+      });
+
+      // ignore: avoid_function_literals_in_foreach_calls
+      data.tables.forEach(
+          (Tuple3<String, String, Map<String, DatabaseTypes>> table) {
+            if (!oldTables.contains(table.item1)) {
+              _createTable(table);
+            }
+          });
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> _getTables(Database db) async {
+    return db.query(
+        'sqlite_master',
+        columns: <String>['name'],
+        where: "type='table'",
+        orderBy: 'name'
+        );
   }
 
   Future<void> _onCreate(Database db, int version) async {
-    data.tables.forEach(_createTable);
+    // ignore: avoid_function_literals_in_foreach_calls
+    data.tables.forEach(
+            (Tuple3<String, String, Map<String, DatabaseTypes>>table) async {
+              await _createTable(table);
+            });
   }
 
   /// Helper to create a new table in the database
@@ -54,11 +90,11 @@ class DatabaseService {
     final String key = data.item2;
     final Map<String, DatabaseTypes> columns = data.item3;
 
-    String sql = '''CREATE TABLE $tableName ( $key INTEGER PRIMARY KEY,''';
+    String sql = '''CREATE TABLE $tableName ( $key INTEGER PRIMARY KEY''';
 
     columns.forEach((String name, DatabaseTypes type) {
       final String colType = enumToString(type);
-      sql += '''$name $colType NOT NULL,''';
+      sql += ''',$name $colType NOT NULL''';
     });
 
     sql += ')';

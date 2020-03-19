@@ -1,4 +1,4 @@
 {
-  "SERVER_URL": "server.ronsholt.me/dev/api/v1/",
+  "SERVER_URL": "http://server.ronsholt.me/api/v1/",
   "DATABASE_VERSION": 1
 }
