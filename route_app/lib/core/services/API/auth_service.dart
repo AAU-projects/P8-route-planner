@@ -31,7 +31,7 @@ class AuthenticationService implements AuthAPI{
       'Pincode': pin
     }).then((Response res) {
       final User usr = User.fromJson(res.json);
-      _userService.setActiveUser(usr);
+      //_userService.setActiveUser(usr);
       _http.setToken(usr.token, usr.tokenExpirationDate.toIso8601String());
       return usr;
     });
@@ -47,9 +47,10 @@ class AuthenticationService implements AuthAPI{
   }
 
   @override
-  Future<User> register(String email) async {
+  Future<User> register(String email, {String licensePlate}) async {
     return _http.post(_endpoint + 'register', <String, String> {
-      'Email': email
+      'Email': email,
+      'LicensePlate': licensePlate ??= ''
     }).then((Response res) {
       return User.fromJson(res.json);
     });

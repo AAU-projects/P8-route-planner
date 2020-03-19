@@ -8,18 +8,19 @@ import '../../constants/colors.dart' as color;
 /// Can have optional icon
 /// Have Accept and Error states based on the provided validator (optional)
 class CustomTextField extends StatefulWidget {
-
-   /// Textfield constructor
+  /// Textfield constructor
   const CustomTextField({
     Key key, 
-    @required this.hint, 
+    @required this.hint,
     @required this.controller,
     this.helper,
     this.icon,
     this.errorText,
     this.validator,
-    this.provider
-  }) : super(key: key);
+    this.provider,
+    bool isOptional = false,
+    TextInputType keyboardType = TextInputType.text
+  }) : type = keyboardType, optional = isOptional, super(key: key);
 
   /// The hint text to display in the textfield
   final String hint;
@@ -42,6 +43,12 @@ class CustomTextField extends StatefulWidget {
   ///
   final FormProvider provider;
 
+  ///
+  final bool optional;
+
+  ///
+  final TextInputType type;
+
   @override
   _CustomTextFieldState createState() => _CustomTextFieldState();
 }
@@ -59,7 +66,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
   @override
   void initState() {
     super.initState();
-    widget.provider.register(widget.hint, false);
+    widget.provider?.register(widget.hint, widget.optional);
     _node.addListener(onFocusChange);
   }
 
@@ -74,9 +81,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
   void onFocusChange() {
     if (_lastFocus != _node.hasFocus) {
       if (_lastFocus && !_node.hasFocus) {
-        if (_input != null) {
           validateInput(_input);
-        }
       }
       setState(() { 
         _lastFocus = _node.hasFocus;
@@ -87,16 +92,20 @@ class _CustomTextFieldState extends State<CustomTextField> {
   // Validate the input using the given validator
   void validateInput(String input) {
     setState(() { 
-      _valid = widget.validator(input); 
+      if (_input.isNotEmpty) {
+        _valid = widget.validator(input);
 
-      if (_input != null) {
         if (_input.isNotEmpty) {
           _completed = _valid;
-          widget.provider.changeStatus(widget.hint, _valid);
+          widget.provider?.changeStatus(widget.hint, _valid);
         }
         else {
           _completed = false;
         }
+      } else if (widget.optional) {
+        _completed = false;
+        _valid = true;
+        widget.provider?.changeStatus(widget.hint, true);
       }
     });
   }
@@ -111,11 +120,12 @@ class _CustomTextFieldState extends State<CustomTextField> {
       height: 85.0,
       width: 250.0,
       child: TextField(
+        keyboardType: widget.type,
         controller: widget.controller,
         focusNode: _node,
         onChanged: (String value) {_input = value;},
         textAlignVertical: TextAlignVertical.center,
-        style: TextStyle( color: Colors.white, fontSize: 13),
+        style: const TextStyle( color: Colors.white, fontSize: 13),
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.all(20.0),
           enabled: true,
@@ -136,17 +146,17 @@ class _CustomTextFieldState extends State<CustomTextField> {
                   : color.ErrorColor
             )
             : null,
-          hintStyle: TextStyle(color: color.NeturalGrey, fontSize: 13),
-          helperStyle: TextStyle(color: color.NeturalGrey, fontSize: 10),
+          hintStyle: const TextStyle(color: color.NeturalGrey, fontSize: 13),
+          helperStyle: const TextStyle(color: color.NeturalGrey, fontSize: 10),
           focusedBorder: UnderlineInputBorder(
             borderSide: _completed
-              ? BorderSide(color: color.CorrectColor) 
-              : BorderSide(color: Colors.white)
+              ? const BorderSide(color: color.CorrectColor)
+              : const BorderSide(color: Colors.white)
           ),
           enabledBorder: UnderlineInputBorder(
             borderSide: _completed
-              ? BorderSide(color: color.CorrectColor) 
-              : BorderSide(color: color.NeturalGrey)
+              ? const BorderSide(color: color.CorrectColor)
+              : const BorderSide(color: color.NeturalGrey)
           ),
         ),
       ),

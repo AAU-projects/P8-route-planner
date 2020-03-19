@@ -21,12 +21,11 @@ void setupLocator() {
       ));
 
   locator.registerLazySingleton<UserAPI>(() => UserService());
+  locator.registerLazySingleton<AuthAPI>(() => AuthenticationService());
 
   // Example of factory, New instance with each call
   // locator.registerFactory(() => Api());
 
   locator.registerFactory<Http>(() => HttpService(
       baseUrl: environment.getVar('SERVER_URL'), tokenTable: 'auth'));
-
-  locator.registerFactory<AuthAPI>(() => AuthenticationService());
 }

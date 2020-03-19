@@ -34,32 +34,39 @@ class _CustomButtonState extends State<CustomButton> {
   }
 
   Widget _button() {
-    return SizedBox(
-      height: 40.0,
-      width: 150.0,
-      child: RawMaterialButton(
-        onPressed: widget.onPressed,
-        fillColor: widget.provider.accept
-          ? color.CorrectColor
-          : color.ErrorColor,
-        splashColor: Colors.white,
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                widget.buttonText,
-                style: TextStyle(
-                  color: color.NeturalGrey,
-                  fontSize: 14
-                ),
-              )
-            ],
+    return Padding(
+      padding: const EdgeInsets.only(top: 15),
+      child: SizedBox(
+        height: 40.0,
+        width: 150.0,
+        child: RawMaterialButton(
+          onPressed: widget.provider.accept
+            ? widget.onPressed
+            : null,
+          fillColor: widget.provider.accept
+            ? color.CorrectColor
+            : color.CustomButtonInactive,
+          splashColor: Colors.white,
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  widget.buttonText,
+                  style: TextStyle(
+                    color: widget.provider.accept
+                      ? Colors.white
+                      : color.NeturalGrey,
+                    fontSize: 14
+                  ),
+                )
+              ],
+            )
           )
         )
-      )
+      ),
     );
   }
 

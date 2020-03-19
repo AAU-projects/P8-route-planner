@@ -1,5 +1,6 @@
 RegExp _emailMatcher = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
 RegExp _licensePlateMatcher = RegExp(r'([A-Za-zæøåÆØÅ0-9])+');
+RegExp _pinMatcher = RegExp(r'(0-9)+');
 
 /// Email validator
 bool email(String email) {
@@ -16,8 +17,17 @@ bool licensePlate(String plate) {
   }
   final String _plate = plate.replaceAll(' ','');
   return _plate.length > 2
-    ? _plate.length < 7
+    ? _plate.length <= 7
       ? _licensePlateMatcher.hasMatch(_plate) 
-      :false 
+      : false 
     : false;
+}
+
+/// PIN code validator
+bool pin(String pin) {
+  if (pin == null) {
+    return false;
+  }
+  final String _pin = pin.replaceAll(' ','');
+  return _pin.length == 4;
 }
