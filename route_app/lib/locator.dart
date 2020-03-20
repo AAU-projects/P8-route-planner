@@ -16,7 +16,7 @@ void setupLocator() {
   // Example of Singleton, One instance thought the app
   // locator.registerLazySingleton(() => Api());
   locator.registerLazySingleton<DatabaseService>(() => DatabaseService(
-      databaseName: 'testDBv2',
+      databaseName: 'testDBv3',
       version: environment.getVar<int>('DATABASE_VERSION')
       ));
 

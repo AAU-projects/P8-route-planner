@@ -14,7 +14,6 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   setupLocator();
 
-
   if (Debug) {
     environment.setFile('assets/environments.json').whenComplete(() {
       _startApp();

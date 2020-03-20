@@ -13,7 +13,9 @@ class DatabaseService {
   /// Default constructor
   DatabaseService(
       {@required String databaseName, @required int version})
-      : _databaseName = databaseName, _databaseVersion = version;
+      : _databaseName = databaseName, _databaseVersion = version {
+    database.then((_) {});
+  }
 
   // This is the actual database filename that is saved in the docs directory.
   final String _databaseName;
@@ -57,7 +59,7 @@ class DatabaseService {
       data.tables.forEach(
           (Tuple3<String, String, Map<String, DatabaseTypes>> table) {
             if (!oldTables.contains(table.item1)) {
-              _createTable(table);
+              _createTable(db, table);
             }
           });
     });
@@ -76,15 +78,14 @@ class DatabaseService {
     // ignore: avoid_function_literals_in_foreach_calls
     data.tables.forEach(
             (Tuple3<String, String, Map<String, DatabaseTypes>>table) async {
-              await _createTable(table);
+              await _createTable(db, table);
             });
   }
 
   /// Helper to create a new table in the database
-  Future<void> _createTable(
+  Future<void> _createTable(Database db,
       Tuple3<String, String, Map<String, DatabaseTypes>> data)
   async {
-    final Database db = await database;
 
     final String tableName = data.item1;
     final String key = data.item2;
