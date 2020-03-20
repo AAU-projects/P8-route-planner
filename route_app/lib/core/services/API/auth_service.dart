@@ -31,7 +31,7 @@ class AuthenticationService implements AuthAPI{
       'Pincode': pin
     }).then((Response res) {
       final User usr = User.fromJson(res.json);
-      //_userService.setActiveUser(usr);
+      _userService.setActiveUser(usr);
       _http.setToken(usr.token, usr.tokenExpirationDate.toIso8601String());
       return usr;
     });

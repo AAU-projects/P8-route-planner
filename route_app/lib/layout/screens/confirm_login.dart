@@ -15,9 +15,9 @@ class ConfirmLoginScreen extends StatelessWidget {
   final TextEditingController _pinController = TextEditingController();
   final AuthAPI _authAPI = locator.get<AuthAPI>();
 
-  void _onPressedConfirm() {
+  void _onPressedConfirm(BuildContext context) {
     _authAPI.login(_pinController.text).then((_) {
-      print('Loggedin');
+      Navigator.pushNamedAndRemoveUntil(context, '/test', (_) => false);
     }).catchError((Object error) {
       print(error);
     });
@@ -69,7 +69,7 @@ class ConfirmLoginScreen extends StatelessWidget {
                                 keyboardType: TextInputType.number,
                                 provider: formProvider),
                             CustomButton(
-                                onPressed: _onPressedConfirm,
+                                onPressed: () {_onPressedConfirm(context);},
                                 buttonText: 'Confirm',
                                 provider: formProvider),
                             GestureDetector(

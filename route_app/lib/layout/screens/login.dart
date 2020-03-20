@@ -11,6 +11,8 @@ import 'package:route_app/layout/widgets/fields/custom_text_field.dart';
 import 'package:route_app/locator.dart';
 import 'package:route_app/layout/constants/colors.dart' as color;
 import 'package:route_app/layout/constants/validators.dart' as validators;
+import 'package:route_app/layout/widgets/notifications.dart' as notifications;
+import 'package:route_app/layout/widgets/loading_snackbar.dart';
 
 /// Documentation
 class LoginScreen extends StatelessWidget {
@@ -18,22 +20,16 @@ class LoginScreen extends StatelessWidget {
   final AuthAPI _auth = locator.get<AuthAPI>();
 
   void _onPressedLogin(BuildContext context) {
-    print('Login pressed');
-
+    showLoadingSnackbar(context, 'Requesting Pincode');
     _auth.sendPin(_emailController.text).then((bool value) {
       if (value) {
-        Navigator.pushNamed(
-            context,
-            '/login/confirm',
-            // Pass input email to confirm screen
-            arguments: ConfirmScreenArguments(
-                _emailController.text,
-                'LOGIN'
-                ));
+        Navigator.pushNamed(context, '/login/confirm',
+            arguments: ConfirmScreenArguments(_emailController.text, 'LOGIN'));
       }
-      // TODO: Handle not being able to send PIN
+      notifications.error(context, 'Could not login, please try again later');
+    }).catchError((Object error) {
+      notifications.error(context, error);
     });
-
   }
 
   @override
@@ -41,7 +37,9 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: color.Background,
       body: GestureDetector(
-        onTap: () {FocusScope.of(context).requestFocus(FocusNode());},
+        onTap: () {
+          FocusScope.of(context).requestFocus(FocusNode());
+        },
         child: Center(
           child: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
@@ -69,14 +67,17 @@ class LoginScreen extends StatelessWidget {
                                 controller: _emailController,
                                 provider: formProvider),
                             CustomButton(
-                                onPressed: () {_onPressedLogin(context);},
+                                onPressed: () {
+                                  _onPressedLogin(context);
+                                },
                                 buttonText: 'Login',
                                 provider: formProvider),
                             GestureDetector(
                               onTap: () {
                                 Navigator.push<dynamic>(
-                                  context,
-                                  SlideFromLeftRoute(widget: WelcomeScreen()));
+                                    context,
+                                    SlideFromLeftRoute(
+                                        widget: WelcomeScreen()));
                               },
                               child: Container(
                                 padding: const EdgeInsets.all(10),

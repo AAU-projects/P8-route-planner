@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:route_app/core/extensions/int.dart';
 import 'package:flutter/material.dart';
 import 'package:route_app/core/services/database.dart';
 import 'package:route_app/core/services/interfaces/http.dart';
@@ -139,7 +139,7 @@ class HttpService implements Http {
 
     return res.then((http.Response value) {
 
-      if (value.statusCode != 200) {
+      if (!value.statusCode.between(199, 300)) {
         throw '''[${value.statusCode}] ${jsonDecode(value.body)['title']}''';
       }
 

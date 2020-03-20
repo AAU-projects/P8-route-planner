@@ -44,8 +44,8 @@ class User implements Model{
       'LicensePlate': licensePlate,
       'Pincode': pincode,
       'Token': token,
-      'PinExpirationDate': pinExpirationDate,
-      'TokenExpirationDate': tokenExpirationDate
+      'PinExpirationDate': pinExpirationDate.toIso8601String(),
+      'TokenExpirationDate': tokenExpirationDate.toIso8601String()
     };
   }
 }
