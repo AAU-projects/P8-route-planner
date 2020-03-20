@@ -7,11 +7,9 @@ import 'package:route_app/core/services/interfaces/http.dart';
 import 'package:route_app/locator.dart';
 
 /// Authentication endpoints
-class AuthenticationService implements AuthAPI{
+class AuthenticationService implements AuthAPI {
   /// Default constructor
-  AuthenticationService({
-    String endpoint = 'user/'
-  }): _endpoint = endpoint;
+  AuthenticationService({String endpoint = 'user/'}) : _endpoint = endpoint;
 
   final String _endpoint;
   final Http _http = locator.get<Http>();
@@ -26,10 +24,8 @@ class AuthenticationService implements AuthAPI{
           'as named parameter';
     }
     email ??= _currentEmail;
-    return _http.post(_endpoint + 'login', <String, String>{
-      'Email': email,
-      'Pincode': pin
-    }).then((Response res) {
+    return _http.post(_endpoint + 'login',
+        <String, String>{'Email': email, 'Pincode': pin}).then((Response res) {
       final User usr = User.fromJson(res.json);
       _userService.setActiveUser(usr);
       _http.setToken(usr.token, usr.tokenExpirationDate.toIso8601String());
@@ -40,21 +36,21 @@ class AuthenticationService implements AuthAPI{
   @override
   Future<bool> sendPin(String email) async {
     _currentEmail = email;
-    return _http.post(_endpoint + 'pincode', jsonEncode(email))
-        .then((Response res) {
-          return res.json['result'];
+    return _http
+        .post(_endpoint + 'pincode', <String, String>{'Email': email}).then(
+            (Response res) {
+      return res.json['result'];
     });
   }
 
   @override
   Future<User> register(String email, {String licensePlate}) async {
-    return _http.post(_endpoint + 'register', <String, String> {
+    return _http.post(_endpoint + 'register', <String, String>{
       'Email': email,
       'LicensePlate': licensePlate ??= ''
     }).then((Response res) {
       return User.fromJson(res.json);
     });
-
   }
 
   @override
@@ -68,6 +64,4 @@ class AuthenticationService implements AuthAPI{
     throw 'Not implemented';
     //_userService.setActiveUser(user);
   }
-
-
 }

@@ -33,9 +33,12 @@ class RegisterScreen extends StatelessWidget {
       _authAPI.sendPin(_emailController.text).then((bool value) {
         if (value) {
           Navigator.pushNamed(context, '/login/confirm',
-              // Pass input email to confirm screen
               arguments:
                   ConfirmScreenArguments(_emailController.text, 'REGISTER'));
+          notifications.removeNotification(context);
+        } else {
+          notifications.error(
+              context, 'Could not login, please try again later');
         }
       });
     }).catchError((Object error) {

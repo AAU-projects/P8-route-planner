@@ -9,6 +9,7 @@ import 'package:route_app/layout/widgets/fields/custom_text_field.dart';
 import 'package:route_app/locator.dart';
 import 'package:route_app/layout/constants/colors.dart' as color;
 import 'package:route_app/layout/constants/validators.dart' as validators;
+import 'package:route_app/layout/widgets/notifications.dart' as notifications;
 
 /// Documentation
 class ConfirmLoginScreen extends StatelessWidget {
@@ -19,7 +20,7 @@ class ConfirmLoginScreen extends StatelessWidget {
     _authAPI.login(_pinController.text).then((_) {
       Navigator.pushNamedAndRemoveUntil(context, '/test', (_) => false);
     }).catchError((Object error) {
-      print(error);
+      notifications.error(context, error);
     });
   }
 

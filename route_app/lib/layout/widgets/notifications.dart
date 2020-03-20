@@ -29,7 +29,7 @@ Animation<double> _animation;
 Widget _snackbar(BuildContext context, String message, Color color,
     {Duration time}) {
   return SnackBar(
-      duration: time != null ? time : const Duration(minutes: 1),
+      duration: time != null ? time : const Duration(seconds: 4),
       backgroundColor: color,
       behavior: SnackBarBehavior.floating,
       action: _closeSnackBar(context),

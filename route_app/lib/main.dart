@@ -17,25 +17,23 @@ void main() {
 
   if (Debug) {
     environment.setFile('assets/environments.json').whenComplete(() {
-      final UserAPI _user = locator.get<UserAPI>();
-      _user.activeUser.then((User user) {
-        if (user != null) {
-          _initScreen = '/test';
-        }
-        runApp(App());
-      });
+      _startApp();
     });
   } else {
     environment.setFile('assets/environments.prod.json').whenComplete(() {
-      final UserAPI _user = locator.get<UserAPI>();
-      _user.activeUser.then((User user) {
-        if (user != null) {
-          _initScreen = '/test';
-        }
-        runApp(App());
-      });
+      _startApp();
     });
   }
+}
+
+void _startApp() {
+  final UserAPI _user = locator.get<UserAPI>();
+  _user.activeUser.then((User user) {
+    if (user != null) {
+      _initScreen = '/';
+    }
+    runApp(App());
+  });
 }
 
 /// Main app class

@@ -25,8 +25,10 @@ class LoginScreen extends StatelessWidget {
       if (value) {
         Navigator.pushNamed(context, '/login/confirm',
             arguments: ConfirmScreenArguments(_emailController.text, 'LOGIN'));
+        notifications.removeNotification(context);
+      } else {
+        notifications.error(context, 'Could not login, please try again later');
       }
-      notifications.error(context, 'Could not login, please try again later');
     }).catchError((Object error) {
       notifications.error(context, error);
     });
