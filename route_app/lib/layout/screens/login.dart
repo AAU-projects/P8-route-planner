@@ -61,6 +61,7 @@ class LoginScreen extends StatelessWidget {
                                     style: TextStyle(
                                         fontSize: 30.0, color: color.Text))),
                             CustomTextField(
+                                key: const Key('emailField'),
                                 hint: 'Enter email',
                                 icon: Icons.mail,
                                 helper: 'Email',
@@ -75,6 +76,7 @@ class LoginScreen extends StatelessWidget {
                                 buttonText: 'Login',
                                 provider: formProvider),
                             GestureDetector(
+                              key: const Key('cancelButton'),
                               onTap: () {
                                 Navigator.push<dynamic>(
                                     context,

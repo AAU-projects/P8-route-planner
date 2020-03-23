@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:route_app/core/models/user_model.dart';
 import 'package:route_app/core/services/interfaces/API/auth.dart';
+import 'package:route_app/layout/screens/confirm_login.dart';
 import 'package:route_app/layout/screens/register.dart';
 import 'package:route_app/layout/widgets/buttons/custom_button.dart';
 import 'package:route_app/layout/widgets/fields/custom_text_field.dart';
@@ -12,8 +16,21 @@ class MockApi extends Mock implements AuthAPI {}
 
 void main() {
   setUp(() {
+    final MockApi api = MockApi();
     locator.reset();
-    locator.registerFactory<AuthAPI>(() => MockApi());
+    locator.registerSingleton<AuthAPI>(api);
+
+    when(api.register('validEmail@test.com')).thenAnswer((_) {
+      final Map<String, dynamic> json = <String, dynamic>{
+        'Email': 'validEmail@test.com',
+        'LicensePlate': ''
+      };
+      return Future<User>.value(User.fromJson(json));
+    });
+
+    when(api.sendPin('validEmail@test.com')).thenAnswer((_) {
+      return Future<bool>.value(true);
+    });
   });
 
   testWidgets('Screen renders', (WidgetTester tester) async {
@@ -107,5 +124,24 @@ void main() {
     final RawMaterialButton customButtonFinal =
         tester.firstWidget(find.byType(RawMaterialButton));
     expect(customButtonFinal.fillColor, color.CorrectColor);
+  });
+
+    testWidgets('Tap on confirm successfully navigates to confirm screen',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(MaterialApp(home: RegisterScreen()));
+
+    // Enter a valid email
+    await tester.enterText(
+      find.byKey(const Key('emailField')), 'validEmail@test.com');
+    await tester.pumpAndSettle();
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pumpAndSettle();
+
+    // Tap the confirm key
+    await tester.tap(find.byType(CustomButton));
+    await tester.pumpAndSettle();
+
+    // Expect to see the confirm screen
+    expect(find.byType(ConfirmLoginScreen), findsOneWidget);
   });
 }

@@ -55,8 +55,7 @@ class ConfirmLoginScreen extends StatelessWidget {
                                 alignment: Alignment.center,
                                 height: constraints.maxHeight / 6,
                                 width: constraints.maxWidth / 2,
-                                child: Text('''Please enter the 4-digit code 
-                                sent to ${args.email}''',
+                                child: Text('''Please enter the 4-digit code sent to ${args.email}''',
                                     style: const TextStyle(
                                         fontSize: 15.0,
                                         color: color.Text))),

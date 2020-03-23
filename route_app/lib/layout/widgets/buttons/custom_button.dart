@@ -5,7 +5,8 @@ import '../../constants/colors.dart' as color;
 
 /// Custom button matching the app's design guidelines
 /// 
-/// Has two states: invalid and valid
+/// Has two states: invalid and valid, based on the state of 
+/// the CustomTextField's which are linked
 class CustomButton extends StatefulWidget {
 
   /// CustomButton constructor
