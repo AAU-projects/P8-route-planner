@@ -3,24 +3,26 @@ import 'package:flutter/widgets.dart';
 import 'package:route_app/core/providers/form_provider.dart';
 import '../../constants/colors.dart' as color;
 
-///
+/// Custom button matching the app's design guidelines
+/// 
+/// Has two states: invalid and valid
 class CustomButton extends StatefulWidget {
 
-  ///
+  /// CustomButton constructor
   const CustomButton({
     Key key, 
     @required this.onPressed,
     @required this.buttonText,
-    this.provider
+    @required this.provider
   }) : super(key: key);
 
-  ///
+  /// The function to call when this button is pressed
   final GestureTapCallback onPressed;
 
-  ///
+  /// The text to show on the button
   final String buttonText;
 
-  ///
+  /// The FormProvider used to link the button with the textfields
   final FormProvider provider;
 
   @override

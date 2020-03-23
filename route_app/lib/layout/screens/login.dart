@@ -14,7 +14,7 @@ import 'package:route_app/layout/constants/validators.dart' as validators;
 import 'package:route_app/layout/widgets/notifications.dart' as notifications;
 import 'package:route_app/layout/widgets/loading_snackbar.dart';
 
-/// Documentation
+/// Screen to log in the user
 class LoginScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final AuthAPI _auth = locator.get<AuthAPI>();
@@ -24,7 +24,7 @@ class LoginScreen extends StatelessWidget {
     _auth.sendPin(_emailController.text).then((bool value) {
       if (value) {
         Navigator.pushNamed(context, '/login/confirm',
-            arguments: ConfirmScreenArguments(_emailController.text, 'LOGIN'));
+            arguments: ConfirmScreenArguments(_emailController.text, 'login'));
         notifications.removeNotification(context);
       } else {
         notifications.error(context, 'Could not login, please try again later');
@@ -57,9 +57,9 @@ class LoginScreen extends StatelessWidget {
                             Container(
                                 alignment: Alignment.center,
                                 height: constraints.maxHeight / 6,
-                                child: const Text('LOGIN',
+                                child: const Text('Login',
                                     style: TextStyle(
-                                        fontSize: 35.0, color: color.Text))),
+                                        fontSize: 30.0, color: color.Text))),
                             CustomTextField(
                                 hint: 'Enter email',
                                 icon: Icons.mail,
