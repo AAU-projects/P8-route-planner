@@ -27,12 +27,14 @@ class ConfirmLoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ConfirmScreenArguments args =
-       ModalRoute.of(context).settings.arguments;
+        ModalRoute.of(context).settings.arguments;
 
     return Scaffold(
       backgroundColor: color.Background,
       body: GestureDetector(
-        onTap: () {FocusScope.of(context).requestFocus(FocusNode());},
+        onTap: () {
+          FocusScope.of(context).requestFocus(FocusNode());
+        },
         child: Center(
           child: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
@@ -55,10 +57,10 @@ class ConfirmLoginScreen extends StatelessWidget {
                                 alignment: Alignment.center,
                                 height: constraints.maxHeight / 6,
                                 width: constraints.maxWidth / 2,
-                                child: Text('''Please enter the 4-digit code sent to ${args.email}''',
+                                child: Text(
+                                    '''Please enter the 4-digit code sent to ${args.email}''',
                                     style: const TextStyle(
-                                        fontSize: 15.0,
-                                        color: color.Text))),
+                                        fontSize: 15.0, color: color.Text))),
                             CustomTextField(
                                 hint: 'Enter PIN',
                                 icon: Icons.lock,
@@ -69,7 +71,9 @@ class ConfirmLoginScreen extends StatelessWidget {
                                 keyboardType: TextInputType.number,
                                 provider: formProvider),
                             CustomButton(
-                                onPressed: () {_onPressedConfirm(context);},
+                                onPressed: () {
+                                  _onPressedConfirm(context);
+                                },
                                 buttonText: 'Confirm',
                                 provider: formProvider),
                             GestureDetector(

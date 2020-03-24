@@ -35,9 +35,7 @@ Widget _snackbar(BuildContext context, String message, Color color,
         children: <Widget>[
           Text(
             message,
-            style: const TextStyle(
-              fontSize: 16
-            ),
+            style: const TextStyle(fontSize: 16),
           ),
         ],
       ));
