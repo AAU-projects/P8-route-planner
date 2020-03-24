@@ -125,23 +125,4 @@ void main() {
         tester.firstWidget(find.byType(RawMaterialButton));
     expect(customButtonFinal.fillColor, color.CorrectColor);
   });
-
-    testWidgets('Tap on confirm successfully navigates to confirm screen',
-      (WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(home: RegisterScreen()));
-
-    // Enter a valid email
-    await tester.enterText(
-      find.byKey(const Key('emailField')), 'validEmail@test.com');
-    await tester.pumpAndSettle();
-    await tester.testTextInput.receiveAction(TextInputAction.done);
-    await tester.pumpAndSettle();
-
-    // Tap the confirm key
-    await tester.tap(find.byType(CustomButton));
-    await tester.pumpAndSettle();
-
-    // Expect to see the confirm screen
-    expect(find.byType(ConfirmLoginScreen), findsOneWidget);
-  });
 }

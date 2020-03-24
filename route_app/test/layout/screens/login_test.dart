@@ -17,9 +17,8 @@ void main() {
     locator.reset();
     locator.registerSingleton<AuthAPI>(api);
 
-    when(api.sendPin('validEmail@test.com')).thenAnswer((_) {
-      return Future<bool>.value(true);
-    });
+    when(api.sendPin('validEmail@test.com')).thenAnswer(
+      (_) => Future<bool>.value(true));
   });
 
   testWidgets('Screen renders', (WidgetTester tester) async {
@@ -40,24 +39,5 @@ void main() {
   testWidgets('Has one cancel button', (WidgetTester tester) async {
     await tester.pumpWidget(MaterialApp(home: LoginScreen()));
     expect(find.byKey(const Key('cancelButton')), findsOneWidget);
-  });
-
-  testWidgets('Tap on confirm successfully navigates to confirm screen',
-      (WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(home: LoginScreen()));
-
-    // Enter a valid email
-    await tester.enterText(
-      find.byKey(const Key('emailField')), 'validEmail@test.com');
-    await tester.pumpAndSettle();
-    await tester.testTextInput.receiveAction(TextInputAction.done);
-    await tester.pumpAndSettle();
-
-    // Tap the confirm key
-    await tester.tap(find.byType(CustomButton));
-    await tester.pumpAndSettle();
-
-    // Expect to see the confirm screen
-    expect(find.byType(ConfirmLoginScreen), findsOneWidget);
   });
 }
