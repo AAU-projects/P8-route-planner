@@ -14,10 +14,10 @@ class UserService implements UserAPI{
     String databaseTable = 'user'
   }): _endpoint = endpoint, _dbTable = databaseTable;
 
-  final String _endpoint;
+  final String _endpoint; //ignore: unused_field
   final String _dbTable;
 
-  final Http _http = locator.get<Http>();
+  final Http _http = locator.get<Http>(); //ignore: unused_field
   final DatabaseService _db = locator.get<DatabaseService>();
 
   User _user;
@@ -52,19 +52,16 @@ class UserService implements UserAPI{
 
   @override
   Future<List<User>> getAllUsers() {
-    // TODO: implement getAllUsers
-    return null;
+    throw 'Not implemented';
   }
 
   @override
   Future<User> getUser(String id) {
-    // TODO: implement getUser
-    return null;
+    throw 'Not implemented';
   }
 
   @override
   Future<User> updateUser(String id, User newUser) {
-    // TODO: implement updateUser
-    return null;
+    throw 'Not implemented';
   }
 }

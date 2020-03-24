@@ -24,8 +24,6 @@ Widget _closeSnackBar(BuildContext context) {
   );
 }
 
-Animation<double> _animation;
-
 Widget _snackbar(BuildContext context, String message, Color color,
     {Duration time}) {
   return SnackBar(

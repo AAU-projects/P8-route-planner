@@ -1,10 +1,12 @@
 import 'package:route_app/core/models/model.dart';
+import 'package:route_app/core/extensions/map.dart';
+import 'package:route_app/core/extensions/datetime.dart';
 
 /// User model containing data about the user retrieved from the backend
-class User implements Model{
+class User implements Model {
   /// Default constructor
   User(this.id, this.email, this.licensePlate, this.pincode, this.token,
-       this.pinExpirationDate, this.tokenExpirationDate);
+      this.pinExpirationDate, this.tokenExpirationDate);
 
   /// Constructor to instantiate from json
   User.fromJson(Map<String, dynamic> json) {
@@ -16,23 +18,36 @@ class User implements Model{
     licensePlate = json['LicensePlate'];
     pincode = json['Pincode'];
     token = json['Token'];
-    pinExpirationDate = DateTime.parse(json['PinExpirationDate']);
-    tokenExpirationDate = DateTime.parse(json['TokenExpirationDate']);
+    pinExpirationDate = _parseToDateTime(json.get('PinExpirationDate', null));
+    tokenExpirationDate =
+        _parseToDateTime(json.get('TokenExpirationDate', null));
+  }
+
+  DateTime _parseToDateTime(String value) {
+    if (value == null) {
+      return null;
+    }
+    return DateTime.tryParse(value);
   }
 
   /// The user's id
   String id;
+
   /// The user's email
   String email;
+
   /// The user's license plate
   String licensePlate;
+
   /// Pincode used to login or register
   String pincode;
+
   /// The user's JWT token
   String token;
 
   /// The expiration date of the pincode
   DateTime pinExpirationDate;
+
   /// The expiration date of the JWT token
   DateTime tokenExpirationDate;
 
@@ -44,8 +59,8 @@ class User implements Model{
       'LicensePlate': licensePlate,
       'Pincode': pincode,
       'Token': token,
-      'PinExpirationDate': pinExpirationDate.toIso8601String(),
-      'TokenExpirationDate': tokenExpirationDate.toIso8601String()
+      'PinExpirationDate': pinExpirationDate.parseToString(),
+      'TokenExpirationDate': tokenExpirationDate.parseToString()
     };
   }
 }
