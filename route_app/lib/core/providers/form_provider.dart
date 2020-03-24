@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-///
+/// Form validation provider
 class FormProvider with ChangeNotifier {
 
   final Map<String, bool> _fields = <String, bool>{};
