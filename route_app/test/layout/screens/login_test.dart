@@ -7,8 +7,7 @@ import 'package:route_app/layout/widgets/buttons/custom_button.dart';
 import 'package:route_app/layout/widgets/fields/custom_text_field.dart';
 import 'package:route_app/locator.dart';
 
-class MockApi extends Mock implements AuthAPI {
-}
+class MockApi extends Mock implements AuthAPI {}
 
 void main() {
   setUp(() {
