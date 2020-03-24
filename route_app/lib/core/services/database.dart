@@ -50,12 +50,10 @@ class DatabaseService {
     final List<String> oldTables = <String>[];
 
     _getTables(db).then((List<Map<String, dynamic>> tables) {
-      // ignore: avoid_function_literals_in_foreach_calls
       tables.forEach((Map<String, dynamic> table) {
         oldTables.add(table.values.first);
       });
 
-      // ignore: avoid_function_literals_in_foreach_calls
       data.tables.forEach(
           (Tuple3<String, String, Map<String, DatabaseTypes>> table) {
             if (!oldTables.contains(table.item1)) {
@@ -75,7 +73,6 @@ class DatabaseService {
   }
 
   Future<void> _onCreate(Database db, int version) async {
-    // ignore: avoid_function_literals_in_foreach_calls
     data.tables.forEach(
             (Tuple3<String, String, Map<String, DatabaseTypes>>table) async {
               await _createTable(db, table);
