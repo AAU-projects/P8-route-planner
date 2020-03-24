@@ -11,7 +11,7 @@ import 'package:route_app/layout/constants/colors.dart' as color;
 import 'package:route_app/layout/constants/validators.dart' as validators;
 import 'package:route_app/layout/widgets/notifications.dart' as notifications;
 
-/// Documentation
+/// Screen to confirm the PIN code on login
 class ConfirmLoginScreen extends StatelessWidget {
   final TextEditingController _pinController = TextEditingController();
   final AuthAPI _authAPI = locator.get<AuthAPI>();
@@ -48,15 +48,14 @@ class ConfirmLoginScreen extends StatelessWidget {
                             Container(
                                 alignment: Alignment.center,
                                 height: constraints.maxHeight / 12,
-                                child: Text('''CONFIRM ${args.type}''',
+                                child: Text('''Confirm ${args.type}''',
                                     style: const TextStyle(
-                                        fontSize: 35.0, color: color.Text))),
+                                        fontSize: 30.0, color: color.Text))),
                             Container(
                                 alignment: Alignment.center,
                                 height: constraints.maxHeight / 6,
                                 width: constraints.maxWidth / 2,
-                                child: Text('''Please enter the 4-digit code 
-                                sent to ${args.email}''',
+                                child: Text('''Please enter the 4-digit code sent to ${args.email}''',
                                     style: const TextStyle(
                                         fontSize: 15.0,
                                         color: color.Text))),

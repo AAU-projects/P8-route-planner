@@ -15,7 +15,7 @@ import 'package:route_app/layout/constants/colors.dart' as color;
 import 'package:route_app/layout/constants/validators.dart' as validators;
 import 'package:route_app/layout/widgets/notifications.dart' as notifications;
 
-/// Documentation
+/// Screen to register the user
 class RegisterScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _licenseController = TextEditingController();
@@ -34,7 +34,7 @@ class RegisterScreen extends StatelessWidget {
         if (value) {
           Navigator.pushNamed(context, '/login/confirm',
               arguments:
-                  ConfirmScreenArguments(_emailController.text, 'REGISTER'));
+                  ConfirmScreenArguments(_emailController.text, 'register'));
           notifications.removeNotification(context);
         } else {
           notifications.error(
@@ -69,10 +69,12 @@ class RegisterScreen extends StatelessWidget {
                             Container(
                                 alignment: Alignment.center,
                                 height: constraints.maxHeight / 6,
-                                child: const Text('REGISTER',
+                                child: const Text('Register',
                                     style: TextStyle(
-                                        fontSize: 35.0, color: color.Text))),
+                                        fontSize: 30.0, color: color.Text))),
                             CustomTextField(
+                                iconKey: const Key('emailIcon'),
+                                key: const Key('emailField'),
                                 hint: 'Enter email',
                                 icon: Icons.mail,
                                 helper: 'Email',
@@ -81,6 +83,7 @@ class RegisterScreen extends StatelessWidget {
                                 controller: _emailController,
                                 provider: formProvider),
                             CustomTextField(
+                              key: const Key('licensePlateField'),
                               hint: 'Enter license plate',
                               icon: Icons.directions_car,
                               helper: 'License plate',
@@ -97,6 +100,7 @@ class RegisterScreen extends StatelessWidget {
                                 buttonText: 'Register',
                                 provider: formProvider),
                             GestureDetector(
+                              key: const Key('cancelButton'),
                               onTap: () {
                                 Navigator.push<dynamic>(
                                     context,

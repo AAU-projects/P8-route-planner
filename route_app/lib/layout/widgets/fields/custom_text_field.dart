@@ -18,6 +18,7 @@ class CustomTextField extends StatefulWidget {
     this.errorText,
     this.validator,
     this.provider,
+    this.iconKey,
     bool isOptional = false,
     TextInputType keyboardType = TextInputType.text
   }) : type = keyboardType, optional = isOptional, super(key: key);
@@ -40,14 +41,17 @@ class CustomTextField extends StatefulWidget {
   /// Text controller to retrieve the input of the textfield
   final TextEditingController controller;
 
-  ///
+  /// The linked FormProvider
   final FormProvider provider;
 
-  ///
+  /// Boolean to indicate if the textfield is optional
   final bool optional;
 
-  ///
+  /// The keyboard type to show when focused on the textfield
   final TextInputType type;
+
+  /// Key to the icon for use when writing tests
+  final Key iconKey;
 
   @override
   _CustomTextFieldState createState() => _CustomTextFieldState();
@@ -138,6 +142,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           suffixIcon: widget.icon != null
             ? Icon(
                 widget.icon, 
+                key: widget.iconKey,
                 size: 20.0,
                 color: _completed
                 ? color.CorrectColor 
