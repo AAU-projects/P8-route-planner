@@ -6,9 +6,9 @@ import 'package:route_app/core/services/interfaces/http.dart';
 import 'package:route_app/locator.dart';
 import 'package:http/http.dart' as http;
 
-///
+/// Http service, send HTTP request 
 class HttpService implements Http {
-  ///
+  /// Default constructor
   HttpService({
     @required this.baseUrl,
     @required String tokenTable,
