@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:route_app/core/models/user_model.dart';
-import 'package:route_app/core/services/interfaces/API/user.dart';
 import 'package:route_app/layout/screens/login.dart';
 import 'package:route_app/layout/screens/register.dart';
 import 'package:route_app/layout/utils/route_animations.dart';
 import 'package:route_app/layout/widgets/buttons/button.dart';
 import 'package:route_app/layout/constants/colors.dart' as colors;
-import 'package:route_app/locator.dart';
 
 /// Initial screen to choose between the screens: login and register
 class WelcomeScreen extends StatelessWidget {

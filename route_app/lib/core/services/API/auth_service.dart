@@ -1,9 +1,8 @@
-import 'dart:convert';
-
 import 'package:route_app/core/models/user_model.dart';
 import 'package:route_app/core/services/interfaces/API/auth.dart';
 import 'package:route_app/core/services/interfaces/API/user.dart';
 import 'package:route_app/core/services/interfaces/http.dart';
+import 'package:route_app/core/extensions/datetime.dart';
 import 'package:route_app/locator.dart';
 
 /// Authentication endpoints
@@ -28,7 +27,7 @@ class AuthenticationService implements AuthAPI {
         <String, String>{'Email': email, 'Pincode': pin}).then((Response res) {
       final User usr = User.fromJson(res.json);
       _userService.setActiveUser(usr);
-      _http.setToken(usr.token, usr.tokenExpirationDate.toIso8601String());
+      _http.setToken(usr.token, usr.tokenExpirationDate.parseToString());
       return usr;
     });
   }
