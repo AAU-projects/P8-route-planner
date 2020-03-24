@@ -27,7 +27,7 @@ class ConfirmLoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ConfirmScreenArguments args =
-        ModalRoute.of(context).settings.arguments;
+       ModalRoute.of(context).settings.arguments;
 
     return Scaffold(
       backgroundColor: color.Background,

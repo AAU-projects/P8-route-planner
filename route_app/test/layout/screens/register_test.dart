@@ -1,16 +1,13 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:route_app/core/models/user_model.dart';
 import 'package:route_app/core/services/interfaces/API/auth.dart';
-import 'package:route_app/layout/screens/confirm_login.dart';
 import 'package:route_app/layout/screens/register.dart';
 import 'package:route_app/layout/widgets/buttons/custom_button.dart';
 import 'package:route_app/layout/widgets/fields/custom_text_field.dart';
 import 'package:route_app/locator.dart';
-import '../../../lib/layout/constants/colors.dart' as color;
+import 'package:route_app/layout/constants/colors.dart' as color;
 
 class MockApi extends Mock implements AuthAPI {}
 

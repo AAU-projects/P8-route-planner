@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:route_app/core/services/interfaces/API/auth.dart';
-import 'package:route_app/layout/screens/confirm_login.dart';
 import 'package:route_app/layout/screens/login.dart';
 import 'package:route_app/layout/widgets/buttons/custom_button.dart';
 import 'package:route_app/layout/widgets/fields/custom_text_field.dart';
