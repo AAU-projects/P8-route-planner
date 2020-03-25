@@ -4,31 +4,21 @@ import 'package:provider/provider.dart';
 import 'package:route_app/core/providers/form_provider.dart';
 import 'package:route_app/core/services/interfaces/API/auth.dart';
 import 'package:route_app/layout/screens/arguments/confirm_arguments.dart';
-import 'package:route_app/layout/screens/welcome.dart';
-import 'package:route_app/layout/utils/route_animations.dart';
 import 'package:route_app/layout/widgets/buttons/custom_button.dart';
 import 'package:route_app/layout/widgets/fields/custom_text_field.dart';
 import 'package:route_app/locator.dart';
 import 'package:route_app/layout/constants/colors.dart' as color;
 import 'package:route_app/layout/constants/validators.dart' as validators;
 import 'package:route_app/layout/widgets/notifications.dart' as notifications;
-import 'package:route_app/layout/widgets/loading_snackbar.dart';
 
-/// Screen to log in the user
-class LoginScreen extends StatelessWidget {
-  final TextEditingController _emailController = TextEditingController();
-  final AuthAPI _auth = locator.get<AuthAPI>();
+/// Screen to confirm the PIN code on login
+class ConfirmLoginScreen extends StatelessWidget {
+  final TextEditingController _pinController = TextEditingController();
+  final AuthAPI _authAPI = locator.get<AuthAPI>();
 
-  void _onPressedLogin(BuildContext context) {
-    showLoadingSnackbar(context, 'Requesting Pincode');
-    _auth.sendPin(_emailController.text).then((bool value) {
-      if (value) {
-        Navigator.pushNamed(context, '/login/confirm',
-            arguments: ConfirmScreenArguments(_emailController.text, 'login'));
-        notifications.removeNotification(context);
-      } else {
-        notifications.error(context, 'Could not login, please try again later');
-      }
+  void _onPressedConfirm(BuildContext context) {
+    _authAPI.login(_pinController.text).then((_) {
+      Navigator.pushNamedAndRemoveUntil(context, '/test', (_) => false);
     }).catchError((Object error) {
       notifications.error(context, error);
     });
@@ -36,6 +26,9 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ConfirmScreenArguments args =
+        ModalRoute.of(context).settings.arguments;
+
     return Scaffold(
       backgroundColor: color.Background,
       body: GestureDetector(
@@ -56,32 +49,36 @@ class LoginScreen extends StatelessWidget {
                           children: <Widget>[
                             Container(
                                 alignment: Alignment.center,
-                                height: constraints.maxHeight / 6,
-                                child: const Text('Login',
-                                    style: TextStyle(
+                                height: constraints.maxHeight / 12,
+                                child: Text('''Confirm ${args.type}''',
+                                    style: const TextStyle(
                                         fontSize: 30.0, color: color.Text))),
+                            Container(
+                                alignment: Alignment.center,
+                                height: constraints.maxHeight / 6,
+                                width: constraints.maxWidth / 2,
+                                child: Text(
+                                    '''Please enter the 4-digit code sent to ${args.email}''',
+                                    style: const TextStyle(
+                                        fontSize: 15.0, color: color.Text))),
                             CustomTextField(
-                                key: const Key('emailField'),
-                                hint: 'Enter email',
-                                icon: Icons.mail,
-                                helper: 'Email',
-                                validator: validators.email,
-                                errorText: 'Invalid email',
-                                controller: _emailController,
+                                hint: 'Enter PIN',
+                                icon: Icons.lock,
+                                helper: 'PIN',
+                                validator: validators.pin,
+                                errorText: 'Invalid pin',
+                                controller: _pinController,
+                                keyboardType: TextInputType.number,
                                 provider: formProvider),
                             CustomButton(
                                 onPressed: () {
-                                  _onPressedLogin(context);
+                                  _onPressedConfirm(context);
                                 },
-                                buttonText: 'Login',
+                                buttonText: 'Confirm',
                                 provider: formProvider),
                             GestureDetector(
-                              key: const Key('cancelButton'),
                               onTap: () {
-                                Navigator.push<dynamic>(
-                                    context,
-                                    SlideFromLeftRoute(
-                                        widget: WelcomeScreen()));
+                                Navigator.pushNamed(context, '/');
                               },
                               child: Container(
                                 padding: const EdgeInsets.all(10),
