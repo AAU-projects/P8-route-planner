@@ -136,7 +136,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           helperText: widget.helper,
           hintText: widget.hint,
           errorText: _valid ? null : widget.errorText,
-          errorStyle: TextStyle(color: color.ErrorColor, fontSize: 10),
+          errorStyle: const TextStyle(color: color.ErrorColor, fontSize: 10),
           suffixIcon: widget.icon != null
               ? Icon(widget.icon,
                   key: widget.iconKey,
