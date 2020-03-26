@@ -11,7 +11,7 @@ class HttpService implements Http {
   /// Default constructor
   HttpService({
     @required this.baseUrl,
-    @required String tokenTable,
+    String tokenTable,
     Duration timeout = const Duration(seconds: 5)
   }): _timeout = timeout, _tokenTable = tokenTable;
 
