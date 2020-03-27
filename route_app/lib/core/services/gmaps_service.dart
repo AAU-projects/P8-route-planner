@@ -7,9 +7,14 @@ import 'interfaces/http.dart';
 
 /// Google maps service
 class GoogleMapsService implements GoogleMapsAPI {
-
   /// Class constructor
-  GoogleMapsService();
+  GoogleMapsService({String apiKey}) {
+    if (apiKey == null) {
+      _apiKey = const String.fromEnvironment('GOOGLE_API_KEY');
+    } else {
+      _apiKey = apiKey;
+    }
+  }
 
   @override
   Future<Directions> getDirections(
@@ -42,7 +47,7 @@ class GoogleMapsService implements GoogleMapsAPI {
 
   final HttpService _httpclient = HttpService(
       baseUrl: 'https://maps.googleapis.com/maps/api/directions/json?');
-  final String _apiKey = const String.fromEnvironment('GOOGLE_API_KEY');
+  String _apiKey;
 
   /// Gets the polyline from a response object
   String _getPolyline(Response response) {
