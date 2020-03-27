@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:route_app/layout/screens/home.dart';
 import 'package:route_app/layout/screens/test.dart';
 import 'layout/screens/confirm_login.dart';
 import 'layout/screens/login.dart';
@@ -19,4 +20,6 @@ Map<String, Widget Function(BuildContext)> routes =
   '/register': (_) => RegisterScreen(),
   // Test screen, will show what ever is being tested
   '/test': (_) => TestScreen(),
+  /// Home screen with map
+  '/home': (_) => HomeScreen(),
 };

@@ -23,3 +23,6 @@ const Color TextFieldBG = Color.fromARGB(255, 30, 39, 51);
 
 /// Custom button inactive color
 const Color CustomButtonInactive = Color.fromARGB(255, 25, 33, 43);
+
+/// Background color for search fields
+const Color SearchBackground = Color.fromARGB(255, 80, 104, 138);
