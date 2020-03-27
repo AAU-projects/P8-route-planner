@@ -1,18 +1,24 @@
 import 'package:route_app/core/models/directions_model.dart';
 import 'package:route_app/core/models/location_model.dart';
-import 'package:route_app/core/services/API/http_service.dart';
+import 'package:route_app/core/models/response_model.dart';
+import 'package:route_app/core/services/API/web_service.dart';
 import 'package:route_app/core/services/interfaces/gmaps.dart';
-
-import 'interfaces/http.dart';
 
 /// Google maps service
 class GoogleMapsService implements GoogleMapsAPI {
   /// Class constructor
-  GoogleMapsService({String apiKey}) {
+  GoogleMapsService({String apiKey, WebService webService}) {
     if (apiKey == null) {
       _apiKey = const String.fromEnvironment('GOOGLE_API_KEY');
     } else {
       _apiKey = apiKey;
+    }
+    if (webService == null) {
+      _webService = WebService(
+          baseUrl: 'https://maps.googleapis.com/maps/api/directions/json?');
+    } else {
+      _webService = webService;
+      _webService.baseUrl = 'https://maps.googleapis.com/maps/api/directions/json?';
     }
   }
 
@@ -28,7 +34,7 @@ class GoogleMapsService implements GoogleMapsAPI {
         '&key=' +
         _apiKey;
 
-    return _httpclient.get(params).then((Response resp) {
+    return _webService.get(params).then((Response resp) {
       final String poly = _getPolyline(resp);
       final String status = _getStatus(resp);
       final Location startLoc = _getStartLocation(resp);
@@ -45,8 +51,7 @@ class GoogleMapsService implements GoogleMapsAPI {
     });
   }
 
-  final HttpService _httpclient = HttpService(
-      baseUrl: 'https://maps.googleapis.com/maps/api/directions/json?');
+  WebService _webService;
   String _apiKey;
 
   /// Gets the polyline from a response object

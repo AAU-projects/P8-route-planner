@@ -29,8 +29,6 @@ void main() {
     api = AuthenticationService();
   });
 
-
-
   group('Login', () {
 
     test('Should call login endpoint', () {

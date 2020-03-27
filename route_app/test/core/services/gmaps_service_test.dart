@@ -3,20 +3,21 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:route_app/core/models/directions_model.dart';
+import 'package:route_app/core/models/response_model.dart';
+import 'package:route_app/core/services/API/web_service.dart';
 import 'package:route_app/core/services/gmaps_service.dart';
-import 'package:route_app/core/services/interfaces/http.dart';
-import 'package:route_app/locator.dart';
-import '../../mocks/http_mock.dart';
+
+class WebServiceMock extends Mock implements WebService {}
 
 void main() {
   GoogleMapsService gmapsService;
-  HttpMock httpMock;
+  WebServiceMock webMock;
   final String directionsStr =
       File('../../assets/directions_example.json').readAsStringSync();
   final Response testResponse = Response(null, jsonDecode(directionsStr));
 
   void setApiCalls() {
-    when(httpMock.get(
+    when(webMock.get(
             'https://maps.googleapis.com/maps/api/directions/json?origin=origin&destination=dest&key=apikey'))
         .thenAnswer((_) {
       return Future<Response>.value(testResponse);
@@ -24,12 +25,8 @@ void main() {
   }
 
   setUp(() {
-    gmapsService = GoogleMapsService(apiKey: 'apikey');
-    httpMock = HttpMock();
-
-    locator.reset();
-    locator.registerSingleton<Http>(httpMock);
-
+    webMock = WebServiceMock();
+    gmapsService = GoogleMapsService(apiKey: 'apikey', webService: webMock);
     setApiCalls();
   });
 
