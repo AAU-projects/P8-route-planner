@@ -98,15 +98,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
   // Validate the input using the given validator
   void validateInput(String input) {
     setState(() {
-      if (_input.isNotEmpty) {
+      if (_input != null && _input.isNotEmpty) {
         _valid = widget.validator(input);
-
-        if (_input.isNotEmpty) {
-          _completed = _valid;
-          widget.provider?.changeStatus(widget.hint, _valid);
-        } else {
-          _completed = false;
-        }
+        _completed = _valid;
+        widget.provider?.changeStatus(widget.hint, _valid);
       } else if (widget.optional) {
         _completed = false;
         _valid = true;
@@ -141,7 +136,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           helperText: widget.helper,
           hintText: widget.hint,
           errorText: _valid ? null : widget.errorText,
-          errorStyle: TextStyle(color: color.ErrorColor, fontSize: 10),
+          errorStyle: const TextStyle(color: color.ErrorColor, fontSize: 10),
           suffixIcon: widget.icon != null
               ? Icon(widget.icon,
                   key: widget.iconKey,
