@@ -22,11 +22,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _startController = TextEditingController();
   final TextEditingController _endController = TextEditingController();
 
-  final CameraPosition _currentPos = const CameraPosition(
-    target: LatLng(56.0333, 8.85),
-    zoom: 14,
-  );
-
   @override
   void dispose() {
     super.dispose();
@@ -44,74 +39,86 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _centerMap(Position location) {
-    _controller.animateCamera(CameraUpdate.newCameraPosition(
-      CameraPosition(
-        bearing: 0,
-        target: LatLng(location.latitude, location.longitude),
-        zoom: 14.0,
-      ),
-    ));
+    if (location != null) {
+      _controller.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(
+          bearing: 0,
+          target: LatLng(location.latitude, location.longitude),
+          zoom: 14.0,
+        ),
+      ));
+    }
+  }
+
+  CameraPosition _initialPosition(Position location) {
+    return const CameraPosition(
+      bearing: 0,
+      target: LatLng(0, 0),
+      zoom: 14.0,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<LocationProvider>(
       create: (_) => LocationProvider(),
-      child: Scaffold(
-          body: Stack(
-        children: <Widget>[
-          GoogleMap(
-            mapType: MapType.normal,
-            initialCameraPosition: _currentPos,
-            onMapCreated: onMapCreate,
-            // circles: circles,
-            myLocationButtonEnabled: false,
-            myLocationEnabled: true,
-            compassEnabled: false,
-            onTap: (_) {
-              FocusScope.of(context).requestFocus(FocusNode());
-            },
-          ),
-          RouteSearch(
-            startController: _startController,
-            endController: _endController,
-          ),
-          _buildSearchField()
-        ],
-      )),
+      child: Consumer<LocationProvider>(builder:
+          (BuildContext context, LocationProvider locationModel, Widget child) {
+        _centerMap(locationModel.currentLocationObj);
+        return Scaffold(
+            body: Stack(
+          children: <Widget>[
+            GoogleMap(
+              mapType: MapType.normal,
+              initialCameraPosition:
+                  _initialPosition(locationModel.currentLocationObj),
+              onMapCreated: onMapCreate,
+              myLocationButtonEnabled: false,
+              myLocationEnabled: true,
+              compassEnabled: false,
+              onTap: (_) {
+                FocusScope.of(context).requestFocus(FocusNode());
+              },
+            ),
+            RouteSearch(
+              startController: _startController,
+              endController: _endController,
+            ),
+            _buildSearchField(locationModel)
+          ],
+        ));
+      }),
     );
   }
 
-  Padding _buildSearchField() {
+  Padding _buildSearchField(LocationProvider locationModel) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Align(
         alignment: Alignment.bottomRight,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[_buildMenuButton(), _buildLocationButton()],
+          children: <Widget>[
+            _buildMenuButton(),
+            _buildLocationButton(locationModel)
+          ],
         ),
       ),
     );
   }
 
-  Consumer<LocationProvider> _buildLocationButton() {
-    return Consumer<LocationProvider>(
-      builder:
-          (BuildContext context, LocationProvider locationModel, Widget child) {
-        return Padding(
-          padding: const EdgeInsets.only(top: 10),
-          child: SizedBox(
-            height: 40,
-            width: 40,
-            child: FloatingActionButton(
-              backgroundColor: colors.SearchBackground,
-              onPressed: () => _centerMap(locationModel.currentLocationObj),
-              child: const Icon(Icons.near_me, size: 25),
-            ),
-          ),
-        );
-      },
+  Padding _buildLocationButton(LocationProvider locationModel) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: SizedBox(
+        height: 40,
+        width: 40,
+        child: FloatingActionButton(
+          backgroundColor: colors.SearchBackground,
+          onPressed: () => _centerMap(locationModel.currentLocationObj),
+          child: const Icon(Icons.near_me, size: 25),
+        ),
+      ),
     );
   }
 

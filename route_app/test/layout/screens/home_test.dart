@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:route_app/layout/screens/home.dart';
 import 'package:route_app/layout/widgets/fields/search_text_field.dart';
 
@@ -15,6 +16,11 @@ void main() {
     testWidgets('Has two floating buttons', (WidgetTester tester) async {
       await tester.pumpWidget(MaterialApp(home: HomeScreen()));
       expect(find.byType(FloatingActionButton), findsNWidgets(2));
+    });
+
+    testWidgets('Google map is rendered', (WidgetTester tester) async {
+      await tester.pumpWidget(MaterialApp(home: HomeScreen()));
+      expect(find.byType(GoogleMap), findsOneWidget);
     });
 
     testWidgets('Has one search textfield', (WidgetTester tester) async {
