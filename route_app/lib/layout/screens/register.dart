@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:route_app/layout/widgets/fields/radio_group.dart';
 import 'package:route_app/layout/widgets/loading_snackbar.dart';
 import 'package:route_app/locator.dart';
 import 'package:route_app/core/models/user_model.dart';
@@ -18,7 +19,9 @@ import 'package:route_app/layout/widgets/notifications.dart' as notifications;
 /// Screen to register the user
 class RegisterScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _licenseController = TextEditingController();
+  final TextEditingController _kmlController = TextEditingController();
+  final TextEditingController _fuelTypeController = TextEditingController();
+  String _fuelType = '';
 
   final AuthAPI _authAPI = locator.get<AuthAPI>();
 
@@ -27,7 +30,7 @@ class RegisterScreen extends StatelessWidget {
         time: const Duration(seconds: 10));
 
     _authAPI
-        .register(_emailController.text, licensePlate: _licenseController.text)
+        .register(_emailController.text, licensePlate: _kmlController.text)
         .then((User user) {
       notifications.removeNotification(context);
       _authAPI.sendPin(_emailController.text).then((bool value) {
@@ -83,16 +86,18 @@ class RegisterScreen extends StatelessWidget {
                                 controller: _emailController,
                                 provider: formProvider),
                             CustomTextField(
-                              key: const Key('licensePlateField'),
-                              hint: 'Enter license plate',
-                              icon: Icons.directions_car,
-                              helper: 'License plate',
+                              key: const Key('fuelConsumptionField'),
+                              hint: 'Fuel consumption',
+                              icon: Icons.local_gas_station,
+                              helper: '(Optional) Enter fuel consumption in km/l',
                               validator: validators.licensePlate,
-                              errorText: 'Invalid license plate',
-                              controller: _licenseController,
+                              errorText: 'Invalid fuel consumption',
+                              controller: _kmlController,
                               provider: formProvider,
                               isOptional: true,
                             ),
+                            RadioGroup(
+                              controller: _fuelTypeController),
                             CustomButton(
                                 onPressed: () {
                                   _onPressRegister(context);
@@ -128,3 +133,4 @@ class RegisterScreen extends StatelessWidget {
     );
   }
 }
+
