@@ -46,7 +46,8 @@ class App extends StatelessWidget {
       routes: routes,
       initialRoute: _initScreen,
       theme: ThemeData(
-        unselectedWidgetColor: color.NeturalGrey
+        unselectedWidgetColor: color.NeturalGrey,
+        accentColor: color.CorrectColor
       )
     );
   }

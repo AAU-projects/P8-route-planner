@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:route_app/layout/widgets/buttons/custom_switch.dart';
 import 'package:route_app/layout/widgets/fields/radio_group.dart';
 import 'package:route_app/layout/widgets/loading_snackbar.dart';
 import 'package:route_app/locator.dart';
@@ -51,6 +52,8 @@ class RegisterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool expanded = true;
+
     return Scaffold(
       backgroundColor: color.Background,
       body: GestureDetector(
@@ -85,19 +88,40 @@ class RegisterScreen extends StatelessWidget {
                                 errorText: 'Invalid email',
                                 controller: _emailController,
                                 provider: formProvider),
-                            CustomTextField(
-                              key: const Key('fuelConsumptionField'),
-                              hint: 'Fuel consumption',
-                              icon: Icons.local_gas_station,
-                              helper: '(Optional) Enter fuel consumption in km/l',
-                              validator: validators.licensePlate,
-                              errorText: 'Invalid fuel consumption',
-                              controller: _kmlController,
-                              provider: formProvider,
-                              isOptional: true,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                const Text('Do you have a car?',
+                                    style: TextStyle(
+                                        fontSize: 12.0,
+                                        color: color.NeturalGrey)),
+                                CustomSwitch(linkedValue: expanded),
+                              ],
                             ),
-                            RadioGroup(
-                              controller: _fuelTypeController),
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              height: expanded ? 150 : 0,
+                              child: Container(
+                                  height: 150,
+                                  child: Column(
+                                    children: <Widget>[
+                                      CustomTextField(
+                                        key: const Key('fuelConsumptionField'),
+                                        hint: '(Optional)',
+                                        icon: Icons.local_gas_station,
+                                        helper:
+                                            'Enter fuel consumption in km/l',
+                                        validator: validators.licensePlate,
+                                        errorText: 'Invalid fuel consumption',
+                                        controller: _kmlController,
+                                        provider: formProvider,
+                                        isOptional: true,
+                                      ),
+                                      RadioGroup(
+                                          controller: _fuelTypeController),
+                                    ],
+                                  )),
+                            ),
                             CustomButton(
                                 onPressed: () {
                                   _onPressRegister(context);
@@ -133,4 +157,3 @@ class RegisterScreen extends StatelessWidget {
     );
   }
 }
-
