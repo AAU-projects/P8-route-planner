@@ -56,7 +56,7 @@ class GoogleMapsService implements GoogleMapsAPI {
 
   /// Gets the polyline from a response object
   String _getPolyline(Response response) {
-    return response.json['routes'].overview_polyline.points;
+    return response.json['routes'][0]['overview_polyline']['points'];
   }
 
   /// Gets the status of the response
@@ -67,26 +67,26 @@ class GoogleMapsService implements GoogleMapsAPI {
   /// Gets the start location
   Location _getStartLocation(Response response) {
     return Location(
-        response.json['routes'].legs.start_address,
-        response.json['routes'].legs.start_location.lat,
-        response.json['routes'].legs.start_location.lng);
+        response.json['routes'][0]['legs'][0]['start_address'],
+        response.json['routes'][0]['legs'][0]['start_location']['lat'],
+        response.json['routes'][0]['legs'][0]['start_location']['lng']);
   }
 
   /// Gets the end location
   Location _getEndLocation(Response response) {
     return Location(
-        response.json['routes'].legs.end_address,
-        response.json['routes'].legs.end_address.lat,
-        response.json['routes'].legs.end_address.lng);
+        response.json['routes'][0]['legs'][0]['end_address'],
+        response.json['routes'][0]['legs'][0]['end_location']['lat'],
+        response.json['routes'][0]['legs'][0]['end_location']['lng']);
   }
 
   /// Gets the distance as meters
   int _getDistance(Response response) {
-    return response.json['routes'].legs.distance.value;
+    return response.json['routes'][0]['legs'][0]['distance']['value'];
   }
 
   /// Gets the duration in seconds
   int _getDuration(Response response) {
-    return response.json['routes'].legs.duration.value;
+    return response.json['routes'][0]['legs'][0]['duration']['value'];
   }
 }

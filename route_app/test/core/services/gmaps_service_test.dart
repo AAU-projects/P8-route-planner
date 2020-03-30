@@ -13,12 +13,12 @@ void main() {
   GoogleMapsService gmapsService;
   WebServiceMock webMock;
   final String directionsStr =
-      File('../../assets/directions_example.json').readAsStringSync();
+      File('test/assets/directions_example.json').readAsStringSync();
   final Response testResponse = Response(null, jsonDecode(directionsStr));
 
   void setApiCalls() {
     when(webMock.get(
-            'https://maps.googleapis.com/maps/api/directions/json?origin=origin&destination=dest&key=apikey'))
+            'origin=origin&destination=dest&key=apikey'))
         .thenAnswer((_) {
       return Future<Response>.value(testResponse);
     });
