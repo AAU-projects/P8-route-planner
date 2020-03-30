@@ -7,10 +7,10 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     - name: Rename Debug Enviroment File
-      working-directory: route_app
+      working-directory: route_app/assets
       run: mv environments_example.json environments.json
     - name: Rename Prod Enviroment File
-      working-directory: route_app
+      working-directory: route_app/assets
       run: mv environments.prod_example.json environments.prod.json
     - name: Java Setup
       uses: actions/setup-java@v1
