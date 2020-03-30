@@ -4,26 +4,26 @@ import 'package:route_app/layout/constants/colors.dart' as colors;
 /// Custom text field used for location search in the app
 class SearchTextField extends StatelessWidget {
   /// Default constructor
-  SearchTextField(
+  const SearchTextField(
       {Key key,
       @required this.hint,
       @required this.textController,
       @required this.animationController,
       @required this.icon,
-      this.node})
-      : _animation = Tween<double>(begin: 350, end: 300).animate(
-            CurvedAnimation(
-                parent: animationController,
-                curve: Interval(0, 0.8, curve: Curves.fastOutSlowIn))),
+      this.node, this.animation})
+        :
         super(key: key);
 
   /// Animation controller
   final AnimationController animationController;
 
+    /// Animation for input
+  final Animation<double> animation;
+
   /// The hint text to display in the textfield
   final String hint;
 
-  ///
+  /// The focusnode to control focus
   final FocusNode node;
 
   /// The suffix icon to display
@@ -31,7 +31,8 @@ class SearchTextField extends StatelessWidget {
 
   /// Text controller to retrieve the input of the textfield
   final TextEditingController textController;
-  final Animation<double> _animation;
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +43,7 @@ class SearchTextField extends StatelessWidget {
   Widget _buildAnimation(BuildContext context, Widget child) {
     return SizedBox(
       height: 50,
-      width: _animation.value,
+      width: animation.value,
       child: TextField(
         focusNode: node,
         controller: textController,

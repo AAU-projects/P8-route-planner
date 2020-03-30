@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_sequence_animation/flutter_sequence_animation.dart';
 import 'package:route_app/layout/widgets/fields/search_text_field.dart';
 import 'package:route_app/layout/constants/colors.dart' as colors;
 
@@ -19,11 +20,11 @@ class RouteSearch extends StatefulWidget {
   _RouteSearchState createState() => _RouteSearchState();
 }
 
-class _RouteSearchState extends State<RouteSearch> with
-    SingleTickerProviderStateMixin {
-
+class _RouteSearchState extends State<RouteSearch>
+    with SingleTickerProviderStateMixin {
   AnimationController _controller;
-  Animation<double> _opacityAnimation;
+  SequenceAnimation sequenceAnimation;
+  Animation<double> _inputAnimation;
   final FocusNode _node = FocusNode();
 
   void onFocusChange() {
@@ -38,15 +39,25 @@ class _RouteSearchState extends State<RouteSearch> with
     _node.addListener(onFocusChange);
     _controller = AnimationController(
         duration: const Duration(milliseconds: 500), vsync: this);
-    _opacityAnimation = Tween<double>(begin: 0, end: 1).animate(
+
+    sequenceAnimation = SequenceAnimationBuilder()
+        .addAnimatable(
+            animatable: Tween<bool>(begin: false, end: true),
+            from: const Duration(milliseconds: 0),
+            to: const Duration(milliseconds: 1),
+            tag: 'visibility')
+        .addAnimatable(
+            animatable: Tween<double>(begin: 0, end: 1),
+            from: const Duration(milliseconds: 1),
+            to: const Duration(milliseconds: 501),
+            tag: 'opacity',
+            curve: Interval(0, 0.8, curve: Curves.fastOutSlowIn))
+        .animate(_controller);
+
+    _inputAnimation = Tween<double>(begin: 350, end: 300).animate(
         CurvedAnimation(
             parent: _controller,
-            curve: Interval(0, 0.8, curve: Curves.fastOutSlowIn)))
-      ..addListener(() {
-        setState(() {
-
-        });
-      });
+            curve: Interval(0, 0.8, curve: Curves.fastOutSlowIn)));
   }
 
   @override
@@ -63,61 +74,71 @@ class _RouteSearchState extends State<RouteSearch> with
         padding: const EdgeInsets.only(top: 30),
         child: Align(
             alignment: Alignment.topCenter,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                Visibility(
-                  visible: true,
-                  child: Opacity(
-                    opacity: _opacityAnimation.value,
-                    child: Align(
-                      alignment: Alignment.topLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 30, left: 15,
-                                                           right: 15),
-                        child: SizedBox(
-                          height: 40,
-                          width: 40,
-                          child: FloatingActionButton(
-                            backgroundColor: colors.SearchBackground,
-                            onPressed: () => _controller.reverse(),
-                            child: const Icon(Icons.arrow_back_ios, size: 25),
+            child: AnimatedBuilder(
+              animation: _controller,
+              builder: (BuildContext context, Widget child) {
+                return Stack(
+                  children: <Widget>[
+                    Opacity(
+                      opacity: sequenceAnimation['opacity'].value,
+                      child: Align(
+                        alignment: Alignment.topLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              top: 30, left: 15, right: 15),
+                          child: SizedBox(
+                            height: 40,
+                            width: 40,
+                            child: Visibility(
+                              visible: sequenceAnimation['visibility'].value,
+                              child: FloatingActionButton(
+                                backgroundColor: colors.SearchBackground,
+                                onPressed: () => _controller.reverse(),
+                                child:
+                                    const Icon(Icons.arrow_back_ios, size: 25),
+                              ),
                             ),
                           ),
                         ),
+                      ),
                     ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 30),
-                  child: Column(
-                    children: <Widget>[
-                      SearchTextField(
-                        textController: widget.startController,
-                        hint: 'Where to?',
-                        icon: Icons.search,
-                        animationController: _controller,
-                        node: _node,
-                      ),
-                      SearchTextField(
-                        textController: widget.startController,
-                        hint: 'Where to?',
-                        icon: Icons.search,
-                        animationController: _controller,
-                      ),
-                      SizedBox(
-                        height: 40,
-                        width: 40,
-                        child: FloatingActionButton(
-                          backgroundColor: colors.SearchBackground,
-                          onPressed: () => _controller.reverse(),
-                          child: const Icon(Icons.arrow_back_ios, size: 25),
+                    Positioned.fill(
+                      child: Align(
+                        alignment: Alignment.topRight,
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 30),
+                          child: Column(
+                            children: <Widget>[
+                              SearchTextField(
+                                textController: widget.startController,
+                                hint: 'Where to?',
+                                icon: Icons.search,
+                                animationController: _controller,
+                                animation: _inputAnimation,
+                                node: _node,
+                              ),
+                              Opacity(
+                                opacity: sequenceAnimation['opacity'].value,
+                                child: Visibility(
+                                  visible:
+                                      sequenceAnimation['visibility'].value,
+                                  child: SearchTextField(
+                                    textController: widget.endController,
+                                    hint: 'Where to?',
+                                    icon: Icons.search,
+                                    animationController: _controller,
+                                    animation: _inputAnimation,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                    ],
-                  ),
-                ),
-              ],
+                      ),
+                    ),
+                  ],
+                );
+              },
             )));
   }
 }
