@@ -56,10 +56,10 @@ class SearchTextField extends StatelessWidget {
             hintText: hint,
             hintStyle: const TextStyle(color: colors.Text, fontSize: 13),
             fillColor: colors.SearchBackground,
-            border: OutlineInputBorder(
+            border: const OutlineInputBorder(
                 borderSide: BorderSide(color: colors.SearchBackground),
-                borderRadius: const BorderRadius.all(Radius.circular(5.0))),
-            focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(5.0))),
+            focusedBorder: const OutlineInputBorder(
                 borderSide: BorderSide(color: colors.SearchBackground)),
             prefixIcon: Icon(icon, size: 20, color: Colors.white)),
       ),
