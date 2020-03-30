@@ -13,7 +13,7 @@ void main() {
   GoogleMapsService gmapsService;
   WebServiceMock webMock;
   final String directionsStr =
-      File('test/assets/directions_example.json').readAsStringSync();
+      File('assets/directions_example.json').readAsStringSync();
   final Response testResponse = Response(null, jsonDecode(directionsStr));
 
   void setApiCalls() {
