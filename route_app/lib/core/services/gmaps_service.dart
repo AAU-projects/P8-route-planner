@@ -3,23 +3,14 @@ import 'package:route_app/core/models/location_model.dart';
 import 'package:route_app/core/models/response_model.dart';
 import 'package:route_app/core/services/API/web_service.dart';
 import 'package:route_app/core/services/interfaces/gmaps.dart';
+import 'package:route_app/core/services/interfaces/web.dart';
+import 'package:route_app/locator.dart';
 
 /// Google maps service
 class GoogleMapsService implements GoogleMapsAPI {
   /// Class constructor
-  GoogleMapsService({String apiKey, WebService webService}) {
-    if (apiKey == null) {
-      _apiKey = const String.fromEnvironment('GOOGLE_API_KEY');
-    } else {
-      _apiKey = apiKey;
-    }
-    if (webService == null) {
-      _webService = WebService(
-          baseUrl: 'https://maps.googleapis.com/maps/api/directions/json?');
-    } else {
-      _webService = webService;
-      _webService.baseUrl = 'https://maps.googleapis.com/maps/api/directions/json?';
-    }
+  GoogleMapsService(this._apiKey, {WebService webService}){
+    _webService = webService ?? locator.get<Web>(param1: 'https://maps.googleapis.com/maps/api/directions/json?');
   }
 
   @override
@@ -52,7 +43,7 @@ class GoogleMapsService implements GoogleMapsAPI {
   }
 
   WebService _webService;
-  String _apiKey;
+  final String _apiKey;
 
   /// Gets the polyline from a response object
   String _getPolyline(Response response) {

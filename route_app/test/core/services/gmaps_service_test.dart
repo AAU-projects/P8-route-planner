@@ -26,7 +26,7 @@ void main() {
 
   setUp(() {
     webMock = WebServiceMock();
-    gmapsService = GoogleMapsService(apiKey: 'apikey', webService: webMock);
+    gmapsService = GoogleMapsService('apikey', webService: webMock);
     setApiCalls();
   });
 
