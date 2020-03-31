@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
-import 'package:route_app/layout/widgets/buttons/custom_switch.dart';
 import 'package:route_app/layout/widgets/fields/radio_group.dart';
 import 'package:route_app/layout/widgets/loading_snackbar.dart';
 import 'package:route_app/locator.dart';
@@ -18,20 +17,28 @@ import 'package:route_app/layout/constants/validators.dart' as validators;
 import 'package:route_app/layout/widgets/notifications.dart' as notifications;
 
 /// Screen to register the user
-class RegisterScreen extends StatelessWidget {
+class RegisterScreen extends StatefulWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _kmlController = TextEditingController();
   final TextEditingController _fuelTypeController = TextEditingController();
-  String _fuelType = '';
 
   final AuthAPI _authAPI = locator.get<AuthAPI>();
+  bool _expanded = false;
 
   void _onPressRegister(BuildContext context) {
     showLoadingSnackbar(context, 'Registering',
         time: const Duration(seconds: 10));
 
+    if (!_expanded) {
+      _kmlController.text = '0';
+      _fuelTypeController.text = null;
+    } 
+
     _authAPI
-        .register(_emailController.text, licensePlate: _kmlController.text)
+        .register(
+            _emailController.text,
+            kml: _kmlController.text,
+            fuelType: _fuelTypeController.text)
         .then((User user) {
       notifications.removeNotification(context);
       _authAPI.sendPin(_emailController.text).then((bool value) {
@@ -46,14 +53,48 @@ class RegisterScreen extends StatelessWidget {
         }
       });
     }).catchError((Object error) {
-      notifications.error(context, error);
+      notifications.error(context, error.toString());
+    });
+  }
+
+  @override
+  RegisterScreenWidget createState() => RegisterScreenWidget();
+}
+
+class RegisterScreenWidget extends State<RegisterScreen>
+    with TickerProviderStateMixin {
+  AnimationController expandController;
+  Animation<double> animation;
+
+  @override
+  void initState() {
+    super.initState();
+    prepareAnimations();
+  }
+
+  ///Setting up the animation
+  void prepareAnimations() {
+    expandController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    animation = CurvedAnimation(
+      parent: expandController,
+      curve: Curves.fastOutSlowIn,
+    );
+  }
+
+  void _onCheckboxClick(bool value) {
+    setState(() {
+      widget._expanded = value;
+      if (value) {
+        expandController.forward();
+      } else {
+        expandController.reverse();
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    bool expanded = true;
-
     return Scaffold(
       backgroundColor: color.Background,
       body: GestureDetector(
@@ -86,7 +127,7 @@ class RegisterScreen extends StatelessWidget {
                                 helper: 'Email',
                                 validator: validators.email,
                                 errorText: 'Invalid email',
-                                controller: _emailController,
+                                controller: widget._emailController,
                                 provider: formProvider),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -95,12 +136,14 @@ class RegisterScreen extends StatelessWidget {
                                     style: TextStyle(
                                         fontSize: 12.0,
                                         color: color.NeturalGrey)),
-                                CustomSwitch(linkedValue: expanded),
+                                Checkbox(
+                                    value: widget._expanded,
+                                    onChanged: _onCheckboxClick),
                               ],
                             ),
-                            AnimatedContainer(
-                              duration: const Duration(milliseconds: 200),
-                              height: expanded ? 150 : 0,
+                            SizeTransition(
+                              axisAlignment: 1.0,
+                              sizeFactor: animation,
                               child: Container(
                                   height: 150,
                                   child: Column(
@@ -113,18 +156,19 @@ class RegisterScreen extends StatelessWidget {
                                             'Enter fuel consumption in km/l',
                                         validator: validators.licensePlate,
                                         errorText: 'Invalid fuel consumption',
-                                        controller: _kmlController,
+                                        controller: widget._kmlController,
                                         provider: formProvider,
                                         isOptional: true,
                                       ),
                                       RadioGroup(
-                                          controller: _fuelTypeController),
+                                          controller:
+                                              widget._fuelTypeController),
                                     ],
                                   )),
                             ),
                             CustomButton(
                                 onPressed: () {
-                                  _onPressRegister(context);
+                                  widget._onPressRegister(context);
                                 },
                                 buttonText: 'Register',
                                 provider: formProvider),
