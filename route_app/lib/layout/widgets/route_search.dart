@@ -7,7 +7,11 @@ import 'package:route_app/layout/constants/colors.dart' as colors;
 class RouteSearch extends StatefulWidget {
   /// default constructor
   const RouteSearch(
-      {Key key, @required this.startController, @required this.endController})
+      {Key key,
+      @required this.startController,
+      @required this.endController,
+      this.startSubmitFunc,
+      this.endSubmitFunc})
       : super(key: key);
 
   /// Text controller to get start location
@@ -15,6 +19,12 @@ class RouteSearch extends StatefulWidget {
 
   /// Text controller to get end location
   final TextEditingController endController;
+
+  /// Callback function for submitting text to the startController
+  final Function startSubmitFunc;
+
+  /// Callback function for submitting text to the endController
+  final Function endSubmitFunc;
 
   @override
   _RouteSearchState createState() => _RouteSearchState();
@@ -116,6 +126,7 @@ class _RouteSearchState extends State<RouteSearch>
                                 animationController: _controller,
                                 animation: _inputAnimation,
                                 node: _node,
+                                onSumbitFunc: widget.startSubmitFunc,
                               ),
                               Opacity(
                                 opacity: sequenceAnimation['opacity'].value,
@@ -128,6 +139,7 @@ class _RouteSearchState extends State<RouteSearch>
                                     icon: Icons.search,
                                     animationController: _controller,
                                     animation: _inputAnimation,
+                                    onSumbitFunc: widget.endSubmitFunc,
                                   ),
                                 ),
                               ),

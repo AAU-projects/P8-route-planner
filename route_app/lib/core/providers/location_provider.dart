@@ -5,8 +5,11 @@ import 'package:geolocator/geolocator.dart';
 /// Location model which can be used in a 'ChangeNotifier' provider.
 class LocationProvider extends ChangeNotifier {
   /// Class Constructor
-  LocationProvider() {
-    _initialize();
+  LocationProvider({bool noInitialization = false}) {
+    if(!noInitialization)
+    {
+      _initialize();
+    }
   }
 
   final Geolocator _geolocator = Geolocator();
