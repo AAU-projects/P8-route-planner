@@ -1,12 +1,16 @@
 import 'package:get_it/get_it.dart';
+import 'package:route_app/core/services/API/web_service.dart';
+import 'package:route_app/core/services/gmaps_service.dart';
 import 'package:route_app/core/services/interfaces/API/auth.dart';
 import 'package:route_app/core/services/interfaces/API/user.dart';
+import 'package:route_app/core/services/interfaces/gmaps.dart';
 import 'package:route_app/core/services/interfaces/http.dart';
 import 'package:route_app/core/services/API/auth_service.dart';
 import 'package:route_app/core/services/API/http_service.dart';
 import 'package:route_app/core/services/API/user_service.dart';
 import 'package:route_app/core/services/database.dart';
 import 'package:route_app/core/utils/environment.dart' as environment;
+import 'package:route_app/core/services/interfaces/web.dart';
 
 /// Instantiates the dependency injection
 GetIt locator = GetIt.instance;
@@ -17,8 +21,7 @@ void setupLocator() {
   // locator.registerLazySingleton(() => Api());
   locator.registerLazySingleton<DatabaseService>(() => DatabaseService(
       databaseName: 'testDBv3',
-      version: environment.getVar<int>('DATABASE_VERSION')
-      ));
+      version: environment.getVar<int>('DATABASE_VERSION')));
 
   locator.registerLazySingleton<UserAPI>(() => UserService());
   locator.registerLazySingleton<AuthAPI>(() => AuthenticationService());
@@ -28,4 +31,8 @@ void setupLocator() {
 
   locator.registerFactory<Http>(() => HttpService(
       baseUrl: environment.getVar('SERVER_URL'), tokenTable: 'auth'));
+  locator.registerFactory<GoogleMapsAPI>(
+      () => GoogleMapsService(environment.getVar('GOOGLE_API_KEY')));
+  locator.registerFactoryParam<Web, String, void>(
+      (String str, _) => WebService(baseUrl: str));
 }

@@ -1,0 +1,258 @@
+{
+    "geocoded_waypoints": [
+        {
+            "geocoder_status": "OK",
+            "place_id": "ChIJPxS3LlLqS0YRti1y_9PXIko",
+            "types": [
+                "establishment",
+                "point_of_interest",
+                "university"
+            ]
+        },
+        {
+            "geocoder_status": "OK",
+            "place_id": "ChIJ5cDNZpMySUYR_cWPhEmIwuw",
+            "types": [
+                "establishment",
+                "point_of_interest"
+            ]
+        }
+    ],
+    "routes": [
+        {
+            "bounds": {
+                "northeast": {
+                    "lat": 57.0475222,
+                    "lng": 9.9763342
+                },
+                "southwest": {
+                    "lat": 57.0189682,
+                    "lng": 9.933803800000002
+                }
+            },
+            "copyrights": "Map data ©2020",
+            "legs": [
+                {
+                    "distance": {
+                        "text": "4,7 km",
+                        "value": 4726
+                    },
+                    "duration": {
+                        "text": "10 min.",
+                        "value": 572
+                    },
+                    "end_address": "end address",
+                    "end_location": {
+                        "lat": 57.04748129999999,
+                        "lng": 9.933803800000002
+                    },
+                    "start_address": "start address",
+                    "start_location": {
+                        "lat": 57.0189682,
+                        "lng": 9.9763342
+                    },
+                    "steps": [
+                        {
+                            "distance": {
+                                "text": "37 m",
+                                "value": 37
+                            },
+                            "duration": {
+                                "text": "1 min.",
+                                "value": 5
+                            },
+                            "end_location": {
+                                "lat": 57.01927629999999,
+                                "lng": 9.976147599999999
+                            },
+                            "html_instructions": "Tag mod \u003cb\u003enordvest\u003c/b\u003e ad \u003cb\u003eNiels Bohrs Vej\u003c/b\u003e",
+                            "polyline": {
+                                "points": "qo_{Iao{{@IJOLc@H"
+                            },
+                            "start_location": {
+                                "lat": 57.0189682,
+                                "lng": 9.9763342
+                            },
+                            "travel_mode": "DRIVING"
+                        },
+                        {
+                            "distance": {
+                                "text": "0,5 km",
+                                "value": 504
+                            },
+                            "duration": {
+                                "text": "1 min.",
+                                "value": 44
+                            },
+                            "end_location": {
+                                "lat": 57.0197645,
+                                "lng": 9.968746899999999
+                            },
+                            "html_instructions": "Tag \u003cb\u003etredje\u003c/b\u003e frakørsel ad \u003cb\u003eUniversitetsboulevarden\u003c/b\u003e/\u003cwbr/\u003e\u003cb\u003eRute 507\u003c/b\u003e/\u003cwbr/\u003e\u003cb\u003eRute 595\u003c/b\u003e i rundkørslen",
+                            "maneuver": "roundabout-right",
+                            "polyline": {
+                                "points": "oq_{I}m{{@EIEEEAECCAC?A?EAC?E@C@C@CBCDCBCBADCFAFADAJAJ?D?F?F?F?F@F@J@F@FBFDFBDDFDr@MdRClAKlMAP?J?H?XIt@"
+                            },
+                            "start_location": {
+                                "lat": 57.01927629999999,
+                                "lng": 9.976147599999999
+                            },
+                            "travel_mode": "DRIVING"
+                        },
+                        {
+                            "distance": {
+                                "text": "3,1 km",
+                                "value": 3075
+                            },
+                            "duration": {
+                                "text": "6 min.",
+                                "value": 336
+                            },
+                            "end_location": {
+                                "lat": 57.0444979,
+                                "lng": 9.9484827
+                            },
+                            "html_instructions": "Tag \u003cb\u003eførste\u003c/b\u003e frakørsel ad \u003cb\u003eHadsundvej\u003c/b\u003e i rundkørslen",
+                            "maneuver": "roundabout-right",
+                            "polyline": {
+                                "points": "ot_{Iu_z{@EDEDEDCDCFCHAHCH?JANYR]Xe@XIHCDGTED_@n@ABABMRCFUf@Ur@Wz@Y~@m@dBw@rBIRg@fASd@[j@CDSb@KNA@MRA@SZKN?@MRg@r@a@b@W\\m@n@}@~@}@|@MJoDfDcA|@eDxCsCjCsAnAkCdC}ArA}@z@qAhAKJSHqAdAq@n@oAx@qA`Ao@b@y@b@UNA@wAp@k@ZaEjBe@NGBm@TMDMDcCz@yC|@cBf@oDfAw@Pi@JsATC?m@Ha@DgATcB\\mBZE@aCZeAZy@l@]Vi@\\uA|@aAx@wBpAq@b@{@l@_Al@_BnAIDi@r@U`@QXQXe@z@"
+                            },
+                            "start_location": {
+                                "lat": 57.0197645,
+                                "lng": 9.968746899999999
+                            },
+                            "travel_mode": "DRIVING"
+                        },
+                        {
+                            "distance": {
+                                "text": "0,2 km",
+                                "value": 168
+                            },
+                            "duration": {
+                                "text": "1 min.",
+                                "value": 35
+                            },
+                            "end_location": {
+                                "lat": 57.04542550000001,
+                                "lng": 9.946369899999999
+                            },
+                            "html_instructions": "Fortsæt ad \u003cb\u003eØsterbro\u003c/b\u003e/\u003cwbr/\u003e\u003cb\u003eO2\u003c/b\u003e",
+                            "polyline": {
+                                "points": "cod{I_av{@SLKTO`@Q`@K^i@rCUdAO^SXGH"
+                            },
+                            "start_location": {
+                                "lat": 57.0444979,
+                                "lng": 9.9484827
+                            },
+                            "travel_mode": "DRIVING"
+                        },
+                        {
+                            "distance": {
+                                "text": "0,1 km",
+                                "value": 146
+                            },
+                            "duration": {
+                                "text": "1 min.",
+                                "value": 31
+                            },
+                            "end_location": {
+                                "lat": 57.0467238,
+                                "lng": 9.946055099999999
+                            },
+                            "html_instructions": "Fortsæt ad \u003cb\u003eSkibsbyggerivej\u003c/b\u003e",
+                            "polyline": {
+                                "points": "}td{Iysu{@OLC@[Lu@Dg@FsBP"
+                            },
+                            "start_location": {
+                                "lat": 57.04542550000001,
+                                "lng": 9.946369899999999
+                            },
+                            "travel_mode": "DRIVING"
+                        },
+                        {
+                            "distance": {
+                                "text": "0,7 km",
+                                "value": 713
+                            },
+                            "duration": {
+                                "text": "2 min.",
+                                "value": 96
+                            },
+                            "end_location": {
+                                "lat": 57.0470137,
+                                "lng": 9.934455699999999
+                            },
+                            "html_instructions": "Drej til \u003cb\u003evenstre\u003c/b\u003e, og følg \u003cb\u003eNyhavnsgade\u003c/b\u003e",
+                            "maneuver": "turn-left",
+                            "polyline": {
+                                "points": "_}d{I{qu{@Q??^AdA?`A@xA@z@@V?x@?v@ArAAlAAjACjBC~AChBCrBAlA?vAC~@AZ?d@AtAC~AIdI?tBAr@?jBBtB"
+                            },
+                            "start_location": {
+                                "lat": 57.0467238,
+                                "lng": 9.946055099999999
+                            },
+                            "travel_mode": "DRIVING"
+                        },
+                        {
+                            "distance": {
+                                "text": "62 m",
+                                "value": 62
+                            },
+                            "duration": {
+                                "text": "1 min.",
+                                "value": 17
+                            },
+                            "end_location": {
+                                "lat": 57.0475222,
+                                "lng": 9.934147299999999
+                            },
+                            "html_instructions": "Drej til \u003cb\u003ehøjre\u003c/b\u003e, og følg \u003cb\u003eMusikkens Pl.\u003c/b\u003e",
+                            "maneuver": "turn-right",
+                            "polyline": {
+                                "points": "y~d{Ikis{@]n@QBu@H"
+                            },
+                            "start_location": {
+                                "lat": 57.0470137,
+                                "lng": 9.934455699999999
+                            },
+                            "travel_mode": "DRIVING"
+                        },
+                        {
+                            "distance": {
+                                "text": "21 m",
+                                "value": 21
+                            },
+                            "duration": {
+                                "text": "1 min.",
+                                "value": 8
+                            },
+                            "end_location": {
+                                "lat": 57.04748129999999,
+                                "lng": 9.933803800000002
+                            },
+                            "html_instructions": "Drej til \u003cb\u003evenstre\u003c/b\u003e\u003cdiv style=\"font-size:0.9em\"\u003eDestinationen ligger til højre\u003c/div\u003e",
+                            "maneuver": "turn-left",
+                            "polyline": {
+                                "points": "_be{Imgs{@DbA@@"
+                            },
+                            "start_location": {
+                                "lat": 57.0475222,
+                                "lng": 9.934147299999999
+                            },
+                            "travel_mode": "DRIVING"
+                        }
+                    ],
+                    "traffic_speed_entry": [],
+                    "via_waypoint": []
+                }
+            ],
+            "overview_polyline": {
+                "points": "abcd"
+            },
+            "summary": "Hadsundvej",
+            "warnings": [],
+            "waypoint_order": []
+        }
+    ],
+    "status": "OK"
+}
