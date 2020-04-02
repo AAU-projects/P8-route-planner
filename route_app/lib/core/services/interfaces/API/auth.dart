@@ -10,7 +10,7 @@ abstract class AuthAPI {
   Future<bool> sendPin(String email);
 
   /// Register API flow
-  Future<User> register(String email, {String kml, String fuelType});
+  Future<User> register(String email, {double kml, String fuelType});
 
   /// Get a new JWT token from the API
   Future<User> refreshToken();

@@ -69,7 +69,7 @@ void main() {
     // Inputs an invalid email and exits textbox
     await tester.enterText(find.byKey(const Key('emailField')), 'invalidEmail');
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('fuelConsumptionField')));
+    await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
 
     // Checks if the color changed
@@ -92,7 +92,7 @@ void main() {
     await tester.enterText(
         find.byKey(const Key('emailField')), 'validEmail@test.com');
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('fuelConsumptionField')));
+    await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
 
     // Checks if the color changed
@@ -114,7 +114,7 @@ void main() {
     await tester.enterText(
         find.byKey(const Key('emailField')), 'validEmail@test.com');
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('fuelConsumptionField')));
+    await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
 
     // Expect change on button color

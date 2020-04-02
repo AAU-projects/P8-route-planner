@@ -31,3 +31,13 @@ bool pin(String pin) {
   final String _pin = pin.replaceAll(' ','');
   return _pinMatcher.hasMatch(_pin);
 }
+
+/// Kml double validator
+bool kml(String kml) {
+  try {
+    double.parse(kml);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}

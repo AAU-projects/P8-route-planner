@@ -43,7 +43,7 @@ class AuthenticationService implements AuthAPI {
   }
 
   @override
-  Future<User> register(String email, {String kml, String fuelType}) async {
+  Future<User> register(String email, {double kml, String fuelType}) async {
     return _http.post(_endpoint + 'register', <String, dynamic>{
       'User': 
         <String, String>{'email': email},

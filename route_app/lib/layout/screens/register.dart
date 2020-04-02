@@ -17,11 +17,11 @@ import 'package:route_app/layout/constants/validators.dart' as validators;
 import 'package:route_app/layout/widgets/notifications.dart' as notifications;
 
 /// Screen to register the user
+/// ignore: must_be_immutable
 class RegisterScreen extends StatefulWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _kmlController = TextEditingController();
   final TextEditingController _fuelTypeController = TextEditingController();
-
   final AuthAPI _authAPI = locator.get<AuthAPI>();
   bool _expanded = false;
 
@@ -32,12 +32,13 @@ class RegisterScreen extends StatefulWidget {
     if (!_expanded) {
       _kmlController.text = '0';
       _fuelTypeController.text = null;
-    } 
+    }
 
     _authAPI
-        .register(
-            _emailController.text,
-            kml: _kmlController.text,
+        .register(_emailController.text,
+            kml: _kmlController.text.isEmpty
+                ? 0
+                : double.parse(_kmlController.text),
             fuelType: _fuelTypeController.text)
         .then((User user) {
       notifications.removeNotification(context);
@@ -61,9 +62,13 @@ class RegisterScreen extends StatefulWidget {
   RegisterScreenWidget createState() => RegisterScreenWidget();
 }
 
+/// State of registerScreen
 class RegisterScreenWidget extends State<RegisterScreen>
     with TickerProviderStateMixin {
+  /// controller for expanding kml / petrol window
   AnimationController expandController;
+
+  /// expanding animation
   Animation<double> animation;
 
   @override
@@ -74,8 +79,8 @@ class RegisterScreenWidget extends State<RegisterScreen>
 
   ///Setting up the animation
   void prepareAnimations() {
-    expandController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    expandController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 500));
     animation = CurvedAnimation(
       parent: expandController,
       curve: Curves.fastOutSlowIn,
@@ -138,7 +143,8 @@ class RegisterScreenWidget extends State<RegisterScreen>
                                         color: color.NeturalGrey)),
                                 Checkbox(
                                     value: widget._expanded,
-                                    onChanged: _onCheckboxClick),
+                                    onChanged: _onCheckboxClick,
+                                    key: const Key('doYouHaveCarCheckbox'))
                               ],
                             ),
                             SizeTransition(
@@ -153,12 +159,13 @@ class RegisterScreenWidget extends State<RegisterScreen>
                                         hint: '(Optional)',
                                         icon: Icons.local_gas_station,
                                         helper:
-                                            'Enter fuel consumption in km/l',
-                                        validator: validators.licensePlate,
+                                            'Enter fuel consumption in km/l. E.g. 16.5',
+                                        validator: validators.kml,
                                         errorText: 'Invalid fuel consumption',
                                         controller: widget._kmlController,
                                         provider: formProvider,
                                         isOptional: true,
+                                        keyboardType: TextInputType.number,
                                       ),
                                       RadioGroup(
                                           controller:

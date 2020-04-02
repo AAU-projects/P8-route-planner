@@ -23,7 +23,7 @@ void main() {
   const String url = 'user/'; // ignore: unused_local_variable
 
   final Map<String, String> apiUserJson = <String, String>{'Email': email}; //ignore: unused_local_variable
-  final User user = User('', email, 'bob', '123', '', DateTime(0), DateTime(0));
+  final User user = User('', email, 127.0, '123', '', DateTime(0), DateTime(0));
   final Map<String, String> userJson = <String, String>{
     'json': jsonEncode(user.toJson())
   };
