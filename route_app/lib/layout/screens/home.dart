@@ -4,19 +4,17 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:route_app/core/models/directions_model.dart';
-import 'package:route_app/core/services/gmaps_service.dart';
 import 'package:route_app/core/services/interfaces/gmaps.dart';
 import 'package:route_app/layout/widgets/route_search.dart';
 import 'package:route_app/layout/constants/colors.dart' as colors;
 import 'package:route_app/locator.dart';
-
-import '../../core/providers/location_provider.dart';
+import 'package:route_app/core/providers/location_provider.dart';
 
 /// Home screen with map
 class HomeScreen extends StatefulWidget {
   ///key is required, otherwise map crashes on hot reload
   HomeScreen() : super(key: UniqueKey());
-  final GoogleMapsService _gMapsService = locator.get<GoogleMapsAPI>();
+  final GoogleMapsAPI _gMapsService = locator.get<GoogleMapsAPI>();
   final LocationProvider _locationModel =
       LocationProvider(noInitialization: true);
 
@@ -74,14 +72,18 @@ class _HomeScreenState extends State<HomeScreen> {
         LatLng(dir.startLocation.latitude, dir.startLocation.longtitude);
     final LatLng endpoint =
         LatLng(dir.endLocation.latitude, dir.endLocation.longtitude);
-    final List<LatLng> pointslist = <LatLng>[startpoint, endpoint];
+    final List<LatLng> pointsList = <LatLng>[];
+    pointsList.add(startpoint);
+    pointsList.addAll(dir.steps);
+    pointsList.add(endpoint);
+    print(pointsList);
 
     setState(() {
       _markers
           .add(Marker(position: startpoint, markerId: MarkerId('startmarker')));
       _markers.add(Marker(position: endpoint, markerId: MarkerId('endmarker')));
       _polyline.add(Polyline(
-          points: pointslist,
+          points: pointsList,
           polylineId: PolylineId('main'),
           geodesic: true,
           color: Colors.pink));

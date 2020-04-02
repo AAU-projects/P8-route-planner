@@ -1,3 +1,4 @@
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:route_app/core/models/directions_model.dart';
 import 'package:route_app/core/models/location_model.dart';
 import 'package:route_app/core/models/response_model.dart';
@@ -9,8 +10,10 @@ import 'package:route_app/locator.dart';
 /// Google maps service
 class GoogleMapsService implements GoogleMapsAPI {
   /// Class constructor
-  GoogleMapsService(this._apiKey, {WebService webService}){
-    _webService = webService ?? locator.get<Web>(param1: 'https://maps.googleapis.com/maps/api/directions/json?');
+  GoogleMapsService(this._apiKey, {WebService webService}) {
+    _webService = webService ??
+        locator.get<Web>(
+            param1: 'https://maps.googleapis.com/maps/api/directions/json?');
   }
 
   @override
@@ -32,13 +35,15 @@ class GoogleMapsService implements GoogleMapsAPI {
       final Location endLoc = _getEndLocation(resp);
       final int dist = _getDistance(resp);
       final int dur = _getDuration(resp);
+      final List<LatLng> routeSteps = _getSteps(resp);
       return Directions(
           polyline: poly,
           status: status,
           startLocation: startLoc,
           endLocation: endLoc,
           distance: dist,
-          duration: dur);
+          duration: dur,
+          steps: routeSteps);
     });
   }
 
@@ -79,5 +84,30 @@ class GoogleMapsService implements GoogleMapsAPI {
   /// Gets the duration in seconds
   int _getDuration(Response response) {
     return response.json['routes'][0]['legs'][0]['duration']['value'];
+  }
+
+  /// Gets the list of steps from a response
+  List<LatLng> _getSteps(Response response) {
+    final List<LatLng> resultList = <LatLng>[];
+
+    final List<dynamic> steps =
+        response.json['routes'][0]['legs'][0]['steps'];
+    /*
+    for (int i = 0; i < steps.length; i++) {
+      resultList.add(LatLng(
+          response.json['routes'][0]['legs'][0]['steps'][0]['start_location']
+              ['lat'],
+          response.json['routes'][0]['legs'][0]['steps'][0]['start_location']
+              ['lng']));
+    }
+    */
+
+    for (int i = 0; i < steps.length; i++) {
+      resultList.add(LatLng(
+          steps[i]['start_location']['lat'],
+          steps[i]['start_location']['lng']));
+    }
+
+    return resultList;
   }
 }

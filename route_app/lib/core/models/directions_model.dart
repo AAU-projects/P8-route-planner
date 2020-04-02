@@ -1,10 +1,12 @@
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 import 'location_model.dart';
 
 /// Directions class
 class Directions {
   /// Class Constructor
   Directions ({this.polyline, this.status, this.startLocation, 
-    this.endLocation, this.distance, this.duration});
+    this.endLocation, this.distance, this.duration, this.steps});
 
   /// The Google maps polyline
   String polyline;
@@ -23,4 +25,7 @@ class Directions {
 
   /// The duration in seconds
   int duration;
+
+  /// The steps of the direcion
+  List<LatLng> steps;
 }

@@ -86,5 +86,13 @@ void main() {
         expect(dir.duration, 572);
       }));
     });
+
+    test('Should return a list of steps', () {
+      gmapsService
+          .getDirections(origin: 'origin', destination: 'dest')
+          .then(expectAsync1((Directions dir) {
+        expect(dir.steps.length, 8);
+      }));
+    });
   });
 }
