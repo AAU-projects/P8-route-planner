@@ -1,13 +1,7 @@
 import 'package:route_app/core/models/response_model.dart';
 
 /// Http client interface
-abstract class Http {
-  /// Get the stored JWT token
-  Future<String> get token;
-
-  /// Clear old JWT tokens and set a new
-  Future<bool> setToken(String token, String expire);
-
+abstract class Web {
   /// Send a GET request to the provided [url]
   Future<Response> get(String url);
 

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:route_app/core/models/response_model.dart';
 import 'package:route_app/core/services/interfaces/http.dart';
 
 enum Method { get, post, put, delete, patch }

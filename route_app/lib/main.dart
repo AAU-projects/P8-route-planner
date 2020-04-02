@@ -30,7 +30,7 @@ void _startApp() {
   final UserAPI _user = locator.get<UserAPI>();
   _user.activeUser.then((User user) {
     if (user != null) {
-      _initScreen = '/test';
+      _initScreen = '/home';
     }
     runApp(App());
   });

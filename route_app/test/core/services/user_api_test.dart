@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:route_app/core/models/user_model.dart';
@@ -8,7 +7,6 @@ import 'package:route_app/core/services/database.dart';
 import 'package:route_app/core/services/interfaces/API/user.dart';
 import 'package:route_app/core/services/interfaces/http.dart';
 import 'package:route_app/locator.dart';
-
 import '../../mocks/http_mock.dart';
 
 class DatabaseMock extends Mock implements DatabaseService {}

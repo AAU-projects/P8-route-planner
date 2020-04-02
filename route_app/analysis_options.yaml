@@ -31,6 +31,10 @@ analyzer:
     # Stream and not importing dart:async
     # Please see https://github.com/flutter/flutter/pull/24528 for details.
     sdk_version_async_exported_from_core: ignore
+    # These two are necessary to tell the analyzer it is okay 
+    # that the two environment files do not exist
+    unrecognized_error_code: ignore
+    asset_does_not_exist: ignore
   exclude:
     - 'bin/cache/**'
     # the following two are relative to the stocks example and the flutter package respectively
@@ -52,7 +56,7 @@ linter:
     - annotate_overrides
     # - avoid_annotating_with_dynamic # conflicts with always_specify_types
     - avoid_as
-      # - avoid_bool_literals_in_conditional_expressions # not yet tested
+    # - avoid_bool_literals_in_conditional_expressions # not yet tested
     # - avoid_catches_without_on_clauses # we do this commonly
     # - avoid_catching_errors # we do this commonly
     - avoid_classes_with_only_static_members

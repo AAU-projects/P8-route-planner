@@ -18,7 +18,7 @@ class ConfirmLoginScreen extends StatelessWidget {
 
   void _onPressedConfirm(BuildContext context) {
     _authAPI.login(_pinController.text).then((_) {
-      Navigator.pushNamedAndRemoveUntil(context, '/test', (_) => false);
+      Navigator.pushNamedAndRemoveUntil(context, '/home', (_) => false);
     }).catchError((Object error) {
       notifications.error(context, error);
     });

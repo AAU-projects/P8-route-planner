@@ -1,3 +1,4 @@
+import 'package:route_app/core/models/response_model.dart';
 import 'package:route_app/core/models/user_model.dart';
 import 'package:route_app/core/services/interfaces/API/auth.dart';
 import 'package:route_app/core/services/interfaces/API/user.dart';
