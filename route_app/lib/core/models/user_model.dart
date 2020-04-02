@@ -36,7 +36,7 @@ class User implements Model {
   /// The user's email
   String email;
 
-  /// The user's license plate
+  /// The user's car emission
   double carEmission;
 
   /// Pincode used to login or register

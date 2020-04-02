@@ -20,7 +20,6 @@ void main() {
     when(api.register('validEmail@test.com')).thenAnswer((_) {
       final Map<String, dynamic> json = <String, dynamic>{
         'Email': 'validEmail@test.com',
-        'LicensePlate': ''
       };
       return Future<User>.value(User.fromJson(json));
     });
