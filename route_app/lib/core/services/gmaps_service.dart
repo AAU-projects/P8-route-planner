@@ -6,6 +6,7 @@ import 'package:route_app/core/services/API/web_service.dart';
 import 'package:route_app/core/services/interfaces/gmaps.dart';
 import 'package:route_app/core/services/interfaces/web.dart';
 import 'package:route_app/locator.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
 /// Google maps service
 class GoogleMapsService implements GoogleMapsAPI {
@@ -14,6 +15,7 @@ class GoogleMapsService implements GoogleMapsAPI {
     _webService = webService ??
         locator.get<Web>(
             param1: 'https://maps.googleapis.com/maps/api/directions/json?');
+    _polyHandler = PolylinePoints();
   }
 
   @override
@@ -24,7 +26,9 @@ class GoogleMapsService implements GoogleMapsAPI {
     final String params = 'origin=' +
         origin +
         '&destination=' +
-        destination.replaceAll(' ', '+') +
+        destination +
+        '&mode=' +
+        travelMode +
         '&key=' +
         _apiKey;
 
@@ -35,7 +39,7 @@ class GoogleMapsService implements GoogleMapsAPI {
       final Location endLoc = _getEndLocation(resp);
       final int dist = _getDistance(resp);
       final int dur = _getDuration(resp);
-      final List<LatLng> routeSteps = _getSteps(resp);
+      final List<LatLng> polyPoints = _getPolylinePoints(poly);
       return Directions(
           polyline: poly,
           status: status,
@@ -43,9 +47,11 @@ class GoogleMapsService implements GoogleMapsAPI {
           endLocation: endLoc,
           distance: dist,
           duration: dur,
-          steps: routeSteps);
+          polylinePoints: polyPoints);
     });
   }
+
+  PolylinePoints _polyHandler;
 
   WebService _webService;
   final String _apiKey;
@@ -86,28 +92,15 @@ class GoogleMapsService implements GoogleMapsAPI {
     return response.json['routes'][0]['legs'][0]['duration']['value'];
   }
 
-  /// Gets the list of steps from a response
-  List<LatLng> _getSteps(Response response) {
-    final List<LatLng> resultList = <LatLng>[];
+  /// Gets the list of polyline points from a polyline string
+  List<LatLng> _getPolylinePoints(String polystr) {
+    final List<PointLatLng> plist = _polyHandler.decodePolyline(polystr);
+    final List<LatLng> reslist = <LatLng>[];
 
-    final List<dynamic> steps =
-        response.json['routes'][0]['legs'][0]['steps'];
-    /*
-    for (int i = 0; i < steps.length; i++) {
-      resultList.add(LatLng(
-          response.json['routes'][0]['legs'][0]['steps'][0]['start_location']
-              ['lat'],
-          response.json['routes'][0]['legs'][0]['steps'][0]['start_location']
-              ['lng']));
-    }
-    */
-
-    for (int i = 0; i < steps.length; i++) {
-      resultList.add(LatLng(
-          steps[i]['start_location']['lat'],
-          steps[i]['start_location']['lng']));
+    for (PointLatLng p in plist) {
+      reslist.add(LatLng(p.latitude, p.longitude));
     }
 
-    return resultList;
+    return reslist;
   }
 }

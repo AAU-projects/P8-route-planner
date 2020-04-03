@@ -41,6 +41,15 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  Polyline _makePolyLine(Directions dir, String id, Color color) {
+    return Polyline(
+        polylineId: PolylineId(id),
+        points: dir.polylinePoints,
+        geodesic: true,
+        color: color,
+        width: 6);
+  }
+
   void _onStartSubmit(String input) {}
 
   Future<bool> _onEndSubmit(String input) async {
@@ -52,41 +61,60 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (_startController.text == 'My Location') {
       await widget._locationModel.updateCurrentLocation();
-      await widget._locationModel
-          .updateAddressFromPosition(widget._locationModel.currentLocationObj);
-      startLoc = widget._locationModel.positionAddress;
+
+      startLoc = widget._locationModel.currentLocationObj.latitude.toString() +
+          ' ' +
+          widget._locationModel.currentLocationObj.longitude.toString();
+
       startpoint = LatLng(widget._locationModel.currentLocationObj.latitude,
           widget._locationModel.currentLocationObj.longitude);
     } else {
       startLoc = _startController.text;
     }
 
-    final Directions dir = await widget._gMapsService
+    final Directions driveDirections = await widget._gMapsService
         .getDirections(origin: startLoc, destination: input);
 
-    if (dir.status == 'ZERO_RESULTS') {
+    final Directions bicyclingDirections = await widget._gMapsService
+        .getDirections(
+            origin: startLoc, destination: input, travelMode: 'bicycling');
+
+    final Directions transitDirections = await widget._gMapsService
+        .getDirections(
+            origin: startLoc, destination: input, travelMode: 'transit');
+
+    if (driveDirections.status == 'ZERO_RESULTS' &&
+        bicyclingDirections.status == 'ZERO_RESULTS' &&
+        transitDirections.status == 'ZERO_RESULTS') {
       return false;
     }
 
-    startpoint ??=
-        LatLng(dir.startLocation.latitude, dir.startLocation.longtitude);
-    final LatLng endpoint =
-        LatLng(dir.endLocation.latitude, dir.endLocation.longtitude);
-    final List<LatLng> pointsList = <LatLng>[];
-    pointsList.add(startpoint);
-    pointsList.addAll(dir.steps);
-    pointsList.add(endpoint);
-    print(pointsList);
+    startpoint ??= LatLng(driveDirections.startLocation.latitude,
+        driveDirections.startLocation.longtitude);
+    final LatLng endpoint = LatLng(driveDirections.endLocation.latitude,
+        driveDirections.endLocation.longtitude);
+
+    final Polyline drivePoly =
+        _makePolyLine(driveDirections, 'driving', Colors.blue);
+
+    final Polyline bicyclingPoly =
+        _makePolyLine(bicyclingDirections, 'bicycling', Colors.green);
+
+    final Polyline transitPoly =
+        _makePolyLine(transitDirections, 'transit', Colors.orange);
+
+    final Set<Polyline> polylineList = <Polyline>{
+      drivePoly,
+      bicyclingPoly,
+      transitPoly
+    };
 
     setState(() {
-      _markers
-          .add(Marker(position: startpoint, markerId: MarkerId('startmarker')));
-      _markers.add(Marker(position: endpoint, markerId: MarkerId('endmarker')));
-      _polyline.add(Polyline(
-          points: pointsList,
-          polylineId: PolylineId('main'),
-          geodesic: true,
-          color: Colors.pink));
+      _markers.add(Marker(
+        position: endpoint,
+        markerId: MarkerId('endmarker'),
+      ));
+      _polyline.addAll(polylineList);
     });
 
     return true;

@@ -5,10 +5,16 @@ import 'location_model.dart';
 /// Directions class
 class Directions {
   /// Class Constructor
-  Directions ({this.polyline, this.status, this.startLocation, 
-    this.endLocation, this.distance, this.duration, this.steps});
+  Directions(
+      {this.polyline,
+      this.status,
+      this.startLocation,
+      this.endLocation,
+      this.distance,
+      this.duration,
+      this.polylinePoints});
 
-  /// The Google maps polyline
+  /// The Google maps polyline as a string
   String polyline;
 
   /// The status of the response
@@ -26,6 +32,6 @@ class Directions {
   /// The duration in seconds
   int duration;
 
-  /// The steps of the direcion
-  List<LatLng> steps;
+  /// The list of points to draw a polyline
+  List<LatLng> polylinePoints;
 }
