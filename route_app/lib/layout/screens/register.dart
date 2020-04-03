@@ -41,7 +41,6 @@ class RegisterScreen extends StatefulWidget {
                 : double.parse(_kmlController.text),
             fuelType: _fuelTypeController.text)
         .then((User user) {
-      notifications.removeNotification(context);
       _authAPI.sendPin(_emailController.text).then((bool value) {
         if (value) {
           Navigator.pushNamed(context, '/login/confirm',
