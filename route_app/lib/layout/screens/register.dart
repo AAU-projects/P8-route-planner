@@ -53,7 +53,8 @@ class RegisterScreen extends StatefulWidget {
         }
       });
     }).catchError((Object error) {
-      notifications.error(context, error.toString());
+      print(error);
+      notifications.error(context, 'Unexpected error!');
     });
   }
 

@@ -30,7 +30,8 @@ class LoginScreen extends StatelessWidget {
         notifications.error(context, 'Could not login, please try again later');
       }
     }).catchError((Object error) {
-      notifications.error(context, error.toString());
+      print(error);
+      notifications.error(context, 'Unexpected error!');
     });
   }
 
