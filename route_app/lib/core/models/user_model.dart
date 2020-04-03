@@ -5,7 +5,7 @@ import 'package:route_app/core/extensions/datetime.dart';
 /// User model containing data about the user retrieved from the backend
 class User implements Model {
   /// Default constructor
-  User(this.id, this.email, this.licensePlate, this.pincode, this.token,
+  User(this.id, this.email, this.carEmission, this.pincode, this.token,
       this.pinExpirationDate, this.tokenExpirationDate);
 
   /// Constructor to instantiate from json
@@ -15,7 +15,7 @@ class User implements Model {
     }
     id = json['Id'];
     email = json['Email'];
-    licensePlate = json['LicensePlate'];
+    carEmission = json['CarEmission'];
     pincode = json['Pincode'];
     token = json['Token'];
     pinExpirationDate = _parseToDateTime(json.get('PinExpirationDate', null));
@@ -36,8 +36,8 @@ class User implements Model {
   /// The user's email
   String email;
 
-  /// The user's license plate
-  String licensePlate;
+  /// The user's car emission
+  double carEmission;
 
   /// Pincode used to login or register
   String pincode;
@@ -56,7 +56,7 @@ class User implements Model {
     return <String, dynamic>{
       'Id': id,
       'Email': email,
-      'LicensePlate': licensePlate,
+      'CarEmission': carEmission,
       'Pincode': pincode,
       'Token': token,
       'PinExpirationDate': pinExpirationDate.parseToString(),

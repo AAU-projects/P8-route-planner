@@ -23,7 +23,6 @@ void main() {
     when(api.register('validEmail@test.com')).thenAnswer((_) {
       final Map<String, dynamic> json = <String, dynamic>{
         'Email': 'validEmail@test.com',
-        'LicensePlate': ''
       };
       return Future<User>.value(User.fromJson(json));
     });
@@ -48,10 +47,10 @@ void main() {
     expect(find.widgetWithText(CustomTextField, 'Email'), findsOneWidget);
   });
 
-  testWidgets('Has one license plate textfield', (WidgetTester tester) async {
+  testWidgets('Has one fuel consumption textfield',
+      (WidgetTester tester) async {
     await tester.pumpWidget(MaterialApp(home: RegisterScreen()));
-    expect(
-        find.widgetWithText(CustomTextField, 'License plate'), findsOneWidget);
+    expect(find.byKey(const Key('fuelConsumptionField')), findsOneWidget);
   });
 
   testWidgets('Has one cancel button', (WidgetTester tester) async {
@@ -72,7 +71,7 @@ void main() {
     // Inputs an invalid email and exits textbox
     await tester.enterText(find.byKey(const Key('emailField')), 'invalidEmail');
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('licensePlateField')));
+    await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
 
     // Checks if the color changed
@@ -95,7 +94,7 @@ void main() {
     await tester.enterText(
         find.byKey(const Key('emailField')), 'validEmail@test.com');
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('licensePlateField')));
+    await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
 
     // Checks if the color changed
@@ -117,7 +116,7 @@ void main() {
     await tester.enterText(
         find.byKey(const Key('emailField')), 'validEmail@test.com');
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('licensePlateField')));
+    await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
 
     // Expect change on button color

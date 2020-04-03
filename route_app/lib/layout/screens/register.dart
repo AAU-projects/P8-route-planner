@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:route_app/layout/widgets/fields/radio_group.dart';
 import 'package:route_app/layout/widgets/loading_snackbar.dart';
 import 'package:route_app/locator.dart';
 import 'package:route_app/core/models/user_model.dart';
@@ -16,20 +17,30 @@ import 'package:route_app/layout/constants/validators.dart' as validators;
 import 'package:route_app/layout/widgets/notifications.dart' as notifications;
 
 /// Screen to register the user
-class RegisterScreen extends StatelessWidget {
+// ignore: must_be_immutable
+class RegisterScreen extends StatefulWidget {
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _licenseController = TextEditingController();
-
+  final TextEditingController _kmlController = TextEditingController();
+  final TextEditingController _fuelTypeController = TextEditingController();
   final AuthAPI _authAPI = locator.get<AuthAPI>();
+  bool _expanded = false;
 
   void _onPressRegister(BuildContext context) {
     showLoadingSnackbar(context, 'Registering',
         time: const Duration(seconds: 10));
 
+    if (!_expanded) {
+      _kmlController.text = '0';
+      _fuelTypeController.text = null;
+    }
+
     _authAPI
-        .register(_emailController.text, licensePlate: _licenseController.text)
+        .register(_emailController.text,
+            kml: _kmlController.text.isEmpty
+                ? 0
+                : double.parse(_kmlController.text),
+            fuelType: _fuelTypeController.text)
         .then((User user) {
-      notifications.removeNotification(context);
       _authAPI.sendPin(_emailController.text).then((bool value) {
         if (value) {
           Navigator.pushNamed(context, '/login/confirm',
@@ -42,7 +53,48 @@ class RegisterScreen extends StatelessWidget {
         }
       });
     }).catchError((Object error) {
-      notifications.error(context, error);
+      print(error);
+      notifications.error(context, 'Unexpected error!');
+    });
+  }
+
+  @override
+  RegisterScreenWidget createState() => RegisterScreenWidget();
+}
+
+/// State of registerScreen
+class RegisterScreenWidget extends State<RegisterScreen>
+    with TickerProviderStateMixin {
+  /// controller for expanding kml / petrol window
+  AnimationController expandController;
+
+  /// expanding animation
+  Animation<double> animation;
+
+  @override
+  void initState() {
+    super.initState();
+    prepareAnimations();
+  }
+
+  ///Setting up the animation
+  void prepareAnimations() {
+    expandController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 500));
+    animation = CurvedAnimation(
+      parent: expandController,
+      curve: Curves.fastOutSlowIn,
+    );
+  }
+
+  void _onCheckboxClick(bool value) {
+    setState(() {
+      widget._expanded = value;
+      if (value) {
+        expandController.forward();
+      } else {
+        expandController.reverse();
+      }
     });
   }
 
@@ -80,23 +132,51 @@ class RegisterScreen extends StatelessWidget {
                                 helper: 'Email',
                                 validator: validators.email,
                                 errorText: 'Invalid email',
-                                controller: _emailController,
+                                controller: widget._emailController,
                                 provider: formProvider),
-                            CustomTextField(
-                              key: const Key('licensePlateField'),
-                              hint: 'Enter license plate',
-                              icon: Icons.directions_car,
-                              helper: 'License plate',
-                              validator: validators.licensePlate,
-                              errorText: 'Invalid license plate',
-                              controller: _licenseController,
-                              provider: formProvider,
-                              isOptional: true,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                const Text('Do you have a car?',
+                                    style: TextStyle(
+                                        fontSize: 12.0,
+                                        color: color.NeturalGrey)),
+                                Checkbox(
+                                    value: widget._expanded,
+                                    onChanged: _onCheckboxClick,
+                                    key: const Key('doYouHaveCarCheckbox'))
+                              ],
+                            ),
+                            SizeTransition(
+                              axisAlignment: 1.0,
+                              sizeFactor: animation,
+                              child: Container(
+                                  height: 150,
+                                  child: Column(
+                                    children: <Widget>[
+                                      CustomTextField(
+                                        key: const Key('fuelConsumptionField'),
+                                        hint: '(Optional)',
+                                        icon: Icons.local_gas_station,
+                                        helper:
+                                            'Enter fuel consumption in km/l. E.g. 16.5',
+                                        validator: validators.kml,
+                                        errorText: 'Invalid fuel consumption',
+                                        controller: widget._kmlController,
+                                        provider: formProvider,
+                                        isOptional: true,
+                                        keyboardType: TextInputType.number,
+                                      ),
+                                      RadioGroup(
+                                          controller:
+                                              widget._fuelTypeController),
+                                    ],
+                                  )),
                             ),
                             CustomButton(
                               key: const Key('RegisterKey'),
                                 onPressed: () {
-                                  _onPressRegister(context);
+                                  widget._onPressRegister(context);
                                 },
                                 buttonText: 'Register',
                                 provider: formProvider),
