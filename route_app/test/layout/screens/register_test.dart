@@ -3,11 +3,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:route_app/core/models/user_model.dart';
 import 'package:route_app/core/services/interfaces/API/auth.dart';
+import 'package:route_app/layout/screens/confirm_login.dart';
 import 'package:route_app/layout/screens/register.dart';
+import 'package:route_app/layout/screens/welcome.dart';
 import 'package:route_app/layout/widgets/buttons/custom_button.dart';
 import 'package:route_app/layout/widgets/fields/custom_text_field.dart';
 import 'package:route_app/locator.dart';
 import 'package:route_app/layout/constants/colors.dart' as color;
+import 'package:route_app/routes.dart';
 
 class MockApi extends Mock implements AuthAPI {}
 
@@ -112,7 +115,7 @@ void main() {
 
     // Write valid input
     await tester.enterText(
-      find.byKey(const Key('emailField')), 'validEmail@test.com');
+        find.byKey(const Key('emailField')), 'validEmail@test.com');
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('licensePlateField')));
     await tester.pumpAndSettle();
@@ -121,5 +124,33 @@ void main() {
     final RawMaterialButton customButtonFinal =
         tester.firstWidget(find.byType(RawMaterialButton));
     expect(customButtonFinal.fillColor, color.CorrectColor);
+  });
+
+  group('Integration Tests', () {
+    testWidgets('Tap on register navigates to the confirm screen',
+        (WidgetTester tester) async {
+      await tester
+          .pumpWidget(MaterialApp(routes: routes, initialRoute: '/register',));
+
+      await tester.enterText(
+          find.byKey(const Key('emailField')), 'validEmail@test.com');
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('licensePlateField')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('RegisterKey')));
+      await tester.pumpAndSettle();
+      expect(find.byType(ConfirmLoginScreen), findsOneWidget);
+    });
+
+    testWidgets('Tap on cancel navigates to the welcome screen',
+        (WidgetTester tester) async {
+      await tester
+          .pumpWidget(MaterialApp(routes: routes, initialRoute: '/register'));
+      await tester.tap(find.byKey(const Key('cancelButton')));
+      await tester.pumpAndSettle();
+      expect(find.byType(WelcomeScreen), findsOneWidget);
+    });
   });
 }

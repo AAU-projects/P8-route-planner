@@ -94,6 +94,7 @@ class RegisterScreen extends StatelessWidget {
                               isOptional: true,
                             ),
                             CustomButton(
+                              key: const Key('RegisterKey'),
                                 onPressed: () {
                                   _onPressRegister(context);
                                 },
