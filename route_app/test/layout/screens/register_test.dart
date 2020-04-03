@@ -20,7 +20,8 @@ void main() {
     locator.reset();
     locator.registerSingleton<AuthAPI>(api);
 
-    when(api.register('validEmail@test.com')).thenAnswer((_) {
+    when(api.register('validEmail@test.com', kml: 0, fuelType: null)).thenAnswer
+      ((_) async {
       final Map<String, dynamic> json = <String, dynamic>{
         'Email': 'validEmail@test.com',
       };
@@ -135,11 +136,11 @@ void main() {
           find.byKey(const Key('emailField')), 'validEmail@test.com');
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byKey(const Key('licensePlateField')));
+      await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pumpAndSettle();
 
       await tester.tap(find.byKey(const Key('RegisterKey')));
-      await tester.pumpAndSettle();
+      await tester.pumpAndSettle(const Duration(seconds: 10));
       expect(find.byType(ConfirmLoginScreen), findsOneWidget);
     });
 

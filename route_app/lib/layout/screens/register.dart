@@ -33,7 +33,6 @@ class RegisterScreen extends StatefulWidget {
       _kmlController.text = '0';
       _fuelTypeController.text = null;
     }
-
     _authAPI
         .register(_emailController.text,
             kml: _kmlController.text.isEmpty
