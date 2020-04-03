@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:route_app/layout/widgets/route_search.dart';
 import 'package:route_app/layout/constants/colors.dart' as colors;
 
-import '../../core/providers/location_provider.dart';
+import 'package:route_app/core/providers/location_provider.dart';
 
 /// Home screen with map
 class HomeScreen extends StatefulWidget {

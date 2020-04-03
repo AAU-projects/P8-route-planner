@@ -20,12 +20,13 @@ void main() {
     locator.reset();
     locator.registerSingleton<AuthAPI>(api);
 
-    when(api.register('validEmail@test.com', kml: 0, fuelType: null)).thenAnswer
-      ((_) async {
+    when(api.register('validEmail@test.com',
+            kml: anyNamed('kml'), fuelType: anyNamed('fuelType')))
+        .thenAnswer((_) async {
       final Map<String, dynamic> json = <String, dynamic>{
         'Email': 'validEmail@test.com',
       };
-      return Future<User>.value(User.fromJson(json));
+      return User.fromJson(json);
     });
 
     when(api.sendPin('validEmail@test.com')).thenAnswer((_) {
@@ -129,8 +130,10 @@ void main() {
   group('Integration Tests', () {
     testWidgets('Tap on register navigates to the confirm screen',
         (WidgetTester tester) async {
-      await tester
-          .pumpWidget(MaterialApp(routes: routes, initialRoute: '/register',));
+      await tester.pumpWidget(MaterialApp(
+        routes: routes,
+        initialRoute: '/register',
+      ));
 
       await tester.enterText(
           find.byKey(const Key('emailField')), 'validEmail@test.com');
