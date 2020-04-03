@@ -17,7 +17,7 @@ void main() {
   const String email = 'test@test.com';
   const String url = 'user/';
 
-  final Map<String, String> userJson = <String, String>{'Email': email};
+  final Map<String, dynamic> userJson = <String, dynamic>{'Email': email};
 
   setUp(() {
     httpMock = HttpMock();
@@ -30,7 +30,6 @@ void main() {
   });
 
   group('Login', () {
-
     test('Should call login endpoint', () {
       api.login('', email: email).then(expectAsync1((User user) {
         expect(user.email, email);
@@ -56,7 +55,6 @@ void main() {
           .expectOne(url: url + 'login', method: Method.post)
           .throwError('[401] Unauthorized');
     });
-
   });
 
   group('Send Pin', () {
@@ -82,7 +80,7 @@ void main() {
   });
 
   group('Register', () {
-    test('Should call pin endpoint without license plate', () {
+    test('Should call pin endpoint without kml and fueltype', () {
       api.register(email).then(expectAsync1((User value) {
         expect(value.email, email);
       }));
@@ -92,12 +90,14 @@ void main() {
           .flush(userJson);
     });
 
-    test('Should call pin endpoint with license plate', () {
-      api.register(email, licensePlate: '123').then(expectAsync1((User value) {
-        expect(value.licensePlate, '123');
+    test('Should call pin endpoint with kml and fuel type', () {
+      api
+          .register(email, kml: 24.0, fuelType: 'Diesel')
+          .then(expectAsync1((User value) {
+        expect(value.carEmission, 110.0);
       }));
 
-      userJson['LicensePlate'] = '123';
+      userJson['CarEmission'] = 110.0;
 
       httpMock
           .expectOne(url: url + 'register', method: Method.post)
