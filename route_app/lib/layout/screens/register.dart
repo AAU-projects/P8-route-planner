@@ -17,7 +17,7 @@ import 'package:route_app/layout/constants/validators.dart' as validators;
 import 'package:route_app/layout/widgets/notifications.dart' as notifications;
 
 /// Screen to register the user
-/// ignore: must_be_immutable
+// ignore: must_be_immutable
 class RegisterScreen extends StatefulWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _kmlController = TextEditingController();
