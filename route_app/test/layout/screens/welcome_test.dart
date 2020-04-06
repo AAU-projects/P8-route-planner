@@ -19,24 +19,36 @@ void main() {
   });
 
   testWidgets('Screen renders', (WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(home: WelcomeScreen()));
+    await tester.pumpWidget(const MaterialApp(
+        home: WelcomeScreen(
+      test: true,
+    )));
     expect(find.byType(WelcomeScreen), findsOneWidget);
   });
 
   testWidgets('Has login button', (WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(home: WelcomeScreen()));
+    await tester.pumpWidget(const MaterialApp(home: WelcomeScreen(test: true)));
     expect(find.widgetWithText(Button, 'Login'), findsOneWidget);
   });
 
   testWidgets('Has register button', (WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(home: WelcomeScreen()));
+    await tester.pumpWidget(const MaterialApp(home: WelcomeScreen(test: true)));
     expect(find.widgetWithText(Button, 'Register'), findsOneWidget);
   });
 
   group('Integration Tests', () {
+    final Map<String, Widget Function(BuildContext)> testRoutes =
+        <String, Widget Function(BuildContext)>{
+      '/welcometest': (_) => const WelcomeScreen(test: true),
+    };
+
     testWidgets('Tap on register navigates to the register screen',
         (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialApp(routes: routes));
+      testRoutes.addEntries(routes.entries);
+      await tester.pumpWidget(MaterialApp(
+        routes: testRoutes,
+        initialRoute: '/welcometest',
+      ));
       await tester.tap(find.byKey(const Key('RegisterButton')));
       await tester.pumpAndSettle();
       expect(find.byType(RegisterScreen), findsOneWidget);
@@ -44,7 +56,11 @@ void main() {
 
     testWidgets('Tap on login navigates to the login screen',
         (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialApp(routes: routes));
+      testRoutes.addEntries(routes.entries);
+      await tester.pumpWidget(MaterialApp(
+        routes: testRoutes,
+        initialRoute: '/welcometest',
+      ));
       await tester.tap(find.byKey(const Key('LoginButton')));
       await tester.pumpAndSettle();
       expect(find.byType(LoginScreen), findsOneWidget);

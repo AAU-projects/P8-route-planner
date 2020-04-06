@@ -11,6 +11,11 @@ import 'package:route_app/layout/constants/text_styles.dart' as text_styles;
 
 /// Initial screen to choose between the screens: login and register
 class WelcomeScreen extends StatelessWidget {
+  /// Default constructor with optional test parameter
+  const WelcomeScreen({bool test = false}) : _test = test;
+
+  /// A bool for test
+  final bool _test;
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<LocationProvider>(
@@ -61,7 +66,7 @@ class WelcomeScreen extends StatelessWidget {
     return FutureBuilder<bool>(
         future: locationModel.permission,
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-          if (snapshot.hasData && snapshot.data) {
+          if (_test || snapshot.hasData && snapshot.data) {
             return Column(
               children: <Widget>[
                 Button(
