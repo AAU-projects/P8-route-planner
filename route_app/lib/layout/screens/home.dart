@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:route_app/layout/widgets/dialogs/logout.dart';
 import 'package:route_app/layout/widgets/route_search.dart';
 import 'package:route_app/layout/constants/colors.dart' as colors;
 
@@ -60,34 +61,37 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<LocationProvider>(
-      create: (_) => LocationProvider(),
-      child: Consumer<LocationProvider>(builder:
-          (BuildContext context, LocationProvider locationModel, Widget child) {
-        _centerMap(locationModel.currentLocationObj);
-        return Scaffold(
-            body: Stack(
-          children: <Widget>[
-            GoogleMap(
-              mapType: MapType.normal,
-              initialCameraPosition:
-                  _initialPosition(locationModel.currentLocationObj),
-              onMapCreated: onMapCreate,
-              myLocationButtonEnabled: false,
-              myLocationEnabled: true,
-              compassEnabled: false,
-              onTap: (_) {
-                FocusScope.of(context).requestFocus(FocusNode());
-              },
-            ),
-            RouteSearch(
-              startController: _startController,
-              endController: _endController,
-            ),
-            _buildSearchField(locationModel)
-          ],
-        ));
-      }),
+    return WillPopScope(
+      onWillPop: () => showLogoutDialog(context),
+      child: ChangeNotifierProvider<LocationProvider>(
+        create: (_) => LocationProvider(),
+        child: Consumer<LocationProvider>(builder: (BuildContext context,
+            LocationProvider locationModel, Widget child) {
+          _centerMap(locationModel.currentLocationObj);
+          return Scaffold(
+              body: Stack(
+            children: <Widget>[
+              GoogleMap(
+                mapType: MapType.normal,
+                initialCameraPosition:
+                    _initialPosition(locationModel.currentLocationObj),
+                onMapCreated: onMapCreate,
+                myLocationButtonEnabled: false,
+                myLocationEnabled: true,
+                compassEnabled: false,
+                onTap: (_) {
+                  FocusScope.of(context).requestFocus(FocusNode());
+                },
+              ),
+              RouteSearch(
+                startController: _startController,
+                endController: _endController,
+              ),
+              _buildSearchField(locationModel)
+            ],
+          ));
+        }),
+      ),
     );
   }
 
