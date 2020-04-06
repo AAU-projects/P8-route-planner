@@ -5,18 +5,20 @@ import 'package:route_app/routes.dart';
 import 'package:route_app/layout/constants/colors.dart' as color;
 import 'core/services/interfaces/API/user.dart';
 import 'locator.dart';
+import 'package:flutter_stetho/flutter_stetho.dart';
 
 /// Is the app in debug mode
 const bool Debug = true;
 
 String _initScreen = '/';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setupLocator();
 
   if (Debug) {
-    environment.setFile('assets/environments.json').whenComplete(() {
+    environment.setFile('assets/environments.json').whenComplete(() async {
+      Stetho.initialize();
       _startApp();
     });
   } else {
@@ -38,17 +40,14 @@ void _startApp() {
 
 /// Main app class
 class App extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'App name',
-      routes: routes,
-      initialRoute: _initScreen,
-      theme: ThemeData(
-        unselectedWidgetColor: color.NeturalGrey,
-        accentColor: color.CorrectColor
-      )
-    );
+        title: 'App name',
+        routes: routes,
+        initialRoute: _initScreen,
+        theme: ThemeData(
+            unselectedWidgetColor: color.NeturalGrey,
+            accentColor: color.CorrectColor));
   }
 }

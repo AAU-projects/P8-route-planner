@@ -11,9 +11,9 @@ import '../data/database_tables.dart' as data;
 /// Database interaction interface
 class DatabaseService {
   /// Default constructor
-  DatabaseService(
-      {@required String databaseName, @required int version})
-      : _databaseName = databaseName, _databaseVersion = version {
+  DatabaseService({@required String databaseName, @required int version})
+      : _databaseName = databaseName,
+        _databaseVersion = version {
     database.then((_) {});
   }
 
@@ -36,11 +36,17 @@ class DatabaseService {
 
   /// Open the database connection
   Future<Database> _initDatabase() async {
-    final Directory documentDirectory = await
-    getApplicationDocumentsDirectory();
-    final String path = join(documentDirectory.path, _databaseName);
-    return openDatabase(
-        path,
+    final Directory documentDirectory =
+        await getApplicationDocumentsDirectory();
+    String path;
+
+    if (Platform.isAndroid) {
+      path = join(documentDirectory.parent.path, "databases/" + _databaseName);
+    } else {
+      path = join(documentDirectory.path, _databaseName);
+    }
+
+    return openDatabase(path,
         version: _databaseVersion,
         onCreate: _onCreate,
         onUpgrade: _onVersionChange);
@@ -54,36 +60,30 @@ class DatabaseService {
         oldTables.add(table.values.first);
       });
 
-      data.tables.forEach(
-          (Tuple3<String, String, Map<String, DatabaseTypes>> table) {
-            if (!oldTables.contains(table.item1)) {
-              _createTable(db, table);
-            }
-          });
+      data.tables
+          .forEach((Tuple3<String, String, Map<String, DatabaseTypes>> table) {
+        if (!oldTables.contains(table.item1)) {
+          _createTable(db, table);
+        }
+      });
     });
   }
 
   Future<List<Map<String, dynamic>>> _getTables(Database db) async {
-    return db.query(
-        'sqlite_master',
-        columns: <String>['name'],
-        where: "type='table'",
-        orderBy: 'name'
-        );
+    return db.query('sqlite_master',
+        columns: <String>['name'], where: "type='table'", orderBy: 'name');
   }
 
   Future<void> _onCreate(Database db, int version) async {
     data.tables.forEach(
-            (Tuple3<String, String, Map<String, DatabaseTypes>>table) async {
-              await _createTable(db, table);
-            });
+        (Tuple3<String, String, Map<String, DatabaseTypes>> table) async {
+      await _createTable(db, table);
+    });
   }
 
   /// Helper to create a new table in the database
   Future<void> _createTable(Database db,
-      Tuple3<String, String, Map<String, DatabaseTypes>> data)
-  async {
-
+      Tuple3<String, String, Map<String, DatabaseTypes>> data) async {
     final String tableName = data.item1;
     final String key = data.item2;
     final Map<String, DatabaseTypes> columns = data.item3;
@@ -133,13 +133,27 @@ class DatabaseService {
 
   /// @return the items found
   Future<List<Map<String, dynamic>>> query(String table,
-  {bool distinct, List<String> columns, String where, List<dynamic> whereArgs,
-  String groupBy, String having, String orderBy,int limit, int offset}) async {
+      {bool distinct,
+      List<String> columns,
+      String where,
+      List<dynamic> whereArgs,
+      String groupBy,
+      String having,
+      String orderBy,
+      int limit,
+      int offset}) async {
     final Database db = await database;
 
-    return db.query(table, distinct: distinct, columns: columns, where: where,
-                    whereArgs: whereArgs, groupBy: groupBy, having: having,
-                    orderBy: orderBy, limit: limit, offset: offset);
+    return db.query(table,
+        distinct: distinct,
+        columns: columns,
+        where: where,
+        whereArgs: whereArgs,
+        groupBy: groupBy,
+        having: having,
+        orderBy: orderBy,
+        limit: limit,
+        offset: offset);
   }
 
   /// Helper for updating rows in the database.
@@ -153,7 +167,7 @@ class DatabaseService {
   /// You may include ?s in the where clause, which will be replaced by the
   /// values from [whereArgs]
   Future<int> update(String table, Map<String, dynamic> values,
-  {String where, List<dynamic> whereArgs}) async {
+      {String where, List<dynamic> whereArgs}) async {
     final Database db = await database;
 
     return db.update(table, values, whereArgs: whereArgs, where: where);
@@ -172,11 +186,19 @@ class DatabaseService {
   /// Returns the number of rows affected if a whereClause is passed in, 0
   /// otherwise. To remove all rows and get a count pass '1' as the
   /// whereClause.
-  Future<int> delete(String table, {String where, List<dynamic> whereArgs})
-  async {
+  Future<int> delete(String table,
+      {String where, List<dynamic> whereArgs}) async {
     final Database db = await database;
 
     return db.delete(table, where: where, whereArgs: whereArgs);
+  }
+
+  /// Gets count of given table
+  Future<int> getCount(String table) async {
+    final Database db = await database;
+
+    return Sqflite.firstIntValue(
+        await db.rawQuery('SELECT COUNT(*) FROM $table'));
   }
 
   /// Creates a batch, used for performing multiple operation
@@ -191,6 +213,4 @@ class DatabaseService {
 
     return db.batch();
   }
-
 }
-
