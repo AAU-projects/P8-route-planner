@@ -24,8 +24,10 @@ class RegisterScreen extends StatefulWidget {
   final TextEditingController _fuelTypeController = TextEditingController();
   final AuthAPI _authAPI = locator.get<AuthAPI>();
   bool _expanded = false;
+  bool _disabled = false;
 
   void _onPressRegister(BuildContext context) {
+    _disabled = true;
     showLoadingSnackbar(context, 'Registering',
         time: const Duration(seconds: 10));
 
@@ -50,11 +52,14 @@ class RegisterScreen extends StatefulWidget {
           notifications.error(
               context, 'Could not login, please try again later');
         }
+      _disabled = false;
+
       });
     }).catchError((Object error) {
-      print(error);
-      notifications.error(context, 'Unexpected error!');
+      _disabled = false;
+      notifications.error(context, error.toString());
     });
+    
   }
 
   @override
@@ -173,9 +178,11 @@ class RegisterScreenWidget extends State<RegisterScreen>
                                   )),
                             ),
                             CustomButton(
-                              key: const Key('RegisterKey'),
+                                key: const Key('RegisterKey'),
                                 onPressed: () {
-                                  widget._onPressRegister(context);
+                                  if (!widget._disabled) {
+                                    widget._onPressRegister(context);
+                                  }
                                 },
                                 buttonText: 'Register',
                                 provider: formProvider),
