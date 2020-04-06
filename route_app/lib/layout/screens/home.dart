@@ -114,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
         height: 40,
         width: 40,
         child: FloatingActionButton(
-          heroTag: 'Bob2',
+          heroTag: 'near_me',
           backgroundColor: colors.SearchBackground,
           onPressed: () => _centerMap(locationModel.currentLocationObj),
           child: const Icon(Icons.near_me, size: 25, color: colors.Text),
@@ -128,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
       height: 40,
       width: 40,
       child: FloatingActionButton(
-        heroTag: 'Bob1',
+        heroTag: 'menu',
         backgroundColor: colors.SearchBackground,
         onPressed: () => print('bob'),
         child: const Icon(Icons.menu, size: 25, color: colors.Text),
