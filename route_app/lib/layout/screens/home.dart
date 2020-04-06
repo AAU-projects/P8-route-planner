@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:route_app/layout/widgets/route_search.dart';
 import 'package:route_app/layout/constants/colors.dart' as colors;
+import 'package:route_app/core/services/background_geolocator.dart';
 
 import '../../core/providers/location_provider.dart';
 
@@ -12,6 +13,9 @@ import '../../core/providers/location_provider.dart';
 class HomeScreen extends StatefulWidget {
   ///key is required, otherwise map crashes on hot reload
   HomeScreen() : super(key: UniqueKey());
+
+  /// Start the background geolocator when the HomeScreen is initialized.
+  final BackgroundGeolocator bgGeolocator = BackgroundGeolocator();
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
