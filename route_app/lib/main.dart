@@ -43,6 +43,9 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: 'App name',
       routes: routes,
+      theme: ThemeData(
+        canvasColor: Colors.transparent,
+      ),
       initialRoute: _initScreen,
     );
   }

@@ -28,6 +28,9 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _endController = TextEditingController();
   final Set<Polyline> _polyline = <Polyline>{};
   final Set<Marker> _markers = <Marker>{};
+  Directions driveDirections;
+  Directions bicyclingDirections;
+  Directions transitDirections;
   LatLng startpoint;
 
   @override
@@ -41,6 +44,13 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  void _onBackButtonPress() {
+    setState(() {
+      _polyline.clear();
+      _markers.clear();
+    });
+  }
+
   Polyline _makePolyLine(Directions dir, String id, Color color) {
     return Polyline(
         polylineId: PolylineId(id),
@@ -52,61 +62,24 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onStartSubmit(String input) {}
 
-  Future<bool> _onEndSubmit(String input) async {
+  Future<void> _onEndSubmit(String input) async {
     if (input.isEmpty) {
-      return false;
+      return;
     }
 
-    String startLoc;
+    final String startLoc = await getStartLocation();
 
-    if (_startController.text == 'My Location') {
-      await widget._locationModel.updateCurrentLocation();
-
-      startLoc = widget._locationModel.currentLocationObj.latitude.toString() +
-          ' ' +
-          widget._locationModel.currentLocationObj.longitude.toString();
-
-      startpoint = LatLng(widget._locationModel.currentLocationObj.latitude,
-          widget._locationModel.currentLocationObj.longitude);
-    } else {
-      startLoc = _startController.text;
+    if (!(await getPolylines(startLoc, input))) {
+      return;
     }
 
-    final Directions driveDirections = await widget._gMapsService
-        .getDirections(origin: startLoc, destination: input);
-
-    final Directions bicyclingDirections = await widget._gMapsService
-        .getDirections(
-            origin: startLoc, destination: input, travelMode: 'bicycling');
-
-    final Directions transitDirections = await widget._gMapsService
-        .getDirections(
-            origin: startLoc, destination: input, travelMode: 'transit');
-
-    if (driveDirections.status == 'ZERO_RESULTS' &&
-        bicyclingDirections.status == 'ZERO_RESULTS' &&
-        transitDirections.status == 'ZERO_RESULTS') {
-      return false;
-    }
-
-    startpoint ??= LatLng(driveDirections.startLocation.latitude,
-        driveDirections.startLocation.longtitude);
     final LatLng endpoint = LatLng(driveDirections.endLocation.latitude,
         driveDirections.endLocation.longtitude);
 
-    final Polyline drivePoly =
-        _makePolyLine(driveDirections, 'driving', Colors.blue);
-
-    final Polyline bicyclingPoly =
-        _makePolyLine(bicyclingDirections, 'bicycling', Colors.green);
-
-    final Polyline transitPoly =
-        _makePolyLine(transitDirections, 'transit', Colors.orange);
-
     final Set<Polyline> polylineList = <Polyline>{
-      drivePoly,
-      bicyclingPoly,
-      transitPoly
+      _makePolyLine(driveDirections, 'driving', Colors.redAccent),
+      _makePolyLine(bicyclingDirections, 'bicycling', Colors.green),
+      _makePolyLine(transitDirections, 'transit', Colors.orangeAccent)
     };
 
     setState(() {
@@ -116,8 +89,35 @@ class _HomeScreenState extends State<HomeScreen> {
       ));
       _polyline.addAll(polylineList);
     });
+  }
 
-    return true;
+  Future<String> getStartLocation() async {
+    String startLoc;
+    if (_startController.text == 'My Location') {
+      await widget._locationModel.updateCurrentLocation();
+
+      startLoc = widget._locationModel.currentLocationObj.latitude.toString() +
+          ' ' +
+          widget._locationModel.currentLocationObj.longitude.toString();
+    } else {
+      startLoc = _startController.text;
+    }
+    return startLoc;
+  }
+
+  Future<bool> getPolylines(String startLoc, String input) async {
+    driveDirections = await widget._gMapsService
+        .getDirections(origin: startLoc, destination: input);
+
+    bicyclingDirections = await widget._gMapsService.getDirections(
+        origin: startLoc, destination: input, travelMode: 'bicycling');
+
+    transitDirections = await widget._gMapsService.getDirections(
+        origin: startLoc, destination: input, travelMode: 'transit');
+
+    return !(driveDirections.status == 'ZERO_RESULTS' &&
+        bicyclingDirections.status == 'ZERO_RESULTS' &&
+        transitDirections.status == 'ZERO_RESULTS');
   }
 
   void onMapCreate(GoogleMapController controller) {
@@ -157,6 +157,47 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Card _makeDirectionCard(Directions dir, IconData icon, Color iconColor) {
+    return Card(
+        color: colors.CardBackground,
+        child: Row(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text('Fastest Route\n',
+                        style: TextStyle(color: Colors.white, fontSize: 18)),
+                    Text(
+                        (dir.duration / 60).round().toString() +
+                            ' minutes,   ' +
+                            (dir.distance / 1000).toStringAsFixed(1) +
+                            ' km,   x g CO2',
+                        style: TextStyle(color: Colors.white))
+                  ]),
+            ),
+            const Spacer(),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: <Widget>[
+                RawMaterialButton(
+                  onPressed: () {},
+                  child: Icon(
+                    icon,
+                    color: Colors.white,
+                  ),
+                  shape: const CircleBorder(),
+                  elevation: 2.0,
+                  fillColor: iconColor,
+                  padding: const EdgeInsets.all(2.0),
+                ),
+              ],
+            ),
+          ],
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<LocationProvider>(
@@ -165,34 +206,80 @@ class _HomeScreenState extends State<HomeScreen> {
           LocationProvider _locationModel, Widget child) {
         _centerMap(_locationModel.currentLocationObj);
         return Scaffold(
-            body: Stack(
-          children: <Widget>[
-            GoogleMap(
-              polylines: _polyline,
-              markers: _markers,
-              mapType: MapType.normal,
-              initialCameraPosition:
-                  _initialPosition(_locationModel.currentLocationObj),
-              onMapCreated: onMapCreate,
-              myLocationButtonEnabled: false,
-              myLocationEnabled: true,
-              compassEnabled: false,
-              onTap: (_) {
-                FocusScope.of(context).requestFocus(FocusNode());
-              },
-            ),
-            GestureDetector(
-              child: RouteSearch(
-                startController: _startController,
-                endController: _endController,
-                startSubmitFunc: _onStartSubmit,
-                endSubmitFunc: _onEndSubmit,
-              ),
-            ),
-            _buildSearchField(_locationModel)
-          ],
-        ));
+            body: _buildMainBody(_locationModel, context),
+            bottomSheet: _buildBottomSheet());
       }),
+    );
+  }
+
+  Stack _buildMainBody(LocationProvider _locationModel, BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        GoogleMap(
+          polylines: _polyline,
+          markers: _markers,
+          mapType: MapType.normal,
+          initialCameraPosition:
+              _initialPosition(_locationModel.currentLocationObj),
+          onMapCreated: onMapCreate,
+          myLocationButtonEnabled: false,
+          myLocationEnabled: true,
+          compassEnabled: false,
+          onTap: (_) {
+            FocusScope.of(context).requestFocus(FocusNode());
+          },
+        ),
+        GestureDetector(
+          child: RouteSearch(
+            startController: _startController,
+            endController: _endController,
+            startSubmitFunc: _onStartSubmit,
+            endSubmitFunc: _onEndSubmit,
+            backButtonFunc: _onBackButtonPress,
+          ),
+        ),
+        _buildSearchField(_locationModel)
+      ],
+    );
+  }
+
+  DraggableScrollableSheet _buildBottomSheet() {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.2,
+      maxChildSize: 0.4,
+      minChildSize: 0.1,
+      expand: false,
+      builder: (BuildContext context, ScrollController scrollController) {
+        return _polyline.isEmpty
+            ? Container()
+            : Container(
+                decoration: BoxDecoration(
+                    color: colors.SearchBackground,
+                    borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(10.0),
+                        topRight: Radius.circular(10.0))),
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.only(top: 14.0, left: 4.0, right: 4.0),
+                    child: Column(
+                      children: <Widget>[
+                        if (driveDirections != null)
+                          _makeDirectionCard(driveDirections,
+                              Icons.directions_car, Colors.redAccent),
+                        if (bicyclingDirections != null)
+                          _makeDirectionCard(bicyclingDirections,
+                              Icons.directions_bike, Colors.green),
+                        if (transitDirections != null)
+                          _makeDirectionCard(transitDirections,
+                              Icons.directions_bus, Colors.orangeAccent)
+                      ],
+                    ),
+                  ),
+                ),
+              );
+      },
     );
   }
 

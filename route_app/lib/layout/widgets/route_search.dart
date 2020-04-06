@@ -11,7 +11,8 @@ class RouteSearch extends StatefulWidget {
       @required this.startController,
       @required this.endController,
       this.startSubmitFunc,
-      this.endSubmitFunc})
+      this.endSubmitFunc,
+      this.backButtonFunc})
       : super(key: key);
 
   /// Text controller to get start location
@@ -26,6 +27,9 @@ class RouteSearch extends StatefulWidget {
   /// Callback function for submitting text to the endController
   final Function endSubmitFunc;
 
+  /// Callback function for pressing the back button
+  final Function backButtonFunc;
+
   @override
   _RouteSearchState createState() => _RouteSearchState();
 }
@@ -36,10 +40,16 @@ class _RouteSearchState extends State<RouteSearch>
   SequenceAnimation sequenceAnimation;
   Animation<double> _inputAnimation;
   final FocusNode _node = FocusNode();
+  final FocusNode _endTextFieldNode = FocusNode();
+  bool _redirectToEndTextField = true;
 
   void onFocusChange() {
     if (_node.hasFocus) {
       _controller.forward();
+      if (_redirectToEndTextField) {
+        _endTextFieldNode.requestFocus();
+        _redirectToEndTextField = false;
+      }
     }
   }
 
@@ -103,7 +113,11 @@ class _RouteSearchState extends State<RouteSearch>
                               visible: sequenceAnimation['visibility'].value,
                               child: FloatingActionButton(
                                 backgroundColor: colors.SearchBackground,
-                                onPressed: () => _controller.reverse(),
+                                onPressed: () {
+                                  _controller.reverse();
+                                  widget.backButtonFunc();
+                                  _redirectToEndTextField = true;
+                                },
                                 child:
                                     const Icon(Icons.arrow_back_ios, size: 25),
                               ),
@@ -137,6 +151,7 @@ class _RouteSearchState extends State<RouteSearch>
                                     textController: widget.endController,
                                     hint: 'Where to?',
                                     icon: Icons.search,
+                                    node: _endTextFieldNode,
                                     animationController: _controller,
                                     animation: _inputAnimation,
                                     onSumbitFunc: widget.endSubmitFunc,
