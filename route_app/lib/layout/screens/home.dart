@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:route_app/layout/widgets/route_search.dart';
 import 'package:route_app/layout/constants/colors.dart' as colors;
 
-import '../../core/providers/location_provider.dart';
+import 'package:route_app/core/providers/location_provider.dart';
 
 /// Home screen with map
 class HomeScreen extends StatefulWidget {
@@ -114,9 +114,10 @@ class _HomeScreenState extends State<HomeScreen> {
         height: 40,
         width: 40,
         child: FloatingActionButton(
+          heroTag: 'near_me',
           backgroundColor: colors.SearchBackground,
           onPressed: () => _centerMap(locationModel.currentLocationObj),
-          child: const Icon(Icons.near_me, size: 25),
+          child: const Icon(Icons.near_me, size: 25, color: colors.Text),
         ),
       ),
     );
@@ -127,9 +128,10 @@ class _HomeScreenState extends State<HomeScreen> {
       height: 40,
       width: 40,
       child: FloatingActionButton(
+        heroTag: 'menu',
         backgroundColor: colors.SearchBackground,
         onPressed: () => print('bob'),
-        child: const Icon(Icons.menu, size: 25),
+        child: const Icon(Icons.menu, size: 25, color: colors.Text),
       ),
     );
   }

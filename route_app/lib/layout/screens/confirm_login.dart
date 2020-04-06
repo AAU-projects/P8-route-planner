@@ -62,6 +62,7 @@ class ConfirmLoginScreen extends StatelessWidget {
                                     style: const TextStyle(
                                         fontSize: 15.0, color: color.Text))),
                             CustomTextField(
+                                key: const Key('pinField'),
                                 hint: 'Enter PIN',
                                 icon: Icons.lock,
                                 helper: 'PIN',
@@ -71,6 +72,7 @@ class ConfirmLoginScreen extends StatelessWidget {
                                 keyboardType: TextInputType.number,
                                 provider: formProvider),
                             CustomButton(
+                                key: const Key('confirmBtn'),
                                 onPressed: () {
                                   _onPressedConfirm(context);
                                 },
@@ -81,6 +83,7 @@ class ConfirmLoginScreen extends StatelessWidget {
                                 Navigator.pushNamed(context, '/');
                               },
                               child: Container(
+                                key: const Key('cancelBtn'),
                                 padding: const EdgeInsets.all(10),
                                 child: const Text('Cancel',
                                     style: TextStyle(

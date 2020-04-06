@@ -71,6 +71,7 @@ class LoginScreen extends StatelessWidget {
                                 controller: _emailController,
                                 provider: formProvider),
                             CustomButton(
+                                key: const Key('ConfirmBtn'),
                                 onPressed: () {
                                   _onPressedLogin(context);
                                 },

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:route_app/core/providers/form_provider.dart';
-import '../../constants/colors.dart' as color;
+import 'package:route_app/layout/constants/colors.dart' as color;
 
 /// Custom text field matching the app's design guidelines.
 ///
