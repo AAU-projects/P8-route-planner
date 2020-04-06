@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:route_app/core/services/interfaces/API/user.dart';
 import 'package:route_app/locator.dart';
 
+
 /// Displays logout confirmation message
 Future<bool> showLogoutDialog(BuildContext context) {
-    UserAPI service = locator.get<UserAPI>();
+    final UserAPI service = locator.get<UserAPI>();
 
   return showDialog<bool>(
     context: context,
