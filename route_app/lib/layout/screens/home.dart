@@ -171,14 +171,14 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text('Fastest Route\n',
+                    const Text('Fastest Route\n',
                         style: TextStyle(color: Colors.white, fontSize: 18)),
                     Text(
                         (dir.duration / 60).round().toString() +
                             ' minutes,   ' +
                             (dir.distance / 1000).toStringAsFixed(1) +
                             ' km,   x g CO2',
-                        style: TextStyle(color: Colors.white))
+                        style: const TextStyle(color: Colors.white))
                   ]),
             ),
             const Spacer(),
@@ -262,9 +262,9 @@ class _HomeScreenState extends State<HomeScreen> {
             ? Container()
             : Container(
                 key: const Key('BottomSheetContainer'),
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     color: colors.SearchBackground,
-                    borderRadius: const BorderRadius.only(
+                    borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(10.0),
                         topRight: Radius.circular(10.0))),
                 child: SingleChildScrollView(
