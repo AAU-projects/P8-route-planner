@@ -21,25 +21,25 @@ void main() {
   testWidgets('Screen renders', (WidgetTester tester) async {
     await tester.pumpWidget(const MaterialApp(
         home: WelcomeScreen(
-      test: true,
+      isTest: true,
     )));
     expect(find.byType(WelcomeScreen), findsOneWidget);
   });
 
   testWidgets('Has login button', (WidgetTester tester) async {
-    await tester.pumpWidget(const MaterialApp(home: WelcomeScreen(test: true)));
+    await tester.pumpWidget(const MaterialApp(home: WelcomeScreen(isTest: true)));
     expect(find.widgetWithText(Button, 'Login'), findsOneWidget);
   });
 
   testWidgets('Has register button', (WidgetTester tester) async {
-    await tester.pumpWidget(const MaterialApp(home: WelcomeScreen(test: true)));
+    await tester.pumpWidget(const MaterialApp(home: WelcomeScreen(isTest: true)));
     expect(find.widgetWithText(Button, 'Register'), findsOneWidget);
   });
 
   group('Integration Tests', () {
     final Map<String, Widget Function(BuildContext)> testRoutes =
         <String, Widget Function(BuildContext)>{
-      '/welcometest': (_) => const WelcomeScreen(test: true),
+      '/welcometest': (_) => const WelcomeScreen(isTest: true),
     };
 
     testWidgets('Tap on register navigates to the register screen',
