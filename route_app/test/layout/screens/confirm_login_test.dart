@@ -21,7 +21,6 @@ class MockLogging extends Mock implements LoggingService {}
 class MockDatabase extends Mock implements DatabaseService {}
 class GoogleMapsServiceMock extends Mock implements GoogleMapsAPI {}
 
-
 void main() {
   setUp(() {
     final MockApi api = MockApi();
