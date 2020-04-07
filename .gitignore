@@ -2,3 +2,6 @@
 .idea/workspace.xml
 route_app/android/.project
 route_app/android/app/.project
+route_app/android/app/.settings/org.eclipse.buildship.core.prefs
+route_app/android/app/.classpath
+route_app/android/.settings/org.eclipse.buildship.core.prefs
