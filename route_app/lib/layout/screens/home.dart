@@ -17,7 +17,7 @@ class HomeScreen extends StatefulWidget {
   HomeScreen() : super(key: UniqueKey());
   final GoogleMapsAPI _gMapsService = locator.get<GoogleMapsAPI>();
   final LocationProvider _locationModel =
-      LocationProvider(noInitialization: true);
+      LocationProvider();
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -325,7 +325,7 @@ class _HomeScreenState extends State<HomeScreen> {
           heroTag: 'menu',
           backgroundColor: colors.SearchBackground,
           onPressed: () {},
-          child: const Icon(Icons.menu, size: 25),
+          child: const Icon(Icons.menu, size: 25, color: colors.Text),
         ),
       ),
     );
