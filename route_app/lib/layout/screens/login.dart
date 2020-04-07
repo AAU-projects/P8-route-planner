@@ -71,6 +71,7 @@ class LoginScreen extends StatelessWidget {
                                 controller: _emailController,
                                 provider: formProvider),
                             CustomButton(
+                                key: const Key('ConfirmBtn'),
                                 onPressed: () {
                                   _onPressedLogin(context);
                                 },
@@ -82,7 +83,7 @@ class LoginScreen extends StatelessWidget {
                                 Navigator.push<dynamic>(
                                     context,
                                     SlideFromLeftRoute(
-                                        widget: WelcomeScreen()));
+                                        widget: const WelcomeScreen()));
                               },
                               child: Container(
                                 padding: const EdgeInsets.all(10),

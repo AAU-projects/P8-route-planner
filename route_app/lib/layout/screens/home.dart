@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:route_app/layout/widgets/dialogs/logout.dart';
 import 'package:route_app/layout/widgets/route_search.dart';
 import 'package:route_app/layout/constants/colors.dart' as colors;
 import 'package:route_app/core/services/background_geolocator.dart';
@@ -63,34 +64,37 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<LocationProvider>(
-      create: (_) => LocationProvider(),
-      child: Consumer<LocationProvider>(builder:
-          (BuildContext context, LocationProvider locationModel, Widget child) {
-        _centerMap(locationModel.currentLocationObj);
-        return Scaffold(
-            body: Stack(
-          children: <Widget>[
-            GoogleMap(
-              mapType: MapType.normal,
-              initialCameraPosition:
-                  _initialPosition(locationModel.currentLocationObj),
-              onMapCreated: onMapCreate,
-              myLocationButtonEnabled: false,
-              myLocationEnabled: true,
-              compassEnabled: false,
-              onTap: (_) {
-                FocusScope.of(context).requestFocus(FocusNode());
-              },
-            ),
-            RouteSearch(
-              startController: _startController,
-              endController: _endController,
-            ),
-            _buildSearchField(locationModel)
-          ],
-        ));
-      }),
+    return WillPopScope(
+      onWillPop: () => showLogoutDialog(context),
+      child: ChangeNotifierProvider<LocationProvider>(
+        create: (_) => LocationProvider(),
+        child: Consumer<LocationProvider>(builder: (BuildContext context,
+            LocationProvider locationModel, Widget child) {
+          _centerMap(locationModel.currentLocationObj);
+          return Scaffold(
+              body: Stack(
+            children: <Widget>[
+              GoogleMap(
+                mapType: MapType.normal,
+                initialCameraPosition:
+                    _initialPosition(locationModel.currentLocationObj),
+                onMapCreated: onMapCreate,
+                myLocationButtonEnabled: false,
+                myLocationEnabled: true,
+                compassEnabled: false,
+                onTap: (_) {
+                  FocusScope.of(context).requestFocus(FocusNode());
+                },
+              ),
+              RouteSearch(
+                startController: _startController,
+                endController: _endController,
+              ),
+              _buildSearchField(locationModel)
+            ],
+          ));
+        }),
+      ),
     );
   }
 
@@ -117,9 +121,10 @@ class _HomeScreenState extends State<HomeScreen> {
         height: 40,
         width: 40,
         child: FloatingActionButton(
+          heroTag: 'near_me',
           backgroundColor: colors.SearchBackground,
           onPressed: () => _centerMap(locationModel.currentLocationObj),
-          child: const Icon(Icons.near_me, size: 25),
+          child: const Icon(Icons.near_me, size: 25, color: colors.Text),
         ),
       ),
     );
@@ -130,9 +135,10 @@ class _HomeScreenState extends State<HomeScreen> {
       height: 40,
       width: 40,
       child: FloatingActionButton(
+        heroTag: 'menu',
         backgroundColor: colors.SearchBackground,
         onPressed: () => print('bob'),
-        child: const Icon(Icons.menu, size: 25),
+        child: const Icon(Icons.menu, size: 25, color: colors.Text),
       ),
     );
   }

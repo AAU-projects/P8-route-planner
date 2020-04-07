@@ -64,4 +64,9 @@ class UserService implements UserAPI{
   Future<User> updateUser(String id, User newUser) {
     throw 'Not implemented';
   }
+
+  @override
+  void logout() {
+    _db.delete(_dbTable, where: '1');
+  }
 }

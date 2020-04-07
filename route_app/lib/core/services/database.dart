@@ -6,7 +6,7 @@ import 'package:route_app/core/enums/Database_Types.dart';
 import 'package:route_app/core/utils/enum_converter.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:tuple/tuple.dart';
-import '../data/database_tables.dart' as data;
+import 'package:route_app/core/data/database_tables.dart' as data;
 
 /// Database interaction interface
 class DatabaseService {
