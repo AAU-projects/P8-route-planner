@@ -24,6 +24,7 @@ class BackgroundGeolocator {
     bg.BackgroundGeolocation.onLocation((bg.Location location) {
       final LogPosition pos = _locationToPosition(location);
 
+      // Insert the logged position in the application database
       _db.insert('logs', <String, String>{'json': jsonEncode(pos.toJson())});
       _batchUploadToDatabase();
     });
@@ -60,6 +61,8 @@ class BackgroundGeolocator {
     return pos;
   }
 
+  /// Takes a result of logs from the application database
+  /// and converts it to a list of LogPosition's 
   List<LogPosition> _logsToPostitions(List<Map<String, dynamic>> logs) {
     final List<LogPosition> listOfPositions = <LogPosition>[];
 
@@ -80,21 +83,28 @@ class BackgroundGeolocator {
     return listOfPositions;
   }
 
-  /// Sends the location logs to the database
+  /// Sends the location logs to the API
   Future<void> _batchUploadToDatabase() async {
     const String dbTable = 'logs';
     // Gets the count of location logs from the internal database
     // and checks if they exceeded 100.
     final int count = await _db.getCount(dbTable);
+
     if (count >= 100) {
+      // Make a batch to commit the query and delete the table afterwards
       final Batch batch = await _db.batch();
       batch.query(dbTable);
       batch.delete(dbTable);
       final dynamic results = await batch.commit();
+
       // Since the batch results comes with a count,
       // we need to take the first element
       final List<Map<String, dynamic>> logs = results[0];
 
+      // If desired count is set to a low number, _batchUpload can run
+      // before the batch.commit has finished. 
+      // This takes care of that situation. 
+      // (Note that the count has to be very low for this to happen)
       if (logs.isNotEmpty) {
         // Make Position objects from Json
         final List<LogPosition> positions = _logsToPostitions(logs);
