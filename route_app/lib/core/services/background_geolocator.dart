@@ -1,26 +1,31 @@
 import 'dart:convert';
-import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
-    as bg;
-import 'package:geolocator/geolocator.dart';
+import 'package:flutter_background_geolocation/flutter_background_geolocation.dart' as bg;
+import 'package:route_app/core/models/logging_position.dart';
+import 'package:route_app/core/services/API/logging_service.dart';
+import 'package:route_app/core/services/interfaces/API/logging.dart';
 import 'package:route_app/locator.dart';
+import 'package:sqflite/sqflite.dart';
 import 'database.dart';
 
+/// Service for logging geolocation when the application
+/// is running in the background
 class BackgroundGeolocator {
   /// Default constructor
   BackgroundGeolocator() {
-    startGeolocator();
+    _startGeolocator();
   }
 
   final DatabaseService _db = locator.get<DatabaseService>();
+  final LoggingService _loggingService = locator.get<LoggingAPI>();
 
   /// Starts the geolocator
-  void startGeolocator() {
+  void _startGeolocator() {
     /// Fired whenever a location is recorded
     bg.BackgroundGeolocation.onLocation((bg.Location location) {
-      final Position pos = locationToPosition(location);
+      final LogPosition pos = _locationToPosition(location);
 
       _db.insert('logs', <String, String>{'json': jsonEncode(pos.toJson())});
-      batchUploadToDatabase();
+      _batchUploadToDatabase();
     });
 
     /// Configure the plugin
@@ -39,61 +44,64 @@ class BackgroundGeolocator {
   }
 
   /// Converts a location to a position
-  Position locationToPosition(bg.Location loc) {
+  LogPosition _locationToPosition(bg.Location loc) {
     // Speed accuracy is not available in background service,
     // therefore is set to default 0.0.
-    final Position pos = Position(
+
+    final LogPosition pos = LogPosition(
         longitude: loc.coords.longitude,
         latitude: loc.coords.latitude,
-        timestamp: DateTime.parse(loc.timestamp),
-        mocked: false,
+        timestamp: DateTime.parse(loc.timestamp).toIso8601String(),
         accuracy: loc.coords.accuracy,
         altitude: loc.coords.altitude,
         heading: loc.coords.heading,
         speed: loc.coords.speed,
         speedAccuracy: 0.0);
-
     return pos;
   }
 
-  List<Position> logsToPostitions(List<Map<String, dynamic>> logs) {
-    List<Position> listOfPositions = <Position>[];
+  List<LogPosition> _logsToPostitions(List<Map<String, dynamic>> logs) {
+    final List<LogPosition> listOfPositions = <LogPosition>[];
 
     for (Map<String, dynamic> log in logs) {
       final dynamic json = jsonDecode(log['json']);
 
-      listOfPositions.add(Position(
-        longitude: json['longitude'],
-        latitude: json['latitude'],
-        timestamp: DateTime.fromMillisecondsSinceEpoch(json['timestamp']),
-        mocked: false,
-        accuracy: json['accuracy'],
-        altitude: json['altitude'],
-        heading: json['heading'],
-        speed: json['speed'],
-        speedAccuracy: 0.0)
-      );
+      listOfPositions.add(LogPosition(
+          longitude: json['longitude'],
+          latitude: json['latitude'],
+          timestamp: json['timestamp'],
+          accuracy: json['accuracy'],
+          altitude: json['altitude'],
+          heading: json['heading'],
+          speed: json['speed'],
+          speedAccuracy: 0.0));
     }
 
     return listOfPositions;
   }
 
   /// Sends the location logs to the database
-  void batchUploadToDatabase() async {
-    String dbTable = 'logs';
+  Future<void> _batchUploadToDatabase() async {
+    const String dbTable = 'logs';
     // Gets the count of location logs from the internal database
     // and checks if they exceeded 100.
     final int count = await _db.getCount(dbTable);
-    if (count >= 2) {
-      final List<Map<String, dynamic>> logs = await _db.query(dbTable);
+    if (count >= 100) {
+      final Batch batch = await _db.batch();
+      batch.query(dbTable);
+      batch.delete(dbTable);
+      final dynamic results = await batch.commit();
+      // Since the batch results comes with a count,
+      // we need to take the first element
+      final List<Map<String, dynamic>> logs = results[0];
 
-      // Make Position objects from Json
-      List<Position> positions = logsToPostitions(logs);
+      if (logs.isNotEmpty) {
+        // Make Position objects from Json
+        final List<LogPosition> positions = _logsToPostitions(logs);
 
-      for (Position position in positions) {
-        print('\n' + position.toString() + '\n');
+        // Send to the external database as list of Positions
+        _loggingService.postPositions(positions);
       }
-      // Send to the external database as list of Positions
     }
   }
 }

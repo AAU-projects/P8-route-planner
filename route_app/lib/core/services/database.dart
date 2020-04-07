@@ -41,7 +41,7 @@ class DatabaseService {
     String path;
 
     if (Platform.isAndroid) {
-      path = join(documentDirectory.parent.path, "databases/" + _databaseName);
+      path = join(documentDirectory.parent.path, 'databases/' + _databaseName);
     } else {
       path = join(documentDirectory.path, _databaseName);
     }
