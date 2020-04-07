@@ -1,3 +1,4 @@
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:route_app/core/models/directions_model.dart';
 import 'package:route_app/core/models/location_model.dart';
 import 'package:route_app/core/models/response_model.dart';
@@ -5,12 +6,16 @@ import 'package:route_app/core/services/API/web_service.dart';
 import 'package:route_app/core/services/interfaces/gmaps.dart';
 import 'package:route_app/core/services/interfaces/web.dart';
 import 'package:route_app/locator.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
 /// Google maps service
 class GoogleMapsService implements GoogleMapsAPI {
   /// Class constructor
-  GoogleMapsService(this._apiKey, {WebService webService}){
-    _webService = webService ?? locator.get<Web>(param1: 'https://maps.googleapis.com/maps/api/directions/json?');
+  GoogleMapsService(this._apiKey, {WebService webService}) {
+    _webService = webService ??
+        locator.get<Web>(
+            param1: 'https://maps.googleapis.com/maps/api/directions/json?');
+    _polyHandler = PolylinePoints();
   }
 
   @override
@@ -21,7 +26,9 @@ class GoogleMapsService implements GoogleMapsAPI {
     final String params = 'origin=' +
         origin +
         '&destination=' +
-        destination.replaceAll(' ', '+') +
+        destination +
+        '&mode=' +
+        travelMode +
         '&key=' +
         _apiKey;
 
@@ -32,15 +39,19 @@ class GoogleMapsService implements GoogleMapsAPI {
       final Location endLoc = _getEndLocation(resp);
       final int dist = _getDistance(resp);
       final int dur = _getDuration(resp);
+      final List<LatLng> polyPoints = _getPolylinePoints(poly);
       return Directions(
           polyline: poly,
           status: status,
           startLocation: startLoc,
           endLocation: endLoc,
           distance: dist,
-          duration: dur);
+          duration: dur,
+          polylinePoints: polyPoints);
     });
   }
+
+  PolylinePoints _polyHandler;
 
   WebService _webService;
   final String _apiKey;
@@ -79,5 +90,17 @@ class GoogleMapsService implements GoogleMapsAPI {
   /// Gets the duration in seconds
   int _getDuration(Response response) {
     return response.json['routes'][0]['legs'][0]['duration']['value'];
+  }
+
+  /// Gets the list of polyline points from a polyline string
+  List<LatLng> _getPolylinePoints(String polystr) {
+    final List<PointLatLng> plist = _polyHandler.decodePolyline(polystr);
+    final List<LatLng> reslist = <LatLng>[];
+
+    for (PointLatLng p in plist) {
+      reslist.add(LatLng(p.latitude, p.longitude));
+    }
+
+    return reslist;
   }
 }

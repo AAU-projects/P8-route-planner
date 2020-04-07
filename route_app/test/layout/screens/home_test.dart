@@ -1,11 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mockito/mockito.dart';
+import 'package:route_app/core/models/directions_model.dart';
+import 'package:route_app/core/models/location_model.dart';
+import 'package:route_app/core/services/interfaces/gmaps.dart';
 import 'package:route_app/layout/screens/home.dart';
 import 'package:route_app/layout/widgets/fields/search_text_field.dart';
+import 'package:route_app/locator.dart';
+
+class GoogleMapsServiceMock extends Mock implements GoogleMapsAPI {}
 
 void main() {
-  setUp(() {});
+  GoogleMapsServiceMock mockGmaps;
+  final Directions testDirections = Directions(
+      polyline: 'polystring',
+      status: 'OK',
+      startLocation: Location('TestAddr', 1.00, 1.00),
+      endLocation: Location('TestAddr', 2.00, 2.00),
+      distance: 25,
+      duration: 20,
+      polylinePoints: <LatLng>[const LatLng(1.00, 1.00)]);
+
+  void _setupServiceCalls() {
+    when(mockGmaps.getDirections(origin: 'testOrigin', destination: 'testDest'))
+        .thenAnswer((_) {
+      return Future<Directions>.value(testDirections);
+    });
+    when(mockGmaps.getDirections(
+            origin: 'testOrigin',
+            destination: 'testDest',
+            travelMode: 'transit'))
+        .thenAnswer((_) {
+      return Future<Directions>.value(testDirections);
+    });
+    when(mockGmaps.getDirections(
+            origin: 'testOrigin',
+            destination: 'testDest',
+            travelMode: 'bicycling'))
+        .thenAnswer((_) {
+      return Future<Directions>.value(testDirections);
+    });
+  }
+
+  setUp(() {
+    mockGmaps = GoogleMapsServiceMock();
+    locator.reset();
+    locator.registerFactory<GoogleMapsAPI>(() => mockGmaps);
+    _setupServiceCalls();
+  });
+
+  
 
   testWidgets('Screen renders', (WidgetTester tester) async {
     await tester.pumpWidget(MaterialApp(home: HomeScreen()));
@@ -26,6 +71,17 @@ void main() {
     testWidgets('Has one search textfield', (WidgetTester tester) async {
       await tester.pumpWidget(MaterialApp(home: HomeScreen()));
       expect(find.byType(SearchTextField), findsOneWidget);
+    });
+
+    testWidgets('Has a Scrollable bottom sheet', (WidgetTester tester) async {
+      await tester.pumpWidget(MaterialApp(home: HomeScreen()));
+      expect(find.byType(DraggableScrollableSheet), findsOneWidget);
+    });
+
+    testWidgets('Scrollable bottom sheet is empty',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(MaterialApp(home: HomeScreen()));
+      expect(find.byKey(const Key('BottomSheetContainer')), findsNothing);
     });
   });
 
@@ -52,6 +108,51 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(FloatingActionButton), findsNWidgets(3));
+    });
+  });
+
+  group('After Search', () {
+    testWidgets('Scrollable bottom sheet is not empty after search result',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(MaterialApp(home: HomeScreen()));
+
+      await tester.tap(find.byType(SearchTextField));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+          find.byKey(const Key('OriginTextField')), 'testOrigin');
+
+      await tester.enterText(
+          find.byKey(const Key('DestinationTextField')), 'testDest');
+      
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('BottomSheetContainer')), findsOneWidget);
+    });
+
+    testWidgets('Back button removes bottom sheet after search',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(MaterialApp(home: HomeScreen()));
+
+      await tester.tap(find.byType(SearchTextField));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+          find.byKey(const Key('OriginTextField')), 'testOrigin');
+
+      await tester.enterText(
+          find.byKey(const Key('DestinationTextField')), 'testDest');
+      
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('SearchBackButton')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('BottomSheetContainer')), findsNothing);
     });
   });
 }

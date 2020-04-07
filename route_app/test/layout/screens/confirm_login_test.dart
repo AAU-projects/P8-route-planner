@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:route_app/core/models/user_model.dart';
 import 'package:route_app/core/services/interfaces/API/auth.dart';
+import 'package:route_app/core/services/interfaces/gmaps.dart';
 import 'package:route_app/layout/screens/arguments/confirm_arguments.dart';
 import 'package:route_app/layout/screens/confirm_login.dart';
 import 'package:route_app/layout/screens/home.dart';
@@ -13,12 +14,14 @@ import 'package:route_app/locator.dart';
 import 'package:route_app/routes.dart';
 
 class MockApi extends Mock implements AuthAPI {}
+class GoogleMapsServiceMock extends Mock implements GoogleMapsAPI {}
 
 void main() {
   setUp(() {
     final MockApi api = MockApi();
     locator.reset();
     locator.registerSingleton<AuthAPI>(api);
+    locator.registerFactory<GoogleMapsAPI>(() => GoogleMapsServiceMock());
 
     when(api.sendPin('validEmail@test.com')).thenAnswer(
             (_) => Future<bool>.value(true));

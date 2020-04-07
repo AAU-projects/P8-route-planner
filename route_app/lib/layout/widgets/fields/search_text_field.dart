@@ -10,14 +10,15 @@ class SearchTextField extends StatelessWidget {
       @required this.textController,
       @required this.animationController,
       @required this.icon,
-      this.node, this.animation})
+      this.node, this.animation,
+      this.onSumbitFunc})
         :
         super(key: key);
 
   /// Animation controller
   final AnimationController animationController;
 
-    /// Animation for input
+  /// Animation for input
   final Animation<double> animation;
 
   /// The hint text to display in the textfield
@@ -31,6 +32,9 @@ class SearchTextField extends StatelessWidget {
 
   /// Text controller to retrieve the input of the textfield
   final TextEditingController textController;
+
+  /// The callback function which executes when submitting text
+  final Function onSumbitFunc;
 
 
 
@@ -46,6 +50,7 @@ class SearchTextField extends StatelessWidget {
       width: animation.value,
       child: TextField(
         focusNode: node,
+        onSubmitted: onSumbitFunc,
         controller: textController,
         textAlignVertical: TextAlignVertical.center,
         style: const TextStyle(color: Colors.white, fontSize: 13),

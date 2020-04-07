@@ -7,7 +7,12 @@ import 'package:route_app/layout/constants/colors.dart' as colors;
 class RouteSearch extends StatefulWidget {
   /// default constructor
   const RouteSearch(
-      {Key key, @required this.startController, @required this.endController})
+      {Key key,
+      @required this.startController,
+      @required this.endController,
+      this.startSubmitFunc,
+      this.endSubmitFunc,
+      this.backButtonFunc})
       : super(key: key);
 
   /// Text controller to get start location
@@ -15,6 +20,15 @@ class RouteSearch extends StatefulWidget {
 
   /// Text controller to get end location
   final TextEditingController endController;
+
+  /// Callback function for submitting text to the startController
+  final Function startSubmitFunc;
+
+  /// Callback function for submitting text to the endController
+  final Function endSubmitFunc;
+
+  /// Callback function for pressing the back button
+  final Function backButtonFunc;
 
   @override
   _RouteSearchState createState() => _RouteSearchState();
@@ -26,10 +40,16 @@ class _RouteSearchState extends State<RouteSearch>
   SequenceAnimation sequenceAnimation;
   Animation<double> _inputAnimation;
   final FocusNode _node = FocusNode();
+  final FocusNode _endTextFieldNode = FocusNode();
+  bool _redirectToEndTextField = true;
 
   void onFocusChange() {
     if (_node.hasFocus) {
       _controller.forward();
+      if (_redirectToEndTextField) {
+        _endTextFieldNode.requestFocus();
+        _redirectToEndTextField = false;
+      }
     }
   }
 
@@ -92,8 +112,13 @@ class _RouteSearchState extends State<RouteSearch>
                             child: Visibility(
                               visible: sequenceAnimation['visibility'].value,
                               child: FloatingActionButton(
+                                key: const Key('SearchBackButton'),
                                 backgroundColor: colors.SearchBackground,
-                                onPressed: () => _controller.reverse(),
+                                onPressed: () {
+                                  _controller.reverse();
+                                  widget.backButtonFunc();
+                                  _redirectToEndTextField = true;
+                                },
                                 child:
                                     const Icon(Icons.arrow_back_ios, size: 25),
                               ),
@@ -110,12 +135,14 @@ class _RouteSearchState extends State<RouteSearch>
                           child: Column(
                             children: <Widget>[
                               SearchTextField(
+                                key: const Key('OriginTextField'),
                                 textController: widget.startController,
                                 hint: 'Where to?',
                                 icon: Icons.search,
                                 animationController: _controller,
                                 animation: _inputAnimation,
                                 node: _node,
+                                onSumbitFunc: widget.startSubmitFunc,
                               ),
                               Opacity(
                                 opacity: sequenceAnimation['opacity'].value,
@@ -123,11 +150,14 @@ class _RouteSearchState extends State<RouteSearch>
                                   visible:
                                       sequenceAnimation['visibility'].value,
                                   child: SearchTextField(
+                                    key: const Key('DestinationTextField'),
                                     textController: widget.endController,
                                     hint: 'Where to?',
                                     icon: Icons.search,
+                                    node: _endTextFieldNode,
                                     animationController: _controller,
                                     animation: _inputAnimation,
+                                    onSumbitFunc: widget.endSubmitFunc,
                                   ),
                                 ),
                               ),
