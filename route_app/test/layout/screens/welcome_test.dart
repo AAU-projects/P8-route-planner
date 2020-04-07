@@ -27,12 +27,14 @@ void main() {
   });
 
   testWidgets('Has login button', (WidgetTester tester) async {
-    await tester.pumpWidget(const MaterialApp(home: WelcomeScreen(isTest: true)));
+    await tester
+        .pumpWidget(const MaterialApp(home: WelcomeScreen(isTest: true)));
     expect(find.widgetWithText(Button, 'Login'), findsOneWidget);
   });
 
   testWidgets('Has register button', (WidgetTester tester) async {
-    await tester.pumpWidget(const MaterialApp(home: WelcomeScreen(isTest: true)));
+    await tester
+        .pumpWidget(const MaterialApp(home: WelcomeScreen(isTest: true)));
     expect(find.widgetWithText(Button, 'Register'), findsOneWidget);
   });
 
