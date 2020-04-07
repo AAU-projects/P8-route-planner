@@ -44,10 +44,12 @@ class AuthenticationService implements AuthAPI {
   }
 
   @override
-  Future<User> register(String email, {String licensePlate}) async {
-    return _http.post(_endpoint + 'register', <String, String>{
-      'Email': email,
-      'LicensePlate': licensePlate ??= ''
+  Future<User> register(String email, {double kml, String fuelType}) async {
+    return _http.post(_endpoint + 'register', <String, dynamic>{
+      'User': 
+        <String, String>{'email': email},
+      'Kml': kml ?? 0,
+      'FuelType': fuelType
     }).then((Response res) {
       return User.fromJson(res.json);
     });

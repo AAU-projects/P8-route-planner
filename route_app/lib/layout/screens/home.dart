@@ -8,6 +8,7 @@ import 'package:route_app/core/services/interfaces/gmaps.dart';
 import 'package:route_app/layout/widgets/route_search.dart';
 import 'package:route_app/layout/constants/colors.dart' as colors;
 import 'package:route_app/locator.dart';
+import 'package:route_app/layout/widgets/dialogs/logout.dart';
 import 'package:route_app/core/providers/location_provider.dart';
 
 /// Home screen with map
@@ -203,19 +204,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<LocationProvider>(
-      create: (_) => LocationProvider(),
-      child: Consumer<LocationProvider>(builder: (BuildContext context,
-          LocationProvider _locationModel, Widget child) {
-        _centerMap(_locationModel.currentLocationObj);
-        return Scaffold(
-            body: _buildMainBody(_locationModel, context),
-            bottomSheet: _buildBottomSheet(),
-            floatingActionButton: _floatingButtonsContainer(_locationModel),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.endDocked);
-      }),
-    );
+    return WillPopScope(
+        onWillPop: () => showLogoutDialog(context),
+        child: ChangeNotifierProvider<LocationProvider>(
+          create: (_) => LocationProvider(),
+          child: Consumer<LocationProvider>(builder: (BuildContext context,
+              LocationProvider _locationModel, Widget child) {
+            _centerMap(_locationModel.currentLocationObj);
+            return Scaffold(
+                body: _buildMainBody(_locationModel, context),
+                bottomSheet: _buildBottomSheet(),
+                floatingActionButton: _floatingButtonsContainer(_locationModel),
+                floatingActionButtonLocation:
+                    FloatingActionButtonLocation.endDocked);
+          }),
+        ));
   }
 
   Stack _buildMainBody(LocationProvider _locationModel, BuildContext context) {
@@ -303,9 +306,11 @@ class _HomeScreenState extends State<HomeScreen> {
         height: 40,
         width: 40,
         child: FloatingActionButton(
-            backgroundColor: colors.SearchBackground,
-            onPressed: () => _centerMap(locationModel.currentLocationObj),
-            child: const Icon(Icons.near_me, size: 25)),
+          heroTag: 'near_me',
+          backgroundColor: colors.SearchBackground,
+          onPressed: () => _centerMap(locationModel.currentLocationObj),
+          child: const Icon(Icons.near_me, size: 25, color: colors.Text),
+        ),
       ),
     );
   }
@@ -317,6 +322,7 @@ class _HomeScreenState extends State<HomeScreen> {
         height: 40,
         width: 40,
         child: FloatingActionButton(
+          heroTag: 'menu',
           backgroundColor: colors.SearchBackground,
           onPressed: () {},
           child: const Icon(Icons.menu, size: 25),

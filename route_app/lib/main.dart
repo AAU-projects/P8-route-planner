@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:route_app/core/models/user_model.dart';
 import 'package:route_app/core/utils/environment.dart' as environment;
 import 'package:route_app/routes.dart';
+import 'package:route_app/layout/constants/colors.dart' as color;
 import 'core/services/interfaces/API/user.dart';
 import 'locator.dart';
 
@@ -43,10 +44,12 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: 'App name',
       routes: routes,
-      theme: ThemeData(
-        canvasColor: Colors.transparent,
-      ),
       initialRoute: _initScreen,
+      theme: ThemeData(
+        unselectedWidgetColor: color.NeturalGrey,
+        accentColor: color.CorrectColor,
+        canvasColor: Colors.transparent
+      )
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 
 /// Location model which can be used in a 'ChangeNotifier' provider.
@@ -8,7 +9,7 @@ class LocationProvider extends ChangeNotifier {
   LocationProvider({bool noInitialization = false}) {
     if(!noInitialization)
     {
-      _initialize();
+      getPermission().then((bool value) => value ? _initialize() : null);
     }
   }
 
@@ -20,6 +21,13 @@ class LocationProvider extends ChangeNotifier {
   Position _addressPosition;
   String _positionAddress;
   double _distanceOut;
+
+  /// Permission to get location
+  Future<bool> get permission async => _geolocator
+          .checkGeolocationPermissionStatus()
+          .then((GeolocationStatus status) {
+        return status == GeolocationStatus.granted;
+      });
 
   /// Get current location
   String get currentLocation => _currentLocation;
@@ -42,6 +50,24 @@ class LocationProvider extends ChangeNotifier {
   /// Get the distance output
   double get distanceOut => _distanceOut;
 
+  /// Gets permission to use location data
+  Future<bool> getPermission() {
+    return _geolocator
+        .checkGeolocationPermissionStatus()
+        .then((GeolocationStatus status) async {
+      if (status == GeolocationStatus.granted) {
+        return true;
+      } else {
+        try {
+          await _geolocator.getCurrentPosition();
+          return true;
+        } on PlatformException catch (_) {
+          return false;
+        }
+      }
+    });
+  }
+
   /// Get Position the position stream
   Stream<Position> positionStream() {
     final LocationOptions locationOptions =
@@ -51,7 +77,10 @@ class LocationProvider extends ChangeNotifier {
 
   /// Update the current location, notifies screens to update
   Future<bool> updateCurrentLocation() async {
-    final Position cPos = await _startCurrentLocationUpdate();
+    final Position cPos =
+        await _startCurrentLocationUpdate().catchError((Object onError) async {
+      return null;
+    });
     _currentLocation = cPos.toString();
     _currentLocationObj = cPos;
 
@@ -114,7 +143,10 @@ class LocationProvider extends ChangeNotifier {
   }
 
   Future<Position> _startCurrentLocationUpdate() async {
-    return _updateCurrentLocation(_getCurrentLocation());
+    return _updateCurrentLocation(_getCurrentLocation())
+        .catchError((Object onError) async {
+      return null;
+    });
   }
 
   Future<Position> _startLastKnownLocationUpdate() async {
@@ -122,8 +154,11 @@ class LocationProvider extends ChangeNotifier {
   }
 
   Future<Position> _getCurrentLocation() async {
-    return _geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.best);
+    return _geolocator
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
+        .catchError((Object onError) async {
+      return null;
+    });
   }
 
   Future<Position> _getLastKnownLocation() async {

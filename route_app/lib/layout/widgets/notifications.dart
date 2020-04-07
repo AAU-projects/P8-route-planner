@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:route_app/layout/constants/colors.dart' as colors;
 
 void _displayNotification(BuildContext context, Widget snackbar) {
+  removeNotification(context);
   _getScaffold(context).showSnackBar(snackbar);
 }
 
