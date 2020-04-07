@@ -43,11 +43,14 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'App name',
-        routes: routes,
-        initialRoute: _initScreen,
-        theme: ThemeData(
-            unselectedWidgetColor: color.NeturalGrey,
-            accentColor: color.CorrectColor));
+      title: 'App name',
+      routes: routes,
+      initialRoute: _initScreen,
+      theme: ThemeData(
+        unselectedWidgetColor: color.NeturalGrey,
+        accentColor: color.CorrectColor,
+        canvasColor: Colors.transparent
+      )
+    );
   }
 }

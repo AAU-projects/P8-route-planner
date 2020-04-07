@@ -18,7 +18,7 @@ void main() {
 
   void setApiCalls() {
     when(webMock.get(
-            'origin=origin&destination=dest&key=apikey'))
+            'origin=origin&destination=dest&mode=driving&key=apikey'))
         .thenAnswer((_) {
       return Future<Response>.value(testResponse);
     });
@@ -39,7 +39,7 @@ void main() {
       gmapsService
           .getDirections(origin: 'origin', destination: 'dest')
           .then(expectAsync1((Directions dir) {
-        expect(dir.polyline, 'abcd');
+        expect(dir.polyline, 'wid{I}vy{@HKLIBGBEJa@j@uDz@kE');
       }));
     });
 
@@ -84,6 +84,14 @@ void main() {
           .getDirections(origin: 'origin', destination: 'dest')
           .then(expectAsync1((Directions dir) {
         expect(dir.duration, 572);
+      }));
+    });
+
+    test('Should return a polyline points list', () {
+      gmapsService
+          .getDirections(origin: 'origin', destination: 'dest')
+          .then(expectAsync1((Directions dir) {
+        expect(dir.polylinePoints.length, 8);
       }));
     });
   });

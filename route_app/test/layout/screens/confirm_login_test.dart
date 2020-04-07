@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:route_app/core/models/user_model.dart';
 import 'package:route_app/core/services/API/logging_service.dart';
+import 'package:route_app/core/services/database.dart';
 import 'package:route_app/core/services/interfaces/API/auth.dart';
 import 'package:route_app/core/services/interfaces/gmaps.dart';
 import 'package:route_app/core/services/interfaces/API/logging.dart';
@@ -17,15 +18,19 @@ import 'package:route_app/routes.dart';
 
 class MockApi extends Mock implements AuthAPI {}
 class MockLogging extends Mock implements LoggingService {}
+class MockDatabase extends Mock implements DatabaseService {}
 class GoogleMapsServiceMock extends Mock implements GoogleMapsAPI {}
+
 
 void main() {
   setUp(() {
     final MockApi api = MockApi();
     final MockLogging mockLog = MockLogging();
+    final MockDatabase db = MockDatabase();
     locator.reset();
     locator.registerSingleton<AuthAPI>(api);
     locator.registerSingleton<LoggingAPI>(mockLog);
+    locator.registerSingleton<DatabaseService>(db);
     locator.registerFactory<GoogleMapsAPI>(() => GoogleMapsServiceMock());
 
     when(api.sendPin('validEmail@test.com')).thenAnswer(
