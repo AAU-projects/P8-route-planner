@@ -112,6 +112,7 @@ class _RouteSearchState extends State<RouteSearch>
                             child: Visibility(
                               visible: sequenceAnimation['visibility'].value,
                               child: FloatingActionButton(
+                                key: const Key('SearchBackButton'),
                                 backgroundColor: colors.SearchBackground,
                                 onPressed: () {
                                   _controller.reverse();
@@ -134,6 +135,7 @@ class _RouteSearchState extends State<RouteSearch>
                           child: Column(
                             children: <Widget>[
                               SearchTextField(
+                                key: const Key('OriginTextField'),
                                 textController: widget.startController,
                                 hint: 'Where to?',
                                 icon: Icons.search,
@@ -148,6 +150,7 @@ class _RouteSearchState extends State<RouteSearch>
                                   visible:
                                       sequenceAnimation['visibility'].value,
                                   child: SearchTextField(
+                                    key: const Key('DestinationTextField'),
                                     textController: widget.endController,
                                     hint: 'Where to?',
                                     icon: Icons.search,

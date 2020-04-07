@@ -32,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Directions bicyclingDirections;
   Directions transitDirections;
   LatLng startpoint;
+  bool _replaceMyLocation = true;
 
   @override
   void initState() {
@@ -45,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onBackButtonPress() {
+    _replaceMyLocation = true;
     setState(() {
       _polyline.clear();
       _markers.clear();
@@ -132,8 +134,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _updateSearchFieldsText() {
-    if (_startController.text == '') {
+    if (_replaceMyLocation && _startController.text == '') {
       _startController.text = 'My Location';
+      _replaceMyLocation = false;
     }
   }
 
@@ -207,7 +210,10 @@ class _HomeScreenState extends State<HomeScreen> {
         _centerMap(_locationModel.currentLocationObj);
         return Scaffold(
             body: _buildMainBody(_locationModel, context),
-            bottomSheet: _buildBottomSheet());
+            bottomSheet: _buildBottomSheet(),
+            floatingActionButton: _floatingButtonsContainer(_locationModel),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.endDocked);
       }),
     );
   }
@@ -238,14 +244,13 @@ class _HomeScreenState extends State<HomeScreen> {
             backButtonFunc: _onBackButtonPress,
           ),
         ),
-        _buildSearchField(_locationModel)
       ],
     );
   }
 
   DraggableScrollableSheet _buildBottomSheet() {
     return DraggableScrollableSheet(
-      initialChildSize: 0.2,
+      initialChildSize: 0.1,
       maxChildSize: 0.4,
       minChildSize: 0.1,
       expand: false,
@@ -253,6 +258,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return _polyline.isEmpty
             ? Container()
             : Container(
+                key: const Key('BottomSheetContainer'),
                 decoration: BoxDecoration(
                     color: colors.SearchBackground,
                     borderRadius: const BorderRadius.only(
@@ -283,45 +289,38 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Padding _buildSearchField(LocationProvider locationModel) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Align(
-        alignment: Alignment.bottomRight,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            _buildMenuButton(),
-            _buildLocationButton(locationModel)
-          ],
-        ),
-      ),
-    );
+  Stack _floatingButtonsContainer(LocationProvider locationModel) {
+    return Stack(children: <Widget>[
+      _buildMenuButton(),
+      _buildLocationButton(locationModel)
+    ]);
   }
 
   Padding _buildLocationButton(LocationProvider locationModel) {
     return Padding(
-      padding: const EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.only(top: 50.0),
+      child: SizedBox(
+        height: 40,
+        width: 40,
+        child: FloatingActionButton(
+            backgroundColor: colors.SearchBackground,
+            onPressed: () => _centerMap(locationModel.currentLocationObj),
+            child: const Icon(Icons.near_me, size: 25)),
+      ),
+    );
+  }
+
+  Padding _buildMenuButton() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 150),
       child: SizedBox(
         height: 40,
         width: 40,
         child: FloatingActionButton(
           backgroundColor: colors.SearchBackground,
-          onPressed: () => _centerMap(locationModel.currentLocationObj),
-          child: const Icon(Icons.near_me, size: 25),
+          onPressed: () {},
+          child: const Icon(Icons.menu, size: 25),
         ),
-      ),
-    );
-  }
-
-  SizedBox _buildMenuButton() {
-    return SizedBox(
-      height: 40,
-      width: 40,
-      child: FloatingActionButton(
-        backgroundColor: colors.SearchBackground,
-        onPressed: () => print('bob'),
-        child: const Icon(Icons.menu, size: 25),
       ),
     );
   }
