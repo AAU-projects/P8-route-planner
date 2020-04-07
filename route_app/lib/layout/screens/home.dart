@@ -7,6 +7,7 @@ import 'package:route_app/core/models/directions_model.dart';
 import 'package:route_app/core/services/interfaces/gmaps.dart';
 import 'package:route_app/layout/widgets/route_search.dart';
 import 'package:route_app/layout/constants/colors.dart' as colors;
+import 'package:route_app/core/services/background_geolocator.dart';
 import 'package:route_app/locator.dart';
 import 'package:route_app/layout/widgets/dialogs/logout.dart';
 import 'package:route_app/core/providers/location_provider.dart';
@@ -18,6 +19,9 @@ class HomeScreen extends StatefulWidget {
   final GoogleMapsAPI _gMapsService = locator.get<GoogleMapsAPI>();
   final LocationProvider _locationModel =
       LocationProvider();
+
+  /// Start the background geolocator when the HomeScreen is initialized.
+  final BackgroundGeolocator bgGeolocator = BackgroundGeolocator();
 
   @override
   _HomeScreenState createState() => _HomeScreenState();

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mockito/mockito.dart';
+import 'package:route_app/core/services/API/logging_service.dart';
+import 'package:route_app/core/services/database.dart';
+import 'package:route_app/core/services/interfaces/API/logging.dart';
 import 'package:route_app/core/models/directions_model.dart';
 import 'package:route_app/core/models/location_model.dart';
 import 'package:route_app/core/services/interfaces/gmaps.dart';
@@ -10,6 +13,8 @@ import 'package:route_app/layout/widgets/fields/search_text_field.dart';
 import 'package:route_app/locator.dart';
 
 class GoogleMapsServiceMock extends Mock implements GoogleMapsAPI {}
+class MockDatabase extends Mock implements DatabaseService {}
+class MockLogging extends Mock implements LoggingService {}
 
 void main() {
   GoogleMapsServiceMock mockGmaps;
@@ -44,13 +49,15 @@ void main() {
   }
 
   setUp(() {
+    final MockDatabase db = MockDatabase();
+    final MockLogging mockLog = MockLogging();
     mockGmaps = GoogleMapsServiceMock();
     locator.reset();
     locator.registerFactory<GoogleMapsAPI>(() => mockGmaps);
+    locator.registerSingleton<DatabaseService>(db);
+    locator.registerSingleton<LoggingAPI>(mockLog);
     _setupServiceCalls();
   });
-
-  
 
   testWidgets('Screen renders', (WidgetTester tester) async {
     await tester.pumpWidget(MaterialApp(home: HomeScreen()));

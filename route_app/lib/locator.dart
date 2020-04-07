@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:route_app/core/services/API/web_service.dart';
 import 'package:route_app/core/services/gmaps_service.dart';
 import 'package:route_app/core/services/interfaces/API/auth.dart';
+import 'package:route_app/core/services/interfaces/API/logging.dart';
 import 'package:route_app/core/services/interfaces/API/user.dart';
 import 'package:route_app/core/services/interfaces/gmaps.dart';
 import 'package:route_app/core/services/interfaces/http.dart';
@@ -11,6 +12,7 @@ import 'package:route_app/core/services/API/user_service.dart';
 import 'package:route_app/core/services/database.dart';
 import 'package:route_app/core/utils/environment.dart' as environment;
 import 'package:route_app/core/services/interfaces/web.dart';
+import 'package:route_app/core/services/API/logging_service.dart';
 
 /// Instantiates the dependency injection
 GetIt locator = GetIt.instance;
@@ -25,6 +27,7 @@ void setupLocator() {
 
   locator.registerLazySingleton<UserAPI>(() => UserService());
   locator.registerLazySingleton<AuthAPI>(() => AuthenticationService());
+  locator.registerLazySingleton<LoggingAPI>(() => LoggingService());
 
   // Example of factory, New instance with each call
   // locator.registerFactory(() => Api());
