@@ -83,7 +83,7 @@ class LoginScreen extends StatelessWidget {
                                 Navigator.push<dynamic>(
                                     context,
                                     SlideFromLeftRoute(
-                                        widget: WelcomeScreen()));
+                                        widget: const WelcomeScreen()));
                               },
                               child: Container(
                                 padding: const EdgeInsets.all(10),

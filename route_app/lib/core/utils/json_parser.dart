@@ -15,7 +15,7 @@ Future<Response> parseJson(Future<http.Response> res) {
 
   return res.then((http.Response value) {
     if (!value.statusCode.between(199, 300)) {
-      throw '''[${value.statusCode}] ${jsonDecode(value.body)['title']}''';
+      throw '''[${value.statusCode}] ${jsonDecode(value.body)}''';
     }
 
     Map<String, dynamic> json;

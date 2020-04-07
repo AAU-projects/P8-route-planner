@@ -9,6 +9,9 @@ abstract class UserAPI {
   /// Set the active user in the app
   void setActiveUser(User user);
 
+  /// Logs a user out from the system
+  void logout();
+
   /// Get all users from API
   Future<List<User>> getAllUsers();
 

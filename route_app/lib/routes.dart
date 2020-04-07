@@ -11,7 +11,7 @@ import 'layout/screens/welcome.dart';
 Map<String, Widget Function(BuildContext)> routes =
     <String, Widget Function(BuildContext)>{
   // When navigating to "/" route, build the WelcomeScreen widget
-  '/': (_) => WelcomeScreen(),
+  '/': (_) => const WelcomeScreen(),
   // When navigating to "/login" route, build the LoginScreen widget
   '/login': (_) => LoginScreen(),
   // When navigating to 'login/confirm', build the ConfirmLoginScreen widget

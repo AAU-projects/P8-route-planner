@@ -7,9 +7,15 @@ import 'package:route_app/layout/screens/register.dart';
 import 'package:route_app/layout/utils/route_animations.dart';
 import 'package:route_app/layout/widgets/buttons/button.dart';
 import 'package:route_app/layout/constants/colors.dart' as colors;
+import 'package:route_app/layout/constants/text_styles.dart' as text_styles;
 
 /// Initial screen to choose between the screens: login and register
 class WelcomeScreen extends StatelessWidget {
+  /// Default constructor with optional test parameter
+  const WelcomeScreen({bool isTest = false}) : _isTest = isTest;
+
+  /// A bool for test
+  final bool _isTest;
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<LocationProvider>(
@@ -41,29 +47,7 @@ class WelcomeScreen extends StatelessWidget {
                           height: constraints.maxHeight / 2,
                           child: Padding(
                             padding: const EdgeInsets.only(top: 50),
-                            child: Column(
-                              children: <Widget>[
-                                Button(
-                                    text: 'Register',
-                                    onPressed: () {
-                                      Navigator.push<dynamic>(
-                                          context,
-                                          SlideFromRightRoute(
-                                              widget: RegisterScreen()));
-                                    },
-                                    key: const Key('RegisterButton')),
-                                const SizedBox(height: 25),
-                                Button(
-                                    text: 'Login',
-                                    onPressed: () {
-                                      Navigator.push<dynamic>(
-                                          context,
-                                          SlideFromRightRoute(
-                                              widget: LoginScreen()));
-                                    },
-                                    key: const Key('LoginButton')),
-                              ],
-                            ),
+                            child: _buildButtons(context, locationModel),
                           ),
                         ),
                       ],
@@ -76,5 +60,48 @@ class WelcomeScreen extends StatelessWidget {
         },
       ),
     );
+  }
+
+  Widget _buildButtons(BuildContext context, LocationProvider locationModel) {
+    return FutureBuilder<bool>(
+        future: locationModel.permission,
+        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+          if (_isTest || snapshot.hasData && snapshot.data) {
+            return Column(
+              children: <Widget>[
+                Button(
+                    text: 'Register',
+                    onPressed: () {
+                      Navigator.push<dynamic>(context,
+                          SlideFromRightRoute(widget: RegisterScreen()));
+                    },
+                    key: const Key('RegisterButton')),
+                const SizedBox(height: 25),
+                Button(
+                    text: 'Login',
+                    onPressed: () {
+                      Navigator.push<dynamic>(
+                          context, SlideFromRightRoute(widget: LoginScreen()));
+                    },
+                    key: const Key('LoginButton')),
+              ],
+            );
+          } else {
+            return Column(
+              children: const <Widget>[
+                Card(
+                  color: colors.Background,
+                  child: Padding(
+                    padding: EdgeInsets.all(30.0),
+                    child: Text(
+                      'Please enable permission for location in settings',
+                      style: text_styles.NormalStyle,
+                    ),
+                  ),
+                )
+              ],
+            );
+          }
+        });
   }
 }
