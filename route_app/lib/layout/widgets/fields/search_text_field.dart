@@ -1,4 +1,7 @@
+import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:route_app/core/providers/suggestion_provider.dart';
 import 'package:route_app/layout/constants/colors.dart' as colors;
 
 /// Custom text field used for location search in the app
@@ -10,10 +13,10 @@ class SearchTextField extends StatelessWidget {
       @required this.textController,
       @required this.animationController,
       @required this.icon,
-      this.node, this.animation,
+      this.node,
+      this.animation,
       this.onSumbitFunc})
-        :
-        super(key: key);
+      : super(key: key);
 
   /// Animation controller
   final AnimationController animationController;
@@ -36,8 +39,6 @@ class SearchTextField extends StatelessWidget {
   /// The callback function which executes when submitting text
   final Function onSumbitFunc;
 
-
-
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
@@ -48,26 +49,68 @@ class SearchTextField extends StatelessWidget {
     return SizedBox(
       height: 50,
       width: animation.value,
-      child: TextField(
-        focusNode: node,
-        onSubmitted: onSumbitFunc,
-        controller: textController,
-        textAlignVertical: TextAlignVertical.center,
-        style: const TextStyle(color: Colors.white, fontSize: 13),
-        decoration: InputDecoration(
-            contentPadding: const EdgeInsets.all(10),
-            enabled: true,
-            filled: true,
-            hintText: hint,
-            hintStyle: const TextStyle(color: colors.Text, fontSize: 13),
-            fillColor: colors.SearchBackground,
-            border: const OutlineInputBorder(
-                borderSide: BorderSide(color: colors.SearchBackground),
-                borderRadius: BorderRadius.all(Radius.circular(5.0))),
-            focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: colors.SearchBackground)),
-            prefixIcon: Icon(icon, size: 20, color: Colors.white)),
-      ),
+      child: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+        return ChangeNotifierProvider<SuggestionProvider>(
+            create: (_) => SuggestionProvider(),
+            child: Consumer<SuggestionProvider>(builder: (BuildContext context,
+                SuggestionProvider suggestionProvider, Widget child) {
+              return _buildAutoCompTextfield(suggestionProvider);
+            }));
+      }),
+    );
+  }
+
+/*
+  TextField _buildTextField(SuggestionProvider suggestionProvider,
+      {bool hasDropDown = false}) {
+    return TextField(
+      onChanged: (_) => suggestionProvider.getSuggestions(textController.text),
+      focusNode: node,
+      onSubmitted: onSumbitFunc,
+      controller: textController,
+      textAlignVertical: TextAlignVertical.center,
+      style: const TextStyle(color: Colors.white, fontSize: 13),
+      decoration: InputDecoration(
+          contentPadding: const EdgeInsets.all(10),
+          enabled: true,
+          filled: true,
+          hintText: hint,
+          hintStyle: const TextStyle(color: colors.Text, fontSize: 13),
+          fillColor: colors.SearchBackground,
+          border: const OutlineInputBorder(
+              borderSide: BorderSide(color: colors.SearchBackground),
+              borderRadius: BorderRadius.all(Radius.circular(5.0))),
+          focusedBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: colors.SearchBackground)),
+          prefixIcon: Icon(icon, size: 20, color: Colors.white)),
+    );
+  }
+*/
+
+  SimpleAutoCompleteTextField _buildAutoCompTextfield(
+      SuggestionProvider suggestionProvider) {
+    return SimpleAutoCompleteTextField(
+      key: GlobalKey(),
+      suggestions: suggestionProvider.suggestionList,
+      textChanged: (_) =>
+          suggestionProvider.getSuggestions(textController.text),
+      focusNode: node,
+      textSubmitted: onSumbitFunc,
+      controller: textController,
+      decoration: InputDecoration(
+          contentPadding: const EdgeInsets.all(10),
+          enabled: true,
+          filled: true,
+          hintText: hint,
+          hintStyle: const TextStyle(color: colors.Text, fontSize: 13),
+          fillColor: colors.SearchBackground,
+          border: const OutlineInputBorder(
+              borderSide: BorderSide(color: colors.SearchBackground),
+              borderRadius: BorderRadius.all(Radius.circular(5.0))),
+          focusedBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: colors.SearchBackground)),
+          prefixIcon: Icon(icon, size: 20, color: Colors.white)),
     );
   }
 }

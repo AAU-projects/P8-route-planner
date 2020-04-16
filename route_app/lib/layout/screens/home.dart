@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:route_app/core/models/directions_model.dart';
 import 'package:route_app/core/services/interfaces/gmaps.dart';
+import 'package:route_app/core/services/interfaces/gsuggestions.dart';
 import 'package:route_app/layout/widgets/route_search.dart';
 import 'package:route_app/layout/constants/colors.dart' as colors;
 import 'package:route_app/core/services/background_geolocator.dart';
@@ -17,8 +18,9 @@ class HomeScreen extends StatefulWidget {
   ///key is required, otherwise map crashes on hot reload
   HomeScreen() : super(key: UniqueKey());
   final GoogleMapsAPI _gMapsService = locator.get<GoogleMapsAPI>();
-  final LocationProvider _locationModel =
-      LocationProvider();
+  final LocationProvider _locationModel = LocationProvider();
+  final GoogleAutocompleteAPI _gSuggestions =
+      locator.get<GoogleAutocompleteAPI>();
 
   /// Start the background geolocator when the HomeScreen is initialized.
   final BackgroundGeolocator bgGeolocator = BackgroundGeolocator();
@@ -328,7 +330,9 @@ class _HomeScreenState extends State<HomeScreen> {
         child: FloatingActionButton(
           heroTag: 'menu',
           backgroundColor: colors.SearchBackground,
-          onPressed: () {},
+          onPressed: () {
+            widget._gSuggestions.getSuggestions('Aal');
+          },
           child: const Icon(Icons.menu, size: 25, color: colors.Text),
         ),
       ),

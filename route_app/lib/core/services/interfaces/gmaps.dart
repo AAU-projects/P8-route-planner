@@ -1,4 +1,3 @@
-
 import 'package:route_app/core/models/directions_model.dart';
 
 /// Google Maps interface

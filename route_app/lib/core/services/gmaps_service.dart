@@ -52,7 +52,6 @@ class GoogleMapsService implements GoogleMapsAPI {
   }
 
   PolylinePoints _polyHandler;
-
   WebService _webService;
   final String _apiKey;
 
