@@ -1,4 +1,6 @@
+import 'package:geolocator/geolocator.dart';
 import 'package:route_app/core/models/response_model.dart';
+import 'package:route_app/core/models/suggestion_result_model.dart';
 import 'package:route_app/core/services/interfaces/gsuggestions.dart';
 import 'package:route_app/core/services/interfaces/web.dart';
 import 'package:route_app/locator.dart';
@@ -21,10 +23,11 @@ class GoogleAutocompleteService implements GoogleAutocompleteAPI {
   final Uuid _uuid = Uuid();
 
   @override
-  Future<List<String>> getSuggestions(String input) {
+  Future<List<SuggestionResult>> getSuggestions(
+      String input, Position currentPos) {
     if (input.isEmpty) {
       _curSessionToken = _uuid.v4();
-      return Future<List<String>>.value(<String>[]);
+      return Future<List<SuggestionResult>>.value(<SuggestionResult>[]);
     }
 
     final String params = 'input=' +
@@ -32,14 +35,18 @@ class GoogleAutocompleteService implements GoogleAutocompleteAPI {
         '&key=' +
         _apiKey +
         '&sessiontoken=' +
-        _curSessionToken;
+        _curSessionToken +
+        '&origin=' +
+        currentPos.latitude.toString() +
+        ',' +
+        currentPos.longitude.toString();
 
     return _webService.get(params).then((Response response) {
-      List<String> resultList;
+      final List<SuggestionResult> resultList = <SuggestionResult>[];
       for (dynamic item in response.json['predictions']) {
-        resultList.add(item['description']);
+        resultList.add(
+            SuggestionResult(item['distance_meters'], item['description']));
       }
-
       return resultList;
     });
   }

@@ -1,4 +1,3 @@
-
 /// Location Model
 class Location {
   /// Constructor for the model

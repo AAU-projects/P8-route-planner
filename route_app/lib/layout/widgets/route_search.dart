@@ -119,8 +119,11 @@ class _RouteSearchState extends State<RouteSearch>
                                   widget.backButtonFunc();
                                   _redirectToEndTextField = true;
                                 },
-                                child:
-                                    const Icon(Icons.arrow_back_ios, size: 25),
+                                child: const Icon(
+                                  Icons.arrow_back_ios,
+                                  size: 25,
+                                  color: colors.Text,
+                                ),
                               ),
                             ),
                           ),

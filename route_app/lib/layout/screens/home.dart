@@ -331,7 +331,8 @@ class _HomeScreenState extends State<HomeScreen> {
           heroTag: 'menu',
           backgroundColor: colors.SearchBackground,
           onPressed: () {
-            widget._gSuggestions.getSuggestions('Aal');
+            widget._gSuggestions.getSuggestions(
+                'Aal', widget._locationModel.currentLocationObj);
           },
           child: const Icon(Icons.menu, size: 25, color: colors.Text),
         ),
