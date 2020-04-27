@@ -69,7 +69,11 @@ class _HomeScreenState extends State<HomeScreen> {
         width: 6);
   }
 
-  void _onStartSubmit(String input) {}
+  void _onStartSubmit(String input) {
+    if (_endController.text.isNotEmpty) {
+      _onEndSubmit(_endController.text);
+    }
+  }
 
   Future<void> _onEndSubmit(String input) async {
     if (input.isEmpty) {
@@ -240,6 +244,7 @@ class _HomeScreenState extends State<HomeScreen> {
           myLocationButtonEnabled: false,
           myLocationEnabled: true,
           compassEnabled: false,
+          zoomControlsEnabled: false,
           onTap: (_) {
             FocusScope.of(context).requestFocus(FocusNode());
           },

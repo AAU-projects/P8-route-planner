@@ -39,24 +39,9 @@ class _RouteSearchState extends State<RouteSearch>
   AnimationController _controller;
   SequenceAnimation sequenceAnimation;
   Animation<double> _inputAnimation;
-  final FocusNode _node = FocusNode();
-  final FocusNode _endTextFieldNode = FocusNode();
-  bool _redirectToEndTextField = true;
-
-  void onFocusChange() {
-    if (_node.hasFocus) {
-      _controller.forward();
-      if (_redirectToEndTextField) {
-        _endTextFieldNode.requestFocus();
-        _redirectToEndTextField = false;
-      }
-    }
-  }
 
   @override
   void initState() {
-    super.initState();
-    _node.addListener(onFocusChange);
     _controller = AnimationController(
         duration: const Duration(milliseconds: 500), vsync: this);
 
@@ -78,14 +63,15 @@ class _RouteSearchState extends State<RouteSearch>
         CurvedAnimation(
             parent: _controller,
             curve: Interval(0, 0.8, curve: Curves.fastOutSlowIn)));
+
+    super.initState();
+
   }
 
   @override
   void dispose() {
     super.dispose();
     _controller.dispose();
-    _node.removeListener(onFocusChange);
-    _node.dispose();
   }
 
   @override
@@ -117,7 +103,6 @@ class _RouteSearchState extends State<RouteSearch>
                                 onPressed: () {
                                   _controller.reverse();
                                   widget.backButtonFunc();
-                                  _redirectToEndTextField = true;
                                 },
                                 child: const Icon(
                                   Icons.arrow_back_ios,
@@ -144,8 +129,12 @@ class _RouteSearchState extends State<RouteSearch>
                                 icon: Icons.search,
                                 animationController: _controller,
                                 animation: _inputAnimation,
-                                node: _node,
-                                onSumbitFunc: widget.startSubmitFunc,
+                                onFocusChange: (bool hasFocus) {
+                                  if (hasFocus) {
+                                    _controller.forward();
+                                  }
+                                },
+                                onSubmitFunc: widget.startSubmitFunc,
                               ),
                               Opacity(
                                 opacity: sequenceAnimation['opacity'].value,
@@ -157,10 +146,10 @@ class _RouteSearchState extends State<RouteSearch>
                                     textController: widget.endController,
                                     hint: 'Where to?',
                                     icon: Icons.search,
-                                    node: _endTextFieldNode,
+                                    onFocusChange: (bool hasFocus) {},
                                     animationController: _controller,
                                     animation: _inputAnimation,
-                                    onSumbitFunc: widget.endSubmitFunc,
+                                    onSubmitFunc: widget.endSubmitFunc,
                                   ),
                                 ),
                               ),

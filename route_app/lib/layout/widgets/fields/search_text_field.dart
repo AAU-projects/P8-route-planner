@@ -8,17 +8,17 @@ import 'package:route_app/layout/constants/colors.dart' as colors;
 import 'package:route_app/locator.dart';
 
 /// Custom text field used for location search in the app
-class SearchTextField extends StatelessWidget {
+class SearchTextField extends StatefulWidget {
   /// Default constructor
-  SearchTextField(
+  const SearchTextField(
       {Key key,
       @required this.hint,
       @required this.textController,
       @required this.animationController,
       @required this.icon,
-      this.node,
+      @required this.onFocusChange,
       this.animation,
-      this.onSumbitFunc})
+      this.onSubmitFunc})
       : super(key: key);
 
   /// Animation controller
@@ -30,8 +30,8 @@ class SearchTextField extends StatelessWidget {
   /// The hint text to display in the textfield
   final String hint;
 
-  /// The focusnode to control focus
-  final FocusNode node;
+  /// Function to run when the focus of the field changes
+  final Function onFocusChange;
 
   /// The suffix icon to display
   final IconData icon;
@@ -40,16 +40,18 @@ class SearchTextField extends StatelessWidget {
   final TextEditingController textController;
 
   /// The callback function which executes when submitting text
-  final Function onSumbitFunc;
+  final Function onSubmitFunc;
 
-  ///
-  AutoCompleteTextField<SuggestionResult> textField;
+  @override
+  _SearchTextFieldState createState() => _SearchTextFieldState();
+}
 
-  /// Suggestion list
-  final List<SuggestionResult> suggestionList = <SuggestionResult>[];
+class _SearchTextFieldState extends State<SearchTextField> {
+  AutoCompleteTextField<SuggestionResult> _textField;
 
-  ///
-  final GoogleAutocompleteAPI googleAutocompleteAPI =
+  final List<SuggestionResult> _suggestionList = <SuggestionResult>[];
+
+  final GoogleAutocompleteAPI _googleAutocompleteAPI =
       locator.get<GoogleAutocompleteAPI>();
 
   final LocationProvider _locationModel = LocationProvider();
@@ -57,59 +59,32 @@ class SearchTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-        animation: animationController, builder: _buildAnimation);
+        animation: widget.animationController, builder: _buildAnimation);
   }
 
   Widget _buildAnimation(BuildContext context, Widget child) {
     return SizedBox(
       height: 50,
-      width: animation.value,
+      width: widget.animation.value,
       child: _buildAutoCompTextfield(),
     );
   }
 
-/*
-  TextField _buildTextField(SuggestionProvider suggestionProvider,
-      {bool hasDropDown = false}) {
-    return TextField(
-      onChanged: (_) => suggestionProvider.getSuggestions(textController.text),
-      focusNode: node,
-      onSubmitted: onSumbitFunc,
-      controller: textController,
-      textAlignVertical: TextAlignVertical.center,
-      style: const TextStyle(color: Colors.white, fontSize: 13),
-      decoration: InputDecoration(
-          contentPadding: const EdgeInsets.all(10),
-          enabled: true,
-          filled: true,
-          hintText: hint,
-          hintStyle: const TextStyle(color: colors.Text, fontSize: 13),
-          fillColor: colors.SearchBackground,
-          border: const OutlineInputBorder(
-              borderSide: BorderSide(color: colors.SearchBackground),
-              borderRadius: BorderRadius.all(Radius.circular(5.0))),
-          focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: colors.SearchBackground)),
-          prefixIcon: Icon(icon, size: 20, color: Colors.white)),
-    );
-  }
-*/
-
   AutoCompleteTextField<SuggestionResult> _buildAutoCompTextfield() {
-    textField = AutoCompleteTextField<SuggestionResult>(
+    _textField = AutoCompleteTextField<SuggestionResult>(
       key: GlobalKey(),
-      suggestions: suggestionList,
+      suggestions: _suggestionList,
       clearOnSubmit: false,
       textChanged: (_) => _updateSuggestionList(),
-      focusNode: node,
-      textSubmitted: onSumbitFunc,
-      controller: textController,
+      onFocusChanged: widget.onFocusChange,
+      textSubmitted: widget.onSubmitFunc,
+      controller: widget.textController,
       style: const TextStyle(color: Colors.white, fontSize: 13),
       decoration: InputDecoration(
           contentPadding: const EdgeInsets.all(10),
           enabled: true,
           filled: true,
-          hintText: hint,
+          hintText: widget.hint,
           hintStyle: const TextStyle(color: colors.Text, fontSize: 13),
           fillColor: colors.SearchBackground,
           border: const OutlineInputBorder(
@@ -117,7 +92,7 @@ class SearchTextField extends StatelessWidget {
               borderRadius: BorderRadius.all(Radius.circular(5.0))),
           focusedBorder: const OutlineInputBorder(
               borderSide: BorderSide(color: colors.SearchBackground)),
-          prefixIcon: Icon(icon, size: 20, color: Colors.white)),
+          prefixIcon: Icon(widget.icon, size: 20, color: Colors.white)),
       itemBuilder: (BuildContext context, SuggestionResult suggestion) {
         return _row(suggestion);
       },
@@ -130,22 +105,24 @@ class SearchTextField extends StatelessWidget {
         return a.distance.compareTo(b.distance);
       },
       itemSubmitted: (SuggestionResult suggestion) {
-        textController.text = suggestion.location;
+        widget.textController.text = suggestion.location;
+        widget.onSubmitFunc(widget.textController.text);
       },
     );
-    return textField;
+    return _textField;
   }
 
   void _updateSuggestionList() {
-    googleAutocompleteAPI
-        .getSuggestions(textController.text, _locationModel.currentLocationObj)
+    _googleAutocompleteAPI
+        .getSuggestions(
+            widget.textController.text, _locationModel.currentLocationObj)
         .then((List<SuggestionResult> resultList) {
-      suggestionList.clear();
+      _suggestionList.clear();
       resultList.forEach((SuggestionResult res) {
-        suggestionList.add(res);
+        _suggestionList.add(res);
         print(res.location);
       });
-      textField.updateSuggestions(suggestionList);
+      _textField.updateSuggestions(_suggestionList);
     });
   }
 
@@ -155,15 +132,16 @@ class SearchTextField extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Text(
-            suggestion.location,
-            style: const TextStyle(fontSize: 16.0, color: colors.Text),
+          Container(
+            width: 225,
+            child: Text(
+              suggestion.location,
+              style: const TextStyle(fontSize: 12.0, color: colors.Text),
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
-          const SizedBox(
-            width: 10.0,
-          ),
           Text(
-            suggestion.distance.toString(),
+            (suggestion.distance / 1000).toStringAsFixed(1) + ' Km',
             style: const TextStyle(fontSize: 10.0, color: colors.Text),
           ),
         ],
