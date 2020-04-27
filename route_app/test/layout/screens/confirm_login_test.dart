@@ -7,6 +7,7 @@ import 'package:route_app/core/services/database.dart';
 import 'package:route_app/core/services/interfaces/API/auth.dart';
 import 'package:route_app/core/services/interfaces/gmaps.dart';
 import 'package:route_app/core/services/interfaces/API/logging.dart';
+import 'package:route_app/core/services/interfaces/gsuggestions.dart';
 import 'package:route_app/layout/screens/arguments/confirm_arguments.dart';
 import 'package:route_app/layout/screens/confirm_login.dart';
 import 'package:route_app/layout/screens/home.dart';
@@ -20,16 +21,19 @@ class MockApi extends Mock implements AuthAPI {}
 class MockLogging extends Mock implements LoggingService {}
 class MockDatabase extends Mock implements DatabaseService {}
 class GoogleMapsServiceMock extends Mock implements GoogleMapsAPI {}
+class SuggestionMock extends Mock implements GoogleAutocompleteAPI {}
 
 void main() {
   setUp(() {
     final MockApi api = MockApi();
     final MockLogging mockLog = MockLogging();
     final MockDatabase db = MockDatabase();
+    final SuggestionMock mockSuggestion = SuggestionMock();
     locator.reset();
     locator.registerSingleton<AuthAPI>(api);
     locator.registerSingleton<LoggingAPI>(mockLog);
     locator.registerSingleton<DatabaseService>(db);
+    locator.registerSingleton<GoogleAutocompleteAPI>(mockSuggestion);
     locator.registerFactory<GoogleMapsAPI>(() => GoogleMapsServiceMock());
 
     when(api.sendPin('validEmail@test.com')).thenAnswer(
@@ -101,7 +105,7 @@ void main() {
       expect(find.byType(ConfirmLoginScreen), findsOneWidget);
     }
 
-    testWidgets('Tap on register navigates to the confirm screen',
+    testWidgets('Tap on login navigates to the home screen',
         (WidgetTester tester) async {
       await setup(tester);
 
