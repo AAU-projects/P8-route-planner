@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:route_app/core/services/API/trip_service.dart';
 import 'package:route_app/core/services/API/web_service.dart';
 import 'package:route_app/core/services/gmaps_service.dart';
 import 'package:route_app/core/services/interfaces/API/auth.dart';
@@ -28,6 +29,7 @@ void setupLocator() {
   locator.registerLazySingleton<UserAPI>(() => UserService());
   locator.registerLazySingleton<AuthAPI>(() => AuthenticationService());
   locator.registerLazySingleton<LoggingAPI>(() => LoggingService());
+  locator.registerLazySingleton<TripService>(() => TripService());
 
   // Example of factory, New instance with each call
   // locator.registerFactory(() => Api());
