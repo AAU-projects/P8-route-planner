@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:route_app/core/models/directions_model.dart';
+import 'package:route_app/core/services/interfaces/API/user.dart';
 import 'package:route_app/core/services/interfaces/gmaps.dart';
 import 'package:route_app/core/services/interfaces/gsuggestions.dart';
 import 'package:route_app/layout/widgets/route_search.dart';
@@ -21,6 +22,7 @@ class HomeScreen extends StatefulWidget {
   final LocationProvider _locationModel = LocationProvider();
   final GoogleAutocompleteAPI _gSuggestions =
       locator.get<GoogleAutocompleteAPI>();
+  final UserAPI _userAPI = locator.get<UserAPI>();
 
   /// Start the background geolocator when the HomeScreen is initialized.
   final BackgroundGeolocator bgGeolocator = BackgroundGeolocator();
@@ -76,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _onEndSubmit(String input) async {
-    if (input.isEmpty) {
+    if (input.isEmpty || _startController.text.isEmpty) {
       return;
     }
 
@@ -121,12 +123,20 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<bool> getPolylines(String startLoc, String input) async {
     driveDirections = await widget._gMapsService
         .getDirections(origin: startLoc, destination: input);
+    driveDirections.icon = Icons.directions_car;
+    driveDirections.emission =
+        widget._userAPI.getUserSynchronously().carEmission *
+            (driveDirections.distance / 1000);
 
     bicyclingDirections = await widget._gMapsService.getDirections(
         origin: startLoc, destination: input, travelMode: 'bicycling');
+        bicyclingDirections.icon = Icons.directions_bike;
+        bicyclingDirections.emission = 0.0;
 
     transitDirections = await widget._gMapsService.getDirections(
         origin: startLoc, destination: input, travelMode: 'transit');
+        transitDirections.icon = Icons.directions_bus;
+        transitDirections.emission = 75 * (transitDirections.distance / 1000);
 
     return !(driveDirections.status == 'ZERO_RESULTS' &&
         bicyclingDirections.status == 'ZERO_RESULTS' &&
@@ -180,16 +190,7 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const Text('Fastest Route\n',
-                        style: TextStyle(color: Colors.white, fontSize: 18)),
-                    Text(
-                        (dir.duration / 60).round().toString() +
-                            ' minutes,   ' +
-                            (dir.distance / 1000).toStringAsFixed(1) +
-                            ' km,   x g CO2',
-                        style: const TextStyle(color: Colors.white))
-                  ]),
+                  children: directionCardText(dir, icon)),
             ),
             const Spacer(),
             Column(
@@ -210,6 +211,37 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ));
+  }
+
+  List<Widget> directionCardText(Directions dir, IconData icon) {
+    double emissionValue;
+    String emissionString;
+    if (icon == Icons.directions_car) {
+      emissionValue = widget._userAPI.getUserSynchronously().carEmission *
+          (dir.distance / 1000);
+    } else if (icon == Icons.directions_bus) {
+      emissionValue = 75 * (dir.distance / 1000);
+    } else if (icon == Icons.directions_bike) {
+      emissionValue = 0.0;
+    }
+
+    if (emissionValue > 1000) {
+      emissionString = (emissionValue / 1000).toStringAsFixed(1) + ' kg CO2';
+    } else {
+      emissionString = emissionValue.toStringAsFixed(1) + ' g CO2';
+    }
+
+    return <Widget>[
+      const Text('Fastest Route\n',
+          style: TextStyle(color: Colors.white, fontSize: 18)),
+      Text(
+          (dir.duration / 60).round().toString() +
+              ' minutes,   ' +
+              (dir.distance / 1000).toStringAsFixed(1) +
+              ' km,   ' +
+              emissionString,
+          style: const TextStyle(color: Colors.white))
+    ];
   }
 
   @override
@@ -301,6 +333,17 @@ class _HomeScreenState extends State<HomeScreen> {
               );
       },
     );
+  }
+
+  List<Icons> _getDirectionCardTitles(
+      List<Directions> directions) {
+    double cheapest;
+    int fastests;
+    double environmental;
+
+    for (Directions direction in directions) {
+      if (direction.)
+    }
   }
 
   Stack _floatingButtonsContainer(LocationProvider locationModel) {

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'location_model.dart';
@@ -34,4 +35,10 @@ class Directions {
 
   /// The list of points to draw a polyline
   List<LatLng> polylinePoints;
+
+  /// The widget icon for the directions
+  IconData icon;
+
+  /// The emission for this trip.
+  double emission;
 }
