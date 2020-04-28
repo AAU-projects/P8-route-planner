@@ -5,7 +5,9 @@ import 'package:route_app/core/enums/Transport_Types.dart';
 import 'package:route_app/core/models/trip.dart';
 import 'package:route_app/layout/constants/colors.dart' as color;
 import 'package:route_app/core/services/interfaces/API/trips.dart';
+import 'package:route_app/layout/widgets/dialogs/edit_trip.dart';
 import 'package:route_app/locator.dart';
+import 'package:intl/intl.dart';
 
 ///
 class TripsScreen extends StatefulWidget {
@@ -20,23 +22,79 @@ class _TripsScreenState extends State<TripsScreen> {
     Trip(
       startDestination: 'Nordkraft',
       endDestination: 'Cassiopeia',
-      transport: Transport.CAR,
+      transport: Transport.BIKE,
       tripDuration: 22,
-      tripPosition: <Position>[],
+      tripPosition: <Position>[Position(timestamp: DateTime.now())],
+    ),
+    Trip(
+      startDestination: 'Ikea',
+      endDestination: 'Aalborg C',
+      transport: Transport.CAR,
+      tripDuration: 37,
+      tripPosition: <Position>[Position(timestamp: DateTime.now())],
     ),
     Trip(
       startDestination: 'Ikea',
       endDestination: 'Aalborg C',
       transport: Transport.PUBLIC,
       tripDuration: 37,
-      tripPosition: <Position>[],
+      tripPosition: <Position>[Position(timestamp: DateTime.now())],
+    ),
+    Trip(
+      startDestination: 'Ikea',
+      endDestination: 'Aalborg C',
+      transport: Transport.WALK,
+      tripDuration: 37,
+      tripPosition: <Position>[Position(timestamp: DateTime.now())],
+    ),
+    Trip(
+      startDestination: 'Ikea',
+      endDestination: 'Aalborg C',
+      transport: Transport.PUBLIC,
+      tripDuration: 37,
+      tripPosition: <Position>[Position(timestamp: DateTime.now())],
+    ),
+    Trip(
+      startDestination: 'Ikea',
+      endDestination: 'Aalborg C',
+      transport: Transport.PUBLIC,
+      tripDuration: 37,
+      tripPosition: <Position>[Position(timestamp: DateTime.now())],
+    ),
+    Trip(
+      startDestination: 'Ikea',
+      endDestination: 'Aalborg C',
+      transport: Transport.PUBLIC,
+      tripDuration: 37,
+      tripPosition: <Position>[Position(timestamp: DateTime.now())],
+    ),
+    Trip(
+      startDestination: 'Ikea',
+      endDestination: 'Aalborg C',
+      transport: Transport.PUBLIC,
+      tripDuration: 37,
+      tripPosition: <Position>[Position(timestamp: DateTime.now())],
+    ),
+    Trip(
+      startDestination: 'Ikea',
+      endDestination: 'Aalborg C',
+      transport: Transport.CAR,
+      tripDuration: 37,
+      tripPosition: <Position>[Position(timestamp: DateTime.now())],
+    ),
+    Trip(
+      startDestination: 'Ikea',
+      endDestination: 'Aalborg C',
+      transport: Transport.WALK,
+      tripDuration: 37,
+      tripPosition: <Position>[Position(timestamp: DateTime.now())],
     ),
     Trip(
       startDestination: 'Herningvej 140',
       endDestination: 'Alexs lejlighed',
       transport: Transport.BIKE,
       tripDuration: 12,
-      tripPosition: <Position>[],
+      tripPosition: <Position>[Position(timestamp: DateTime.now())],
     )
   ];
 
@@ -44,7 +102,19 @@ class _TripsScreenState extends State<TripsScreen> {
   Widget build(BuildContext context) {
     //_trips.getTrips().then((List<Trip> value) => _tripList = value);
 
-    return Container(
+    return Scaffold(
+      backgroundColor: color.Background,
+      body: Column(
+        children: <Widget>[
+          buildTitleContainer(context),
+          buildListView(),
+        ],
+      ),
+    );
+  }
+
+  Expanded buildListView() {
+    return Expanded(
       child: ListView.builder(
           itemBuilder: (BuildContext context, int index) =>
               _makeCard(context, index),
@@ -54,25 +124,42 @@ class _TripsScreenState extends State<TripsScreen> {
     );
   }
 
-  Card _makeCard(BuildContext context, int index) {
+  Container buildTitleContainer(BuildContext context) {
+    return Container(
+        alignment: Alignment.bottomCenter,
+        height: 100,
+        width: MediaQuery.of(context).size.width / 1.5,
+        child: const Text('Your recent trips',
+            style: TextStyle(fontSize: 35.0, color: color.Text)));
+  }
+
+  GestureDetector _makeCard(BuildContext context, int index) {
     final Trip item = _tripList[index];
-    return Card(
-      elevation: 8.0,
-      margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-      child: Container(
-        decoration: BoxDecoration(
-            color: color.CardBackground,
-            borderRadius: BorderRadius.circular(10)),
-        child: _buildMenu(context, index, item),
+    return GestureDetector(
+      onTap: () => editTripDialog(context, item),
+      child: Card(
+        color: Colors.transparent,
+        elevation: 8.0,
+        margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+        child: Container(
+          decoration: BoxDecoration(
+              color: color.CardBackground,
+              borderRadius: BorderRadius.circular(10)),
+          child: _buildMenu(context, index, item),
+        ),
       ),
     );
   }
 
   ListTile _buildMenu(BuildContext context, int index, Trip item) {
+    final DateFormat formatter = DateFormat('H:m dd/MM-yyyy');
+    final String dateString = formatter.format(item.tripPosition[0].timestamp);
+
     return ListTile(
       contentPadding:
           const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
       leading: Container(
+        height: 35,
         padding: const EdgeInsets.only(right: 12.0),
         decoration: const BoxDecoration(
           border: Border(
@@ -91,6 +178,13 @@ class _TripsScreenState extends State<TripsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
+                'Date: ' + dateString,
+                style: TextStyle(
+                    fontSize: 14,
+                    color: color.Text,
+                    fontWeight: FontWeight.normal),
+              ),
+              Text(
                 'From: ' + item.startDestination,
                 style:
                     TextStyle(color: color.Text, fontWeight: FontWeight.bold),
@@ -100,9 +194,14 @@ class _TripsScreenState extends State<TripsScreen> {
                 style:
                     TextStyle(color: color.Text, fontWeight: FontWeight.bold),
               ),
+              Text(
+                'Duration: ' + item.tripDuration.toString() + ' minutes',
+                style:
+                    TextStyle(color: color.Text, fontWeight: FontWeight.bold),
+              ),
             ],
           ),
-          Icon(Icons.directions_car, color: color.Text),
+          buildTransportIcon(item),
         ],
       ),
     );
