@@ -231,34 +231,66 @@ class _HomeScreenState extends State<HomeScreen> {
         ));
   }
 
-  Stack _buildMainBody(LocationProvider _locationModel, BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        GoogleMap(
-          polylines: _polyline,
-          markers: _markers,
-          mapType: MapType.normal,
-          initialCameraPosition:
-              _initialPosition(_locationModel.currentLocationObj),
-          onMapCreated: onMapCreate,
-          myLocationButtonEnabled: false,
-          myLocationEnabled: true,
-          compassEnabled: false,
-          zoomControlsEnabled: false,
-          onTap: (_) {
-            FocusScope.of(context).requestFocus(FocusNode());
-          },
+  Scaffold _buildMainBody(
+      LocationProvider _locationModel, BuildContext context) {
+    return Scaffold(
+      endDrawer: Drawer(
+          child: Container(
+        color: colors.ButtonBackground,
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: const <Widget>[
+            ListTile(
+              title: Text(
+                'Route Suggestions',
+                style: TextStyle(fontSize: 25, color: colors.Text),
+              ),
+              trailing: Icon(
+                Icons.settings,
+                color: colors.Text,
+              ),
+            ),
+            ListTile(
+              title: Text(
+                'Settings',
+                style: TextStyle(fontSize: 25, color: colors.Text),
+              ),
+              trailing: Icon(
+                Icons.settings,
+                color: colors.Text,
+              ),
+            )
+          ],
         ),
-        GestureDetector(
-          child: RouteSearch(
-            startController: _startController,
-            endController: _endController,
-            startSubmitFunc: _onStartSubmit,
-            endSubmitFunc: _onEndSubmit,
-            backButtonFunc: _onBackButtonPress,
+      )),
+      body: Stack(
+        children: <Widget>[
+          GoogleMap(
+            polylines: _polyline,
+            markers: _markers,
+            mapType: MapType.normal,
+            initialCameraPosition:
+                _initialPosition(_locationModel.currentLocationObj),
+            onMapCreated: onMapCreate,
+            myLocationButtonEnabled: false,
+            myLocationEnabled: true,
+            compassEnabled: false,
+            zoomControlsEnabled: false,
+            onTap: (_) {
+              FocusScope.of(context).requestFocus(FocusNode());
+            },
           ),
-        ),
-      ],
+          GestureDetector(
+            child: RouteSearch(
+              startController: _startController,
+              endController: _endController,
+              startSubmitFunc: _onStartSubmit,
+              endSubmitFunc: _onEndSubmit,
+              backButtonFunc: _onBackButtonPress,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
