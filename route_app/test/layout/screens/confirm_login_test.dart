@@ -5,6 +5,7 @@ import 'package:route_app/core/models/user_model.dart';
 import 'package:route_app/core/services/API/logging_service.dart';
 import 'package:route_app/core/services/database.dart';
 import 'package:route_app/core/services/interfaces/API/auth.dart';
+import 'package:route_app/core/services/interfaces/API/user.dart';
 import 'package:route_app/core/services/interfaces/gmaps.dart';
 import 'package:route_app/core/services/interfaces/API/logging.dart';
 import 'package:route_app/core/services/interfaces/gsuggestions.dart';
@@ -22,6 +23,7 @@ class MockLogging extends Mock implements LoggingService {}
 class MockDatabase extends Mock implements DatabaseService {}
 class GoogleMapsServiceMock extends Mock implements GoogleMapsAPI {}
 class SuggestionMock extends Mock implements GoogleAutocompleteAPI {}
+class UserAPIMock extends Mock implements UserAPI {}
 
 void main() {
   setUp(() {
@@ -29,8 +31,10 @@ void main() {
     final MockLogging mockLog = MockLogging();
     final MockDatabase db = MockDatabase();
     final SuggestionMock mockSuggestion = SuggestionMock();
+    final UserAPIMock userAPIMock = UserAPIMock();
     locator.reset();
     locator.registerSingleton<AuthAPI>(api);
+    locator.registerSingleton<UserAPI>(userAPIMock);
     locator.registerSingleton<LoggingAPI>(mockLog);
     locator.registerSingleton<DatabaseService>(db);
     locator.registerSingleton<GoogleAutocompleteAPI>(mockSuggestion);

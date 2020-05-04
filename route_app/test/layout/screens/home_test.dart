@@ -4,11 +4,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mockito/mockito.dart';
 import 'package:route_app/core/models/suggestion_result_model.dart';
+import 'package:route_app/core/models/user_model.dart';
 import 'package:route_app/core/services/API/logging_service.dart';
 import 'package:route_app/core/services/database.dart';
 import 'package:route_app/core/services/interfaces/API/logging.dart';
 import 'package:route_app/core/models/directions_model.dart';
 import 'package:route_app/core/models/location_model.dart';
+import 'package:route_app/core/services/interfaces/API/user.dart';
 import 'package:route_app/core/services/interfaces/gmaps.dart';
 import 'package:route_app/core/services/interfaces/gsuggestions.dart';
 import 'package:route_app/layout/screens/home.dart';
@@ -23,9 +25,12 @@ class MockLogging extends Mock implements LoggingService {}
 
 class SuggestionMock extends Mock implements GoogleAutocompleteAPI {}
 
+class UserAPIMock extends Mock implements UserAPI {}
+
 void main() {
   GoogleMapsServiceMock mockGmaps;
   SuggestionMock mockSuggestion;
+  UserAPIMock userAPImock;
   final Directions testDirections = Directions(
       polyline: 'polystring',
       status: 'OK',
@@ -34,6 +39,9 @@ void main() {
       distance: 25,
       duration: 20,
       polylinePoints: <LatLng>[const LatLng(1.00, 1.00)]);
+
+  final User testUser = User(
+      'test', 'test@gmail.com', 76.0, '', '', DateTime.now(), DateTime.now());
 
   void _setupServiceCalls() {
     when(mockGmaps.getDirections(origin: 'testOrigin', destination: 'testDest'))
@@ -58,6 +66,9 @@ void main() {
       return Future<List<SuggestionResult>>.value(
           <SuggestionResult>[SuggestionResult(5, 'aalborg')]);
     });
+    when(userAPImock.getUserSynchronously()).thenAnswer((_) {
+      return testUser;
+    });
   }
 
   setUp(() {
@@ -66,9 +77,11 @@ void main() {
 
     mockGmaps = GoogleMapsServiceMock();
     mockSuggestion = SuggestionMock();
+    userAPImock = UserAPIMock();
     locator.reset();
     locator.registerFactory<GoogleMapsAPI>(() => mockGmaps);
     locator.registerSingleton<DatabaseService>(db);
+    locator.registerSingleton<UserAPI>(userAPImock);
     locator.registerSingleton<LoggingAPI>(mockLog);
     locator.registerSingleton<GoogleAutocompleteAPI>(mockSuggestion);
     _setupServiceCalls();
@@ -152,6 +165,29 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('BottomSheetContainer')), findsOneWidget);
+    });
+
+    testWidgets('Bottom sheet cards have Gesture Detectors',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(MaterialApp(home: HomeScreen()));
+
+      await tester.tap(find.byType(SearchTextField));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+          find.byKey(const Key('OriginTextField')), 'testOrigin');
+
+      await tester.enterText(
+          find.byKey(const Key('DestinationTextField')), 'testDest');
+
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+
+      await tester.pumpAndSettle();
+
+      expect(
+          find.descendant(
+              of: find.byType(Card), matching: find.byType(GestureDetector)),
+          findsNWidgets(3));
     });
 
     testWidgets('Back button removes bottom sheet after search',

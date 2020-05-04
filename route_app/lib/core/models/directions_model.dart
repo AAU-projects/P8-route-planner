@@ -41,4 +41,7 @@ class Directions {
 
   /// The emission for this trip.
   double emission;
+
+  /// The price for the trip.
+  double price;
 }
