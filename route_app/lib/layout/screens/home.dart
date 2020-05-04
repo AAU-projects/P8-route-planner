@@ -4,23 +4,30 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:route_app/core/models/directions_model.dart';
+import 'package:route_app/core/models/user_model.dart';
+import 'package:route_app/core/services/interfaces/API/user.dart';
 import 'package:route_app/core/services/interfaces/gmaps.dart';
-import 'package:route_app/core/services/interfaces/gsuggestions.dart';
+import 'package:route_app/layout/widgets/buttons/custom_button.dart';
+import 'package:route_app/layout/widgets/fields/custom_text_field.dart';
+import 'package:route_app/layout/widgets/fields/radio_group.dart';
 import 'package:route_app/layout/widgets/route_search.dart';
 import 'package:route_app/layout/constants/colors.dart' as colors;
 import 'package:route_app/core/services/background_geolocator.dart';
 import 'package:route_app/locator.dart';
 import 'package:route_app/layout/widgets/dialogs/logout.dart';
 import 'package:route_app/core/providers/location_provider.dart';
+import 'package:route_app/layout/constants/validators.dart' as validators;
+import 'package:route_app/core/providers/form_provider.dart';
 
 /// Home screen with map
 class HomeScreen extends StatefulWidget {
   ///key is required, otherwise map crashes on hot reload
   HomeScreen() : super(key: UniqueKey());
+
   final GoogleMapsAPI _gMapsService = locator.get<GoogleMapsAPI>();
   final LocationProvider _locationModel = LocationProvider();
-  final GoogleAutocompleteAPI _gSuggestions =
-      locator.get<GoogleAutocompleteAPI>();
+  final UserAPI _userService = locator.get<UserAPI>();
+  final GlobalKey<ScaffoldState> _endDrawerKey = GlobalKey();
 
   /// Start the background geolocator when the HomeScreen is initialized.
   final BackgroundGeolocator bgGeolocator = BackgroundGeolocator();
@@ -33,6 +40,9 @@ class _HomeScreenState extends State<HomeScreen> {
   GoogleMapController _controller;
   final TextEditingController _startController = TextEditingController();
   final TextEditingController _endController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _kmlController = TextEditingController();
+  final TextEditingController _fuelTypeController = TextEditingController();
   final Set<Polyline> _polyline = <Polyline>{};
   final Set<Marker> _markers = <Marker>{};
   Directions driveDirections;
@@ -40,11 +50,30 @@ class _HomeScreenState extends State<HomeScreen> {
   Directions transitDirections;
   LatLng startpoint;
   bool _replaceMyLocation = true;
+  bool co2EmissionEnabled = false;
+  bool priceEnabled = false;
+  bool timeEnabled = false;
+  User _loggedInUser;
+
+  void onSaveClick() {
+    if (_emailController.text.isNotEmpty) {
+      _loggedInUser.email = _emailController.text;
+    }
+    widget._userService
+        .updateUser(_loggedInUser.id, _loggedInUser).then((_) {
+          setState(() {
+            _emailController.text = _loggedInUser.email;
+          });
+        });
+  }
 
   @override
   void initState() {
     super.initState();
     _startController.addListener(_updateSearchFieldsText);
+    widget._userService.activeUser.then((User loggedInUser) {
+      _loggedInUser = loggedInUser;
+    });
   }
 
   @override
@@ -234,30 +263,109 @@ class _HomeScreenState extends State<HomeScreen> {
   Scaffold _buildMainBody(
       LocationProvider _locationModel, BuildContext context) {
     return Scaffold(
+      key: widget._endDrawerKey,
       endDrawer: Drawer(
           child: Container(
-        color: colors.ButtonBackground,
+        color: colors.Background,
         child: ListView(
-          padding: EdgeInsets.zero,
-          children: const <Widget>[
+          padding: const EdgeInsets.only(top: 20),
+          children: <Widget>[
             ListTile(
-              title: Text(
+              title: const Text(
                 'Route Suggestions',
                 style: TextStyle(fontSize: 25, color: colors.Text),
               ),
               trailing: Icon(
-                Icons.settings,
+                Icons.room,
                 color: colors.Text,
               ),
             ),
-            ListTile(
-              title: Text(
-                'Settings',
-                style: TextStyle(fontSize: 25, color: colors.Text),
+            const Padding(
+              padding: EdgeInsets.only(left: 35),
+              child: Text(
+                'No route suggestions at this moment.',
+                style: TextStyle(color: colors.Text),
               ),
-              trailing: Icon(
-                Icons.settings,
-                color: colors.Text,
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 20),
+              child: ListTile(
+                title: Text(
+                  'Settings',
+                  style: TextStyle(fontSize: 25, color: colors.Text),
+                ),
+                trailing: Icon(
+                  Icons.settings,
+                  color: colors.Text,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 35),
+              child: Column(
+                children: <Widget>[
+                  Column(
+                    children: <Widget>[
+                      Row(children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Icon(
+                            Icons.portrait,
+                            color: colors.Text,
+                          ),
+                        ),
+                        const Text(
+                          'Profile Settings',
+                          style: TextStyle(color: colors.Text),
+                        )
+                      ]),
+                      LayoutBuilder(builder:
+                          (BuildContext context, BoxConstraints constraints) {
+                        return ChangeNotifierProvider<FormProvider>(
+                            create: (_) => FormProvider(),
+                            child: Consumer<FormProvider>(builder:
+                                (BuildContext context,
+                                    FormProvider formProvider, Widget child) {
+                              return Padding(
+                                padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
+                                child: Column(
+                                  children: <Widget>[
+                                    CustomTextField(
+                                        iconKey: const Key('emailIcon'),
+                                        key: const Key('emailField'),
+                                        hint: _loggedInUser.email,
+                                        icon: Icons.mail,
+                                        helper: 'Change email',
+                                        validator: validators.email,
+                                        errorText: 'Invalid email',
+                                        controller: _emailController,
+                                        provider: formProvider),
+                                    CustomTextField(
+                                      key: const Key('fuelConsumptionField'),
+                                      hint: 'Unknown',
+                                      icon: Icons.local_gas_station,
+                                      helper: 'Change fuel consumption',
+                                      validator: validators.kml,
+                                      errorText: 'Invalid fuel consumption',
+                                      controller: _kmlController,
+                                      provider: formProvider,
+                                      isOptional: true,
+                                      keyboardType: TextInputType.number,
+                                    ),
+                                    RadioGroup(controller: _fuelTypeController),
+                                    CustomButton(
+                                        key: const Key('SaveChanges'),
+                                        onPressed: () => onSaveClick(),
+                                        buttonText: 'Save',
+                                        provider: formProvider),
+                                  ],
+                                ),
+                              );
+                            }));
+                      }),
+                    ],
+                  ),
+                ],
               ),
             )
           ],
@@ -368,8 +476,11 @@ class _HomeScreenState extends State<HomeScreen> {
           heroTag: 'menu',
           backgroundColor: colors.SearchBackground,
           onPressed: () {
-            widget._gSuggestions.getSuggestions(
-                'Aal', widget._locationModel.currentLocationObj);
+            if (widget._endDrawerKey.currentState.isEndDrawerOpen) {
+              widget._endDrawerKey.currentState.openDrawer();
+            } else {
+              widget._endDrawerKey.currentState.openEndDrawer();
+            }
           },
           child: const Icon(Icons.menu, size: 25, color: colors.Text),
         ),

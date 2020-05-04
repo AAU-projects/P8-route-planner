@@ -19,6 +19,6 @@ abstract class UserAPI {
   Future<User> getUser(String id);
 
   /// Update a user with new values by id
-  Future<User> updateUser(String id, User newUser);
+  Future<bool> updateUser(String id, User newUser);
 
 }
