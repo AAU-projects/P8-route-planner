@@ -58,13 +58,15 @@ class _HomeScreenState extends State<HomeScreen> {
   void onSaveClick() {
     if (_emailController.text.isNotEmpty) {
       _loggedInUser.email = _emailController.text;
-    }
-    widget._userService
-        .updateUser(_loggedInUser.id, _loggedInUser).then((_) {
-          setState(() {
-            _emailController.text = _loggedInUser.email;
-          });
+
+      widget._userService
+          .updateUser(_loggedInUser.id, _loggedInUser).then((_) {
+        setState(() {
+          _emailController.text = _loggedInUser.email;
         });
+      });
+    }
+
   }
 
   @override

@@ -58,12 +58,14 @@ class UserService implements UserAPI {
   }
 
   @override
-  Future<bool> updateUser(String id, User user) {
+  Future<User> updateUser(String id, User user) {
     return _http.put(_endpoint + id, <String, dynamic>{
-      'id': id,
-      'inUser': user.toJson(),
+      'Id': id,
+      'Email': user.email,
     }).then((Response res) {
-      return true;
+      User newUser = User.fromJson(res.json);
+      setActiveUser(newUser);
+      return newUser;
     });
   }
 
