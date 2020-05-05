@@ -9,6 +9,9 @@ abstract class UserAPI {
   /// Set the active user in the app
   void setActiveUser(User user);
 
+  /// Returns the current user synchronously
+  User getUserSynchronously();
+
   /// Logs a user out from the system
   void logout();
 
