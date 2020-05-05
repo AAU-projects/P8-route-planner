@@ -18,6 +18,7 @@ class TripsScreen extends StatefulWidget {
 class _TripsScreenState extends State<TripsScreen> {
   //final TripsAPI _trips = locator.get<TripsAPI>();
 
+  // Remove and use backend instead
   final List<Trip> _tripList = <Trip>[
     Trip(
       startDestination: 'Nordkraft',
