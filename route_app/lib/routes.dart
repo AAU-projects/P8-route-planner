@@ -23,6 +23,6 @@ Map<String, Widget Function(BuildContext)> routes =
   '/test': (_) => TestScreen(),
   /// Home screen with map
   '/home': (_) => HomeScreen(),
-  /// Home screen with map
+  /// Trip screen with map
   '/trips': (_) => TripsScreen(),
 };

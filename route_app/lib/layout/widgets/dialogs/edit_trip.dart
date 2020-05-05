@@ -107,13 +107,14 @@ Future<bool> editTripDialog(BuildContext context, Trip trip) {
   );
 }
 
+/// 
 Container buildTransportButton(IconData icon) {
   return Container(
     decoration: BoxDecoration(
         color: color.ButtonBackground,
         borderRadius: BorderRadius.circular(10.0)),
     child: Padding(
-      padding: EdgeInsets.all(5.0),
+      padding: const EdgeInsets.all(5.0),
       child: Icon(
         icon,
         color: color.Text,

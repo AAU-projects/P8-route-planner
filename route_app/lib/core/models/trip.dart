@@ -24,6 +24,9 @@ class Trip {
   /// Converted to a ISO string.
   final Transport transport;
 
+  /// Start destiation of a trip
   final String startDestination;
+
+  /// End destiation of a trip
   final String endDestination;
 }

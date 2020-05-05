@@ -4,9 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:route_app/core/enums/Transport_Types.dart';
 import 'package:route_app/core/models/trip.dart';
 import 'package:route_app/layout/constants/colors.dart' as color;
-import 'package:route_app/core/services/interfaces/API/trips.dart';
 import 'package:route_app/layout/widgets/dialogs/edit_trip.dart';
-import 'package:route_app/locator.dart';
 import 'package:intl/intl.dart';
 
 ///
