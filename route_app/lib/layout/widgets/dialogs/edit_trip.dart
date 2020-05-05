@@ -6,13 +6,29 @@ import 'package:route_app/layout/constants/colors.dart' as color;
 /// Transport Icon
 Icon buildTransportIcon(Trip item, {double size = 24}) {
   if (item.transport == Transport.WALK) {
-    return Icon(Icons.directions_walk, color: color.Text, size: size,);
+    return Icon(
+      Icons.directions_walk,
+      color: color.Text,
+      size: size,
+    );
   } else if (item.transport == Transport.BIKE) {
-    return Icon(Icons.directions_bike, color: color.Text, size: size,);
+    return Icon(
+      Icons.directions_bike,
+      color: color.Text,
+      size: size,
+    );
   } else if (item.transport == Transport.CAR) {
-    return Icon(Icons.directions_car, color: color.Text, size: size,);
+    return Icon(
+      Icons.directions_car,
+      color: color.Text,
+      size: size,
+    );
   } else if (item.transport == Transport.PUBLIC) {
-    return Icon(Icons.directions_bus, color: color.Text, size: size,);
+    return Icon(
+      Icons.directions_bus,
+      color: color.Text,
+      size: size,
+    );
   }
   return Icon(Icons.help_outline, color: color.Text);
 }
@@ -25,23 +41,27 @@ Future<bool> editTripDialog(BuildContext context, Trip trip) {
       backgroundColor: color.CardBackground,
       child: Container(
         alignment: Alignment.topCenter,
-        height: 250,
+        height: 300,
         decoration: BoxDecoration(
             color: color.CardBackground,
             borderRadius: BorderRadius.circular(20)),
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text(
-                'Edit your trip from ' +
-                    trip.startDestination +
-                    ' to ' +
-                    trip.endDestination,
-                style: TextStyle(
-                    fontSize: 18.0,
-                    color: color.Text,
-                    fontWeight: FontWeight.bold),
+              Center(
+                child: Text(
+                  'Edit your trip from ' +
+                      trip.startDestination +
+                      ' to ' +
+                      trip.endDestination,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 18.0,
+                      color: color.Text,
+                      fontWeight: FontWeight.bold),
+                ),
               ),
               const SizedBox(
                 height: 25,
