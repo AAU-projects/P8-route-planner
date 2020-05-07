@@ -18,7 +18,7 @@ class Trip {
   /// The trip duration for a trip
   final int tripDuration;
 
-  /// The menas of transport for a trip
+  /// The means of transport for a trip
   final Transport transport;
 
   /// Start destiation of a trip
