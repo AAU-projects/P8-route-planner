@@ -1,5 +1,8 @@
+import 'dart:async';
 import 'dart:convert';
-import 'package:flutter_background_geolocation/flutter_background_geolocation.dart' as bg;
+import 'dart:math';
+import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
+    as bg;
 import 'package:route_app/core/models/logging_position.dart';
 import 'package:route_app/core/services/API/logging_service.dart';
 import 'package:route_app/core/services/interfaces/API/logging.dart';
@@ -13,10 +16,30 @@ class BackgroundGeolocator {
   /// Default constructor
   BackgroundGeolocator() {
     _startGeolocator();
+    _uploadTime = _generateUploadTime();
+    Timer.periodic(
+        const Duration(seconds: 10), (Timer t) => _checkUploadTime());
   }
 
+  DateTime _uploadTime;
   final DatabaseService _db = locator.get<DatabaseService>();
   final LoggingService _loggingService = locator.get<LoggingAPI>();
+
+  DateTime _generateUploadTime() {
+    final DateTime current = DateTime.now().toUtc();
+    final Random rand = Random();
+    final DateTime newTime = current
+        .add(Duration(hours: rand.nextInt(22) + 1, minutes: rand.nextInt(59)));
+    return newTime;
+  }
+
+  void _checkUploadTime() {
+    final DateTime current = DateTime.now().toUtc();
+    if (current.hour == _uploadTime.hour &&
+        current.minute == _uploadTime.minute) {
+      _batchUploadToDatabase();
+    }
+  }
 
   /// Starts the geolocator
   void _startGeolocator() {
@@ -26,7 +49,6 @@ class BackgroundGeolocator {
 
       // Insert the logged position in the application database
       _db.insert('logs', <String, String>{'json': jsonEncode(pos.toJson())});
-      _batchUploadToDatabase();
     });
 
     /// Configure the plugin
@@ -62,7 +84,7 @@ class BackgroundGeolocator {
   }
 
   /// Takes a result of logs from the application database
-  /// and converts it to a list of LogPosition's 
+  /// and converts it to a list of LogPosition's
   List<LogPosition> _logsToPostitions(List<Map<String, dynamic>> logs) {
     final List<LogPosition> listOfPositions = <LogPosition>[];
 
@@ -85,32 +107,29 @@ class BackgroundGeolocator {
 
   /// Sends the location logs to the API
   Future<void> _batchUploadToDatabase() async {
+    final List<LogPosition> lastLog = _logsToPostitions(await _db.getLastLog());
+    final DateTime lastLogTime = DateTime.parse(lastLog[0].timestamp);
+    final DateTime currentTime = DateTime.now().toUtc();
+
+    // Do not upload if trip is ongoing
+    if (currentTime.difference(lastLogTime) < const Duration(minutes: 5)) {
+      _uploadTime = _uploadTime.add(const Duration(minutes: 5));
+      return;
+    }
+
     const String dbTable = 'logs';
-    // Gets the count of location logs from the internal database
-    // and checks if they exceeded 100.
-    final int count = await _db.getCount(dbTable);
+    final dynamic results = await _db.query(dbTable);
+    final List<Map<String, dynamic>> logs = results;
 
-    if (count >= 100) {
-      // Make a batch to commit the query and delete the table afterwards
-      final Batch batch = await _db.batch();
-      batch.query(dbTable);
-      batch.delete(dbTable);
-      final dynamic results = await batch.commit();
+    if (logs.isNotEmpty) {
+      // Make Position objects from Json
+      final List<LogPosition> positions = _logsToPostitions(logs);
 
-      // Since the batch results comes with a count,
-      // we need to take the first element
-      final List<Map<String, dynamic>> logs = results[0];
-
-      // If desired count is set to a low number, _batchUpload can run
-      // before the batch.commit has finished. 
-      // This takes care of that situation. 
-      // (Note that the count has to be very low for this to happen)
-      if (logs.isNotEmpty) {
-        // Make Position objects from Json
-        final List<LogPosition> positions = _logsToPostitions(logs);
-
-        // Send to the external database as list of Positions
-        _loggingService.postPositions(positions);
+      // Send to the external database as list of Positions
+      if (await _loggingService.postPositions(positions)) {
+        await _db.delete(dbTable);
+      } else {
+        _uploadTime = _uploadTime.add(const Duration(minutes: 5));
       }
     }
   }
