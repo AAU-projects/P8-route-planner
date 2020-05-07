@@ -32,7 +32,6 @@ void setupLocator() {
   locator.registerLazySingleton<UserAPI>(() => UserService());
   locator.registerLazySingleton<AuthAPI>(() => AuthenticationService());
   locator.registerLazySingleton<LoggingAPI>(() => LoggingService());
-  locator.registerLazySingleton<TripsAPI>(() => TripService());
 
   // Example of factory, New instance with each call
   // locator.registerFactory(() => Api());
@@ -42,7 +41,9 @@ void setupLocator() {
   locator.registerFactory<GoogleMapsAPI>(
       () => GoogleMapsService(environment.getVar('GOOGLE_API_KEY')));
   locator.registerFactory<GoogleAutocompleteAPI>(
-    () => GoogleAutocompleteService(environment.getVar('GOOGLE_API_KEY')));
+      () => GoogleAutocompleteService(environment.getVar('GOOGLE_API_KEY')));
   locator.registerFactoryParam<Web, String, void>(
       (String str, _) => WebService(baseUrl: str));
+
+  locator.registerFactory<TripsAPI>(() => TripService());
 }
