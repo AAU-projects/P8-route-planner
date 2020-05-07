@@ -1,29 +1,49 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:route_app/core/enums/Transport_Types.dart';
+import 'package:route_app/core/models/model.dart';
+import 'package:route_app/core/extensions/map.dart';
+
 
 /// Trip model
-class Trip {
+class Trip implements Model{
   /// Default Constructor
   Trip({
+    this.id,
     this.tripPosition,
     this.tripDuration,
-    this.transport,
-    this.startDestination,
-    this.endDestination
+    this.transport
   });
 
+  /// Constructor to instantiate from json
+  Trip.fromJson(Map<String, dynamic> json) {
+    if (json == null) {
+      throw const FormatException('Cant initialize on empty json');
+    }
+    id = json['Id'];
+    // get trip positions
+    tripDuration = json['TripDuration'];
+    transport = Transport.values[json['Transport']];
+  }
+
+  /// The trips id
+  String id;
+
   /// The trip positions for a trip
-  final List<Position> tripPosition;
+  List<Position> tripPosition;
 
   /// The trip duration for a trip
-  final int tripDuration;
+  int tripDuration;
 
   /// The means of transport for a trip
-  final Transport transport;
+  Transport transport;
 
-  /// Start destiation of a trip
-  final String startDestination;
-
-  /// End destiation of a trip
-  final String endDestination;
+  @override
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'Id': id,
+      // trips
+      'TripDuration': tripDuration,
+      'Transport': transport
+    };
+  }
 }

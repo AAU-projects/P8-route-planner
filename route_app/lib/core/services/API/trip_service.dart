@@ -17,7 +17,21 @@ class TripService implements TripsAPI {
   @override
   Future<List<Trip>> getTrips() {
     return _http.get(_endpoint).then((Response res) {
-      return res.json['result'];
+      final List<Trip> result = <Trip>[];
+
+      res.json['result'].forEach((dynamic day) {
+        day['TripList'].forEach((dynamic trip) {
+          result.add(Trip.fromJson(trip));
+        });
+      });
+
+      return result;
     });
   }
+
+  @override
+  Future<bool> updateTrip(Trip trip) {
+    return null;
+  }
+
 }

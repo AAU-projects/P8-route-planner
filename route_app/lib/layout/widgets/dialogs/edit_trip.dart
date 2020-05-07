@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:route_app/core/enums/Transport_Types.dart';
 import 'package:route_app/core/models/trip.dart';
 import 'package:route_app/layout/constants/colors.dart' as color;
@@ -35,6 +36,9 @@ Icon buildTransportIcon(Trip item, {double size = 24}) {
 
 /// Displays logout confirmation message
 Future<bool> editTripDialog(BuildContext context, Trip trip) {
+  final DateFormat formatter = DateFormat('H:m dd/MM-yyyy');
+  final String dateString = formatter.format(trip.tripPosition[0].timestamp);
+
   return showDialog<bool>(
     context: context,
     builder: (BuildContext context) => Dialog(
@@ -52,10 +56,7 @@ Future<bool> editTripDialog(BuildContext context, Trip trip) {
             children: <Widget>[
               Center(
                 child: Text(
-                  'Edit your trip from ' +
-                      trip.startDestination +
-                      ' to ' +
-                      trip.endDestination,
+                  'Edit your trip at ' + dateString,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       fontSize: 18.0,

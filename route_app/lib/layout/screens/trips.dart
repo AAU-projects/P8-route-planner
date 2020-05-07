@@ -3,9 +3,11 @@ import 'package:flutter/widgets.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:route_app/core/enums/Transport_Types.dart';
 import 'package:route_app/core/models/trip.dart';
+import 'package:route_app/core/services/interfaces/API/trips.dart';
 import 'package:route_app/layout/constants/colors.dart' as color;
 import 'package:route_app/layout/widgets/dialogs/edit_trip.dart';
 import 'package:intl/intl.dart';
+import 'package:route_app/locator.dart';
 
 ///
 class TripsScreen extends StatefulWidget {
@@ -14,88 +16,18 @@ class TripsScreen extends StatefulWidget {
 }
 
 class _TripsScreenState extends State<TripsScreen> {
-  //final TripsAPI _trips = locator.get<TripsAPI>();
+  final TripsAPI _trips = locator.get<TripsAPI>();
+
+  @override
+  void initState() {
+    _trips.getTrips().then((List<Trip> res) {
+      _tripList.addAll(res);
+    });
+    super.initState();
+  }
 
   // Remove and use backend instead
-  final List<Trip> _tripList = <Trip>[
-    Trip(
-      startDestination: 'Nordkraft',
-      endDestination: 'Cassiopeia',
-      transport: Transport.BIKE,
-      tripDuration: 22,
-      tripPosition: <Position>[Position(timestamp: DateTime.now())],
-    ),
-    Trip(
-      startDestination: 'Ikea',
-      endDestination: 'Aalborg C',
-      transport: Transport.CAR,
-      tripDuration: 37,
-      tripPosition: <Position>[Position(timestamp: DateTime.now())],
-    ),
-    Trip(
-      startDestination: 'Ikea',
-      endDestination: 'Aalborg C',
-      transport: Transport.PUBLIC,
-      tripDuration: 37,
-      tripPosition: <Position>[Position(timestamp: DateTime.now())],
-    ),
-    Trip(
-      startDestination: 'Ikea',
-      endDestination: 'Aalborg C',
-      transport: Transport.WALK,
-      tripDuration: 37,
-      tripPosition: <Position>[Position(timestamp: DateTime.now())],
-    ),
-    Trip(
-      startDestination: 'Ikea',
-      endDestination: 'Aalborg C',
-      transport: Transport.PUBLIC,
-      tripDuration: 37,
-      tripPosition: <Position>[Position(timestamp: DateTime.now())],
-    ),
-    Trip(
-      startDestination: 'Ikea',
-      endDestination: 'Aalborg C',
-      transport: Transport.PUBLIC,
-      tripDuration: 37,
-      tripPosition: <Position>[Position(timestamp: DateTime.now())],
-    ),
-    Trip(
-      startDestination: 'Ikea',
-      endDestination: 'Aalborg C',
-      transport: Transport.PUBLIC,
-      tripDuration: 37,
-      tripPosition: <Position>[Position(timestamp: DateTime.now())],
-    ),
-    Trip(
-      startDestination: 'Ikea',
-      endDestination: 'Aalborg C',
-      transport: Transport.PUBLIC,
-      tripDuration: 37,
-      tripPosition: <Position>[Position(timestamp: DateTime.now())],
-    ),
-    Trip(
-      startDestination: 'Ikea',
-      endDestination: 'Aalborg C',
-      transport: Transport.CAR,
-      tripDuration: 37,
-      tripPosition: <Position>[Position(timestamp: DateTime.now())],
-    ),
-    Trip(
-      startDestination: 'Ikea',
-      endDestination: 'Aalborg C',
-      transport: Transport.WALK,
-      tripDuration: 37,
-      tripPosition: <Position>[Position(timestamp: DateTime.now())],
-    ),
-    Trip(
-      startDestination: 'Herningvej 140',
-      endDestination: 'Alexs lejlighed',
-      transport: Transport.BIKE,
-      tripDuration: 12,
-      tripPosition: <Position>[Position(timestamp: DateTime.now())],
-    )
-  ];
+  final List<Trip> _tripList = <Trip>[];
 
   @override
   Widget build(BuildContext context) {
@@ -182,16 +114,6 @@ class _TripsScreenState extends State<TripsScreen> {
                     fontSize: 14,
                     color: color.Text,
                     fontWeight: FontWeight.normal),
-              ),
-              Text(
-                'From: ' + item.startDestination,
-                style:
-                    TextStyle(color: color.Text, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                'To: ' + item.endDestination,
-                style:
-                    TextStyle(color: color.Text, fontWeight: FontWeight.bold),
               ),
               Text(
                 'Duration: ' + item.tripDuration.toString() + ' minutes',
