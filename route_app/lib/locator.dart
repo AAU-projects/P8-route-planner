@@ -1,9 +1,11 @@
 import 'package:get_it/get_it.dart';
+import 'package:route_app/core/services/API/trip_service.dart';
 import 'package:route_app/core/services/API/web_service.dart';
 import 'package:route_app/core/services/gmaps_service.dart';
 import 'package:route_app/core/services/gsuggestions_service.dart';
 import 'package:route_app/core/services/interfaces/API/auth.dart';
 import 'package:route_app/core/services/interfaces/API/logging.dart';
+import 'package:route_app/core/services/interfaces/API/trips.dart';
 import 'package:route_app/core/services/interfaces/API/user.dart';
 import 'package:route_app/core/services/interfaces/gmaps.dart';
 import 'package:route_app/core/services/interfaces/gsuggestions.dart';
@@ -39,7 +41,9 @@ void setupLocator() {
   locator.registerFactory<GoogleMapsAPI>(
       () => GoogleMapsService(environment.getVar('GOOGLE_API_KEY')));
   locator.registerFactory<GoogleAutocompleteAPI>(
-    () => GoogleAutocompleteService(environment.getVar('GOOGLE_API_KEY')));
+      () => GoogleAutocompleteService(environment.getVar('GOOGLE_API_KEY')));
   locator.registerFactoryParam<Web, String, void>(
       (String str, _) => WebService(baseUrl: str));
+
+  locator.registerFactory<TripsAPI>(() => TripService());
 }

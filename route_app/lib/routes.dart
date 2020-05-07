@@ -6,6 +6,7 @@ import 'layout/screens/confirm_login.dart';
 import 'layout/screens/login.dart';
 import 'layout/screens/register.dart';
 import 'layout/screens/welcome.dart';
+import 'layout/screens/trips.dart';
 
 /// routes for the application
 Map<String, Widget Function(BuildContext)> routes =
@@ -22,4 +23,6 @@ Map<String, Widget Function(BuildContext)> routes =
   '/test': (_) => TestScreen(),
   /// Home screen with map
   '/home': (_) => HomeScreen(),
+  /// Trip screen with map
+  '/trips': (_) => TripsScreen(),
 };
