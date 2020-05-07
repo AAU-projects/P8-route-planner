@@ -59,14 +59,12 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_emailController.text.isNotEmpty) {
       _loggedInUser.email = _emailController.text;
 
-      widget._userService
-          .updateUser(_loggedInUser.id, _loggedInUser).then((_) {
+      widget._userService.updateUser(_loggedInUser.id, _loggedInUser).then((_) {
         setState(() {
           _emailController.text = _loggedInUser.email;
         });
       });
     }
-
   }
 
   @override
@@ -266,113 +264,7 @@ class _HomeScreenState extends State<HomeScreen> {
       LocationProvider _locationModel, BuildContext context) {
     return Scaffold(
       key: widget._endDrawerKey,
-      endDrawer: Drawer(
-          child: Container(
-        color: colors.Background,
-        child: ListView(
-          padding: const EdgeInsets.only(top: 20),
-          children: <Widget>[
-            ListTile(
-              title: const Text(
-                'Route Suggestions',
-                style: TextStyle(fontSize: 25, color: colors.Text),
-              ),
-              trailing: Icon(
-                Icons.room,
-                color: colors.Text,
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.only(left: 35),
-              child: Text(
-                'No route suggestions at this moment.',
-                style: TextStyle(color: colors.Text),
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.only(top: 20),
-              child: ListTile(
-                title: Text(
-                  'Settings',
-                  style: TextStyle(fontSize: 25, color: colors.Text),
-                ),
-                trailing: Icon(
-                  Icons.settings,
-                  color: colors.Text,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 35),
-              child: Column(
-                children: <Widget>[
-                  Column(
-                    children: <Widget>[
-                      Row(children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: Icon(
-                            Icons.portrait,
-                            color: colors.Text,
-                          ),
-                        ),
-                        const Text(
-                          'Profile Settings',
-                          style: TextStyle(color: colors.Text),
-                        )
-                      ]),
-                      LayoutBuilder(builder:
-                          (BuildContext context, BoxConstraints constraints) {
-                        return ChangeNotifierProvider<FormProvider>(
-                            create: (_) => FormProvider(),
-                            child: Consumer<FormProvider>(builder:
-                                (BuildContext context,
-                                    FormProvider formProvider, Widget child) {
-                              return Padding(
-                                padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
-                                child: Column(
-                                  children: <Widget>[
-                                    CustomTextField(
-                                        iconKey: const Key('emailIcon'),
-                                        key: const Key('emailField'),
-                                        hint: _loggedInUser.email,
-                                        icon: Icons.mail,
-                                        helper: 'Change email',
-                                        validator: validators.email,
-                                        errorText: 'Invalid email',
-                                        controller: _emailController,
-                                        provider: formProvider),
-                                    CustomTextField(
-                                      key: const Key('fuelConsumptionField'),
-                                      hint: 'Unknown',
-                                      icon: Icons.local_gas_station,
-                                      helper: 'Change fuel consumption',
-                                      validator: validators.kml,
-                                      errorText: 'Invalid fuel consumption',
-                                      controller: _kmlController,
-                                      provider: formProvider,
-                                      isOptional: true,
-                                      keyboardType: TextInputType.number,
-                                    ),
-                                    RadioGroup(controller: _fuelTypeController),
-                                    CustomButton(
-                                        key: const Key('SaveChanges'),
-                                        onPressed: () => onSaveClick(),
-                                        buttonText: 'Save',
-                                        provider: formProvider),
-                                  ],
-                                ),
-                              );
-                            }));
-                      }),
-                    ],
-                  ),
-                ],
-              ),
-            )
-          ],
-        ),
-      )),
+      endDrawer: _createDrawer(),
       body: Stack(
         children: <Widget>[
           GoogleMap(
@@ -400,6 +292,121 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _createDrawer() {
+    return Drawer(
+        child: Container(
+      color: colors.Background,
+      child: ListView(
+        padding: const EdgeInsets.only(top: 20),
+        children: <Widget>[
+          _suggestionsTitle(),
+          _noSuggestionsTile(),
+          _profileSettings()
+        ],
+      ),
+    ));
+  }
+
+  Widget _profileSettings() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 35),
+      child: Column(
+        children: <Widget>[
+          _settingsTitle(),
+          _settingsForm(),
+        ],
+      ),
+    );
+  }
+
+  Widget _settingsForm() {
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+      return ChangeNotifierProvider<FormProvider>(
+          create: (_) => FormProvider(),
+          child: Consumer<FormProvider>(builder:
+              (BuildContext context, FormProvider formProvider, Widget child) {
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
+              child: Column(
+                children: <Widget>[
+                  CustomTextField(
+                      iconKey: const Key('emailIcon'),
+                      key: const Key('emailField'),
+                      hint: _loggedInUser.email,
+                      icon: Icons.mail,
+                      helper: 'Change email',
+                      validator: validators.email,
+                      errorText: 'Invalid email',
+                      controller: _emailController,
+                      provider: formProvider),
+//                                    CustomTextField(
+//                                      key: const Key('fuelConsumptionField'),
+//                                      hint: 'Unknown',
+//                                      icon: Icons.local_gas_station,
+//                                      helper: 'Change fuel consumption',
+//                                      validator: validators.kml,
+//                                      errorText: 'Invalid fuel consumption',
+//                                      controller: _kmlController,
+//                                      provider: formProvider,
+//                                      isOptional: true,
+//                                      keyboardType: TextInputType.number,
+//                                    ),
+//                                    RadioGroup(controller: _fuelTypeController),
+                  CustomButton(
+                      key: const Key('SaveChanges'),
+                      onPressed: () => onSaveClick(),
+                      buttonText: 'Save',
+                      provider: formProvider),
+                ],
+              ),
+            );
+          }));
+    });
+  }
+
+  Widget _settingsTitle() {
+    return Row(children: <Widget>[
+      Padding(
+        padding: const EdgeInsets.only(right: 8),
+        child: Icon(
+          Icons.portrait,
+          color: colors.Text,
+        ),
+      ),
+      const Text(
+        'Profile Settings',
+        style: TextStyle(color: colors.Text),
+      )
+    ]);
+  }
+
+  Widget _noSuggestionsTile() {
+    return const Padding(
+      padding: EdgeInsets.only(top: 20),
+      child: ListTile(
+        title: Text(
+          'Settings',
+          style: TextStyle(fontSize: 25, color: colors.Text),
+        ),
+        trailing: Icon(
+          Icons.settings,
+          color: colors.Text,
+        ),
+      ),
+    );
+  }
+
+  Widget _suggestionsTitle() {
+    return const Padding(
+      padding: EdgeInsets.only(left: 35),
+      child: Text(
+        'No route suggestions at this moment.',
+        style: TextStyle(color: colors.Text),
       ),
     );
   }
