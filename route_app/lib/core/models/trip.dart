@@ -12,16 +12,13 @@ class Trip {
     this.endDestination
   });
 
-  /// The latitude of this position in degrees normalized to the interval 
-  /// -90.0 to +90.0 (both inclusive).
+  /// The trip positions for a trip
   final List<Position> tripPosition;
 
-  /// The longitude of the position in degrees normalized to the interval 
-  /// -180 (exclusive) to +180 (inclusive).
+  /// The trip duration for a trip
   final int tripDuration;
 
-  /// The time at which this position was determined.
-  /// Converted to a ISO string.
+  /// The menas of transport for a trip
   final Transport transport;
 
   /// Start destiation of a trip
