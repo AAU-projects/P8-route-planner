@@ -44,6 +44,9 @@ void main() {
       duration: 20,
       polylinePoints: <LatLng>[const LatLng(1.00, 1.00)]);
 
+  final User testUser = User(
+      'test', 'test@gmail.com', 76.0, '', '', DateTime.now(), DateTime.now());
+
   void _setupServiceCalls() {
     when(mockGmaps.getDirections(origin: 'testOrigin', destination: 'testDest'))
         .thenAnswer((_) {
@@ -66,6 +69,9 @@ void main() {
     when(mockSuggestion.getSuggestions(any, any)).thenAnswer((_) {
       return Future<List<SuggestionResult>>.value(
           <SuggestionResult>[SuggestionResult(5, 'aalborg')]);
+    });
+    when(userApi.getUserSynchronously()).thenAnswer((_) {
+      return testUser;
     });
   }
 
@@ -163,6 +169,29 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('BottomSheetContainer')), findsOneWidget);
+    });
+
+    testWidgets('Bottom sheet cards have Gesture Detectors',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(MaterialApp(home: HomeScreen()));
+
+      await tester.tap(find.byType(SearchTextField));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+          find.byKey(const Key('OriginTextField')), 'testOrigin');
+
+      await tester.enterText(
+          find.byKey(const Key('DestinationTextField')), 'testDest');
+
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+
+      await tester.pumpAndSettle();
+
+      expect(
+          find.descendant(
+              of: find.byType(Card), matching: find.byType(GestureDetector)),
+          findsNWidgets(3));
     });
 
     testWidgets('Back button removes bottom sheet after search',

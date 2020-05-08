@@ -17,6 +17,7 @@ import 'package:route_app/layout/widgets/dialogs/logout.dart';
 import 'package:route_app/core/providers/location_provider.dart';
 import 'package:route_app/layout/constants/validators.dart' as validators;
 import 'package:route_app/core/providers/form_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:route_app/layout/widgets/notifications.dart' as notifications;
 
 /// Home screen with map
@@ -104,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _onEndSubmit(String input) async {
-    if (input.isEmpty) {
+    if (input.isEmpty || _startController.text.isEmpty) {
       return;
     }
 
@@ -132,6 +133,47 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future<void> openMaps(Directions dir, BuildContext context) async {
+    String url = 'https://www.google.com/maps/dir/?api=1&origin=' +
+        dir.startLocation.latitude.toString() +
+        ',' +
+        dir.startLocation.longtitude.toString() +
+        '&destination=' +
+        dir.endLocation.latitude.toString() +
+        ',' +
+        dir.endLocation.longtitude.toString();
+
+    if (dir.icon == Icons.directions_bus) {
+      url += '&travelmode=transit';
+    } else {
+      url += '&waypoints=';
+
+      for (int i = 0; i < dir.polylinePoints.length; i++) {
+        url += dir.polylinePoints[i].latitude.toString();
+        url += ',';
+        url += dir.polylinePoints[i].longitude.toString();
+
+        if (i != dir.polylinePoints.length - 1) {
+          url += '|';
+        }
+      }
+
+      url += '&travelmode=';
+
+      if (dir.icon == Icons.directions_car) {
+        url += 'driving';
+      } else {
+        url += 'bicycling';
+      }
+    }
+
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      notifications.error(context, 'Could not open Google Maps');
+    }
+  }
+
   Future<String> getStartLocation() async {
     String startLoc;
     if (_startController.text == 'My Location') {
@@ -147,14 +189,25 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<bool> getPolylines(String startLoc, String input) async {
+    final User currentUser = widget._userService.getUserSynchronously();
     driveDirections = await widget._gMapsService
         .getDirections(origin: startLoc, destination: input);
+    driveDirections.icon = Icons.directions_car;
+    driveDirections.emission =
+        currentUser.carEmission * (driveDirections.distance / 1000);
+    driveDirections.price = driveDirections.distance / 1000 / 15 * 11;
 
     bicyclingDirections = await widget._gMapsService.getDirections(
         origin: startLoc, destination: input, travelMode: 'bicycling');
+    bicyclingDirections.icon = Icons.directions_bike;
+    bicyclingDirections.emission = 0.0;
+    bicyclingDirections.price = 0.0;
 
     transitDirections = await widget._gMapsService.getDirections(
         origin: startLoc, destination: input, travelMode: 'transit');
+    transitDirections.icon = Icons.directions_bus;
+    transitDirections.emission = 75 * (transitDirections.distance / 1000);
+    transitDirections.price = 22.0;
 
     return !(driveDirections.status == 'ZERO_RESULTS' &&
         bicyclingDirections.status == 'ZERO_RESULTS' &&
@@ -199,45 +252,79 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Card _makeDirectionCard(Directions dir, IconData icon, Color iconColor) {
-    return Card(
-        color: colors.CardBackground,
-        child: Row(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const Text('Fastest Route\n',
-                        style: TextStyle(color: Colors.white, fontSize: 18)),
-                    Text(
-                        (dir.duration / 60).round().toString() +
-                            ' minutes,   ' +
-                            (dir.distance / 1000).toStringAsFixed(1) +
-                            ' km,   x g CO2',
-                        style: const TextStyle(color: Colors.white))
-                  ]),
-            ),
-            const Spacer(),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: <Widget>[
-                RawMaterialButton(
-                  onPressed: () {},
-                  child: Icon(
-                    icon,
-                    color: Colors.white,
+  GestureDetector _makeDirectionCard(Directions dir, Color iconColor,
+      List<IconData> titleList, BuildContext context) {
+    return GestureDetector(
+      child: Card(
+          color: colors.CardBackground,
+          child: Row(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: directionCardText(dir, titleList)),
+              ),
+              const Spacer(),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: <Widget>[
+                  RawMaterialButton(
+                    onPressed: () {},
+                    child: Icon(
+                      dir.icon,
+                      color: Colors.white,
+                    ),
+                    shape: const CircleBorder(),
+                    elevation: 2.0,
+                    fillColor: iconColor,
+                    padding: const EdgeInsets.all(2.0),
                   ),
-                  shape: const CircleBorder(),
-                  elevation: 2.0,
-                  fillColor: iconColor,
-                  padding: const EdgeInsets.all(2.0),
-                ),
-              ],
-            ),
-          ],
-        ));
+                ],
+              ),
+            ],
+          )),
+      onTap: () => openMaps(dir, context),
+    );
+  }
+
+  List<Widget> directionCardText(Directions dir, List<IconData> titleList) {
+    String emissionString;
+
+    if (dir.emission > 1000) {
+      emissionString = (dir.emission / 1000).toStringAsFixed(1) + ' kg CO2';
+    } else {
+      emissionString = dir.emission.toStringAsFixed(1) + ' g CO2';
+    }
+
+    String titleText = '';
+
+    if (dir.icon == titleList[0]) {
+      titleText = 'Fastest';
+    }
+    if (dir.icon == titleList[1]) {
+      titleText += titleText.isEmpty ? 'Environmental' : '/Environmental';
+    }
+    if (dir.icon == titleList[2]) {
+      titleText += titleText.isEmpty ? 'Cheapest' : '/Cheapest';
+    }
+
+    titleText += titleText.isEmpty ? 'Route' : ' Route';
+
+    return <Widget>[
+      Text(titleText + '\n',
+          style: const TextStyle(color: Colors.white, fontSize: 18)),
+      Text(
+          (dir.duration / 60).round().toString() +
+              ' minutes,   ' +
+              (dir.distance / 1000).toStringAsFixed(1) +
+              ' km,   ' +
+              emissionString +
+              ',   ' +
+              dir.price.toStringAsFixed(1) +
+              ',-',
+          style: const TextStyle(color: Colors.white))
+    ];
   }
 
   @override
@@ -251,7 +338,7 @@ class _HomeScreenState extends State<HomeScreen> {
             _centerMap(_locationModel.currentLocationObj);
             return Scaffold(
                 body: _buildMainBody(_locationModel, context),
-                bottomSheet: _buildBottomSheet(),
+                bottomSheet: _buildBottomSheet(context),
                 floatingActionButton: _floatingButtonsContainer(_locationModel),
                 floatingActionButtonLocation:
                     FloatingActionButtonLocation.endDocked);
@@ -397,7 +484,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  DraggableScrollableSheet _buildBottomSheet() {
+  DraggableScrollableSheet _buildBottomSheet(BuildContext context) {
     return DraggableScrollableSheet(
       initialChildSize: 0.1,
       maxChildSize: 0.4,
@@ -419,23 +506,57 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding:
                         const EdgeInsets.only(top: 14.0, left: 4.0, right: 4.0),
                     child: Column(
-                      children: <Widget>[
-                        if (driveDirections != null)
-                          _makeDirectionCard(driveDirections,
-                              Icons.directions_car, Colors.redAccent),
-                        if (bicyclingDirections != null)
-                          _makeDirectionCard(bicyclingDirections,
-                              Icons.directions_bike, Colors.green),
-                        if (transitDirections != null)
-                          _makeDirectionCard(transitDirections,
-                              Icons.directions_bus, Colors.orangeAccent)
-                      ],
+                      children: _makeBottomSheetChildren(context),
                     ),
                   ),
                 ),
               );
       },
     );
+  }
+
+  List<Widget> _makeBottomSheetChildren(BuildContext context) {
+    final List<IconData> titleList = _getDirectionCardTitles(
+        <Directions>[driveDirections, bicyclingDirections, transitDirections]);
+    return <Widget>[
+      if (driveDirections != null)
+        _makeDirectionCard(
+            driveDirections, Colors.redAccent, titleList, context),
+      if (bicyclingDirections != null)
+        _makeDirectionCard(
+            bicyclingDirections, Colors.green, titleList, context),
+      if (transitDirections != null)
+        _makeDirectionCard(
+            transitDirections, Colors.orangeAccent, titleList, context)
+    ];
+  }
+
+  List<IconData> _getDirectionCardTitles(List<Directions> directions) {
+    // 0 = fastest, 1 = most environmental, 2 = cheapest
+    final List<IconData> resList = <IconData>[null, null, null];
+    double cheapest = double.maxFinite;
+    int fastests = 2147483647;
+    double environmental = double.maxFinite;
+
+    for (Directions direction in directions) {
+      if (direction == null) {
+        continue;
+      }
+      if (direction.duration < fastests) {
+        fastests = direction.duration;
+        resList[0] = direction.icon;
+      }
+      if (direction.emission < environmental) {
+        environmental = direction.emission;
+        resList[1] = direction.icon;
+      }
+      if (direction.price < cheapest) {
+        cheapest = direction.price;
+        resList[2] = direction.icon;
+      }
+    }
+
+    return resList;
   }
 
   Stack _floatingButtonsContainer(LocationProvider locationModel) {

@@ -35,13 +35,14 @@ void main() {
     final MockLogging mockLog = MockLogging();
     final MockDatabase db = MockDatabase();
     final SuggestionMock mockSuggestion = SuggestionMock();
+    final MockUserApi userAPIMock = MockUserApi();
     locator.reset();
     locator.registerSingleton<AuthAPI>(api);
+    locator.registerSingleton<UserAPI>(userAPIMock);
     locator.registerSingleton<LoggingAPI>(mockLog);
     locator.registerSingleton<DatabaseService>(db);
     locator.registerSingleton<GoogleAutocompleteAPI>(mockSuggestion);
     locator.registerFactory<GoogleMapsAPI>(() => GoogleMapsServiceMock());
-    locator.registerFactory<UserAPI>(() => MockUserApi());
 
     when(api.sendPin('validEmail@test.com')).thenAnswer(
             (_) => Future<bool>.value(true));

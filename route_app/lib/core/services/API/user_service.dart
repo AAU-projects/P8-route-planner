@@ -39,6 +39,11 @@ class UserService implements UserAPI {
   }
 
   @override
+  User getUserSynchronously() {
+     return _user;
+  }
+
+  @override
   void setActiveUser(User user) {
     _user = user;
 
