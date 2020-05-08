@@ -63,7 +63,7 @@ class UserService implements UserAPI {
       'Id': id,
       'Email': user.email,
     }).then((Response res) {
-      User newUser = User.fromJson(res.json);
+      final User newUser = User.fromJson(res.json);
       setActiveUser(newUser);
       return newUser;
     });

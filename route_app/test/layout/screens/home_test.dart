@@ -4,11 +4,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mockito/mockito.dart';
 import 'package:route_app/core/models/suggestion_result_model.dart';
+import 'package:route_app/core/models/user_model.dart';
 import 'package:route_app/core/services/API/logging_service.dart';
 import 'package:route_app/core/services/database.dart';
 import 'package:route_app/core/services/interfaces/API/logging.dart';
 import 'package:route_app/core/models/directions_model.dart';
 import 'package:route_app/core/models/location_model.dart';
+import 'package:route_app/core/services/interfaces/API/user.dart';
 import 'package:route_app/core/services/interfaces/gmaps.dart';
 import 'package:route_app/core/services/interfaces/gsuggestions.dart';
 import 'package:route_app/layout/screens/home.dart';
@@ -19,6 +21,12 @@ class GoogleMapsServiceMock extends Mock implements GoogleMapsAPI {}
 
 class MockDatabase extends Mock implements DatabaseService {}
 
+class MockUserApi extends Mock implements UserAPI {
+  @override
+  Future<User> get activeUser =>
+      Future<User>.value(User('1','test@test.test',123,'123',null,null,null));
+}
+
 class MockLogging extends Mock implements LoggingService {}
 
 class SuggestionMock extends Mock implements GoogleAutocompleteAPI {}
@@ -26,6 +34,7 @@ class SuggestionMock extends Mock implements GoogleAutocompleteAPI {}
 void main() {
   GoogleMapsServiceMock mockGmaps;
   SuggestionMock mockSuggestion;
+  MockUserApi userApi;
   final Directions testDirections = Directions(
       polyline: 'polystring',
       status: 'OK',
@@ -66,10 +75,12 @@ void main() {
 
     mockGmaps = GoogleMapsServiceMock();
     mockSuggestion = SuggestionMock();
+    userApi = MockUserApi();
     locator.reset();
     locator.registerFactory<GoogleMapsAPI>(() => mockGmaps);
     locator.registerSingleton<DatabaseService>(db);
     locator.registerSingleton<LoggingAPI>(mockLog);
+    locator.registerSingleton<UserAPI>(userApi);
     locator.registerSingleton<GoogleAutocompleteAPI>(mockSuggestion);
     _setupServiceCalls();
   });

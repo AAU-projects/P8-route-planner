@@ -9,7 +9,6 @@ import 'package:route_app/core/services/interfaces/API/user.dart';
 import 'package:route_app/core/services/interfaces/gmaps.dart';
 import 'package:route_app/layout/widgets/buttons/custom_button.dart';
 import 'package:route_app/layout/widgets/fields/custom_text_field.dart';
-import 'package:route_app/layout/widgets/fields/radio_group.dart';
 import 'package:route_app/layout/widgets/route_search.dart';
 import 'package:route_app/layout/constants/colors.dart' as colors;
 import 'package:route_app/core/services/background_geolocator.dart';
@@ -18,6 +17,7 @@ import 'package:route_app/layout/widgets/dialogs/logout.dart';
 import 'package:route_app/core/providers/location_provider.dart';
 import 'package:route_app/layout/constants/validators.dart' as validators;
 import 'package:route_app/core/providers/form_provider.dart';
+import 'package:route_app/layout/widgets/notifications.dart' as notifications;
 
 /// Home screen with map
 class HomeScreen extends StatefulWidget {
@@ -41,8 +41,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _startController = TextEditingController();
   final TextEditingController _endController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _kmlController = TextEditingController();
-  final TextEditingController _fuelTypeController = TextEditingController();
   final Set<Polyline> _polyline = <Polyline>{};
   final Set<Marker> _markers = <Marker>{};
   Directions driveDirections;
@@ -55,13 +53,14 @@ class _HomeScreenState extends State<HomeScreen> {
   bool timeEnabled = false;
   User _loggedInUser;
 
-  void onSaveClick() {
+  void onSaveClick(BuildContext context) {
     if (_emailController.text.isNotEmpty) {
       _loggedInUser.email = _emailController.text;
 
       widget._userService.updateUser(_loggedInUser.id, _loggedInUser).then((_) {
         setState(() {
-          _emailController.text = _loggedInUser.email;
+          widget._endDrawerKey.currentState.openDrawer();
+          notifications.success(context, 'Email updated');
         });
       });
     }
@@ -264,7 +263,7 @@ class _HomeScreenState extends State<HomeScreen> {
       LocationProvider _locationModel, BuildContext context) {
     return Scaffold(
       key: widget._endDrawerKey,
-      endDrawer: _createDrawer(),
+      endDrawer: _createDrawer(context),
       body: Stack(
         children: <Widget>[
           GoogleMap(
@@ -296,7 +295,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _createDrawer() {
+  Widget _createDrawer(BuildContext context) {
     return Drawer(
         child: Container(
       color: colors.Background,
@@ -305,25 +304,25 @@ class _HomeScreenState extends State<HomeScreen> {
         children: <Widget>[
           _suggestionsTitle(),
           _noSuggestionsTile(),
-          _profileSettings()
+          _profileSettings(context)
         ],
       ),
     ));
   }
 
-  Widget _profileSettings() {
+  Widget _profileSettings(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 35),
       child: Column(
         children: <Widget>[
           _settingsTitle(),
-          _settingsForm(),
+          _settingsForm(context),
         ],
       ),
     );
   }
 
-  Widget _settingsForm() {
+  Widget _settingsForm(BuildContext context) {
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
       return ChangeNotifierProvider<FormProvider>(
@@ -344,22 +343,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       errorText: 'Invalid email',
                       controller: _emailController,
                       provider: formProvider),
-//                                    CustomTextField(
-//                                      key: const Key('fuelConsumptionField'),
-//                                      hint: 'Unknown',
-//                                      icon: Icons.local_gas_station,
-//                                      helper: 'Change fuel consumption',
-//                                      validator: validators.kml,
-//                                      errorText: 'Invalid fuel consumption',
-//                                      controller: _kmlController,
-//                                      provider: formProvider,
-//                                      isOptional: true,
-//                                      keyboardType: TextInputType.number,
-//                                    ),
-//                                    RadioGroup(controller: _fuelTypeController),
                   CustomButton(
                       key: const Key('SaveChanges'),
-                      onPressed: () => onSaveClick(),
+                      onPressed: () => onSaveClick(context),
                       buttonText: 'Save',
                       provider: formProvider),
                 ],

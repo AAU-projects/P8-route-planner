@@ -5,6 +5,7 @@ import 'package:route_app/core/models/user_model.dart';
 import 'package:route_app/core/services/API/logging_service.dart';
 import 'package:route_app/core/services/database.dart';
 import 'package:route_app/core/services/interfaces/API/auth.dart';
+import 'package:route_app/core/services/interfaces/API/user.dart';
 import 'package:route_app/core/services/interfaces/gmaps.dart';
 import 'package:route_app/core/services/interfaces/API/logging.dart';
 import 'package:route_app/core/services/interfaces/gsuggestions.dart';
@@ -22,6 +23,11 @@ class MockLogging extends Mock implements LoggingService {}
 class MockDatabase extends Mock implements DatabaseService {}
 class GoogleMapsServiceMock extends Mock implements GoogleMapsAPI {}
 class SuggestionMock extends Mock implements GoogleAutocompleteAPI {}
+class MockUserApi extends Mock implements UserAPI {
+  @override
+  Future<User> get activeUser =>
+      Future<User>.value(User('1','test@test.test',123,'123',null,null,null));
+}
 
 void main() {
   setUp(() {
@@ -35,6 +41,7 @@ void main() {
     locator.registerSingleton<DatabaseService>(db);
     locator.registerSingleton<GoogleAutocompleteAPI>(mockSuggestion);
     locator.registerFactory<GoogleMapsAPI>(() => GoogleMapsServiceMock());
+    locator.registerFactory<UserAPI>(() => MockUserApi());
 
     when(api.sendPin('validEmail@test.com')).thenAnswer(
             (_) => Future<bool>.value(true));
