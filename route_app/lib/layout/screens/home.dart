@@ -393,24 +393,24 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.only(top: 20),
         children: <Widget>[
           _noSuggestionsTile('Trips', Icons.place),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(40, 5, 40, 5),
-            child: RaisedButton(
-                key: const Key('AccessTrips'),
-                color: colors.SearchBackground,
-                onPressed: () => Navigator.pushNamed(context, '/trips'),
-                child: const Text('See your trips',
-                    style: TextStyle(fontSize: 14, color: colors.Text))),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(top: 20),
-            child: Divider(color: colors.Text),
-          ),
+          _yourTrips(context),
           _noSuggestionsTile('Settings', Icons.settings),
           _profileSettings(context),
         ],
       ),
     ));
+  }
+
+  Padding _yourTrips(BuildContext context) {
+    return Padding(
+          padding: const EdgeInsets.fromLTRB(40, 5, 40, 5),
+          child: RaisedButton(
+              key: const Key('AccessTrips'),
+              color: colors.SearchBackground,
+              onPressed: () => Navigator.pushNamed(context, '/trips'),
+              child: const Text('See your trips',
+                  style: TextStyle(fontSize: 14, color: colors.Text))),
+        );
   }
 
   Widget _profileSettings(BuildContext context) {
