@@ -33,7 +33,7 @@ void _startApp() {
   _user.activeUser.then((User user) {
     if (user != null) {
       _user.setActiveUser(user);
-      _initScreen = '/trips';
+      _initScreen = '/home';
     }
     runApp(App());
   });
