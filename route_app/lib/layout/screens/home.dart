@@ -597,8 +597,8 @@ class _HomeScreenState extends State<HomeScreen> {
           heroTag: 'near_me',
           backgroundColor: colors.SearchBackground,
           onPressed: () {
-            locationModel.updateCurrentLocation(),
-            _centerMap(locationModel.currentLocationObj)},
+            locationModel.updateCurrentLocation();
+            _centerMap(locationModel.currentLocationObj);},
           child: const Icon(Icons.near_me, size: 25, color: colors.Text),
         ),
       ),
