@@ -7,6 +7,7 @@ import 'package:route_app/core/models/directions_model.dart';
 import 'package:route_app/core/models/user_model.dart';
 import 'package:route_app/core/services/interfaces/API/user.dart';
 import 'package:route_app/core/services/interfaces/gmaps.dart';
+import 'package:route_app/layout/widgets/buttons/button.dart';
 import 'package:route_app/layout/widgets/buttons/custom_button.dart';
 import 'package:route_app/layout/widgets/fields/custom_text_field.dart';
 import 'package:route_app/layout/widgets/route_search.dart';
@@ -19,6 +20,7 @@ import 'package:route_app/layout/constants/validators.dart' as validators;
 import 'package:route_app/core/providers/form_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:route_app/layout/widgets/notifications.dart' as notifications;
+import 'package:flutter/foundation.dart';
 
 /// Home screen with map
 class HomeScreen extends StatefulWidget {
@@ -31,7 +33,7 @@ class HomeScreen extends StatefulWidget {
   final GlobalKey<ScaffoldState> _endDrawerKey = GlobalKey();
 
   /// Start the background geolocator when the HomeScreen is initialized.
-  final BackgroundGeolocator bgGeolocator = BackgroundGeolocator();
+  final BackgroundGeolocator _bgGeolocator = BackgroundGeolocator();
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -78,6 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    widget._bgGeolocator.clearTimer();
     super.dispose();
   }
 
@@ -417,9 +420,24 @@ class _HomeScreenState extends State<HomeScreen> {
         children: <Widget>[
           _settingsTitle(),
           _settingsForm(context),
+          _gpsUploadButton(),
         ],
       ),
     );
+  }
+
+  Widget _gpsUploadButton() {
+    // Only show the GPS upload button when running in debug
+    if (kReleaseMode) {
+       return Container();
+    } else {
+      return Padding(
+      padding: const EdgeInsets.only(top: 30),
+      child: Button(
+        text: 'Upload GPS logs',
+        onPressed: () => widget._bgGeolocator.uploadLogs(),
+      ));
+    }
   }
 
   Widget _settingsForm(BuildContext context) {
