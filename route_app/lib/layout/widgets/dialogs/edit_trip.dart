@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:route_app/core/enums/Transport_Types.dart';
 import 'package:route_app/core/models/trip.dart';
+import 'package:route_app/core/services/interfaces/API/trips.dart';
 import 'package:route_app/layout/constants/colors.dart' as color;
+import 'package:route_app/locator.dart';
 
 /// Transport Icon
 Icon buildTransportIcon(Trip item, {double size = 24}) {
@@ -36,8 +38,9 @@ Icon buildTransportIcon(Trip item, {double size = 24}) {
 
 /// Displays logout confirmation message
 Future<bool> editTripDialog(BuildContext context, Trip trip) {
+  final TripsAPI _trips = locator.get<TripsAPI>();
   final DateFormat formatter = DateFormat('H:m dd/MM-yyyy');
-  final String dateString = formatter.format(trip.tripPosition[0].timestamp);
+  final String dateString = formatter.format(trip.date);
 
   return showDialog<bool>(
     context: context,
@@ -91,15 +94,7 @@ Future<bool> editTripDialog(BuildContext context, Trip trip) {
               const SizedBox(
                 height: 10,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  buildTransportButton(Icons.directions_walk),
-                  buildTransportButton(Icons.directions_bike),
-                  buildTransportButton(Icons.directions_car),
-                  buildTransportButton(Icons.directions_bus),
-                ],
-              )
+              _buildTransportButtons(context, _trips, trip)
             ],
           ),
         ),
@@ -108,19 +103,59 @@ Future<bool> editTripDialog(BuildContext context, Trip trip) {
   );
 }
 
-/// 
-Container buildTransportButton(IconData icon) {
-  return Container(
-    decoration: BoxDecoration(
-        color: color.ButtonBackground,
-        borderRadius: BorderRadius.circular(10.0)),
-    child: Padding(
-      padding: const EdgeInsets.all(5.0),
-      child: Icon(
-        icon,
-        color: color.Text,
-        size: 36,
+Widget _buildTransportButtons(BuildContext context, TripsAPI api, Trip trip) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    children: <Widget>[
+      if (trip.transport != Transport.WALK)
+        buildTransportButton(
+            context, Icons.directions_walk, api, trip),
+      if (trip.transport != Transport.BIKE)
+        buildTransportButton(
+            context, Icons.directions_bike, api, trip),
+      if (trip.transport != Transport.CAR)
+        buildTransportButton(
+            context, Icons.directions_car, api, trip),
+      if (trip.transport != Transport.PUBLIC)
+        buildTransportButton(
+            context, Icons.directions_bus, api, trip),
+    ],
+  );
+}
+
+/// Build the icon button for transport
+Widget buildTransportButton(
+    BuildContext context, IconData icon, TripsAPI api, Trip trip) {
+  return GestureDetector(
+    onTap: () {
+      trip.transport = getTransportFromIcon(icon);
+      api.updateTrip(trip);
+      Navigator.pop(context, true);
+    },
+    child: Container(
+      decoration: BoxDecoration(
+          color: color.ButtonBackground,
+          borderRadius: BorderRadius.circular(10.0)),
+      child: Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: Icon(
+          icon,
+          color: color.Text,
+          size: 36,
+        ),
       ),
     ),
   );
+}
+
+/// Convert icon to transportation
+Transport getTransportFromIcon(IconData icon) {
+  final Map<IconData, Transport> lookup = <IconData, Transport>{
+    Icons.directions_walk: Transport.WALK,
+    Icons.directions_bike: Transport.BIKE,
+    Icons.directions_car: Transport.CAR,
+    Icons.directions_bus: Transport.PUBLIC
+  };
+
+  return lookup[icon];
 }

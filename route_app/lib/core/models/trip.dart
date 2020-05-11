@@ -21,6 +21,7 @@ class Trip implements Model{
     }
     id = json['Id'];
     // get trip positions
+    date = DateTime.tryParse(json.get('TripDate', DateTime.now()));
     tripDuration = json['TripDuration'];
     transport = Transport.values[json['Transport']];
   }
@@ -37,13 +38,17 @@ class Trip implements Model{
   /// The means of transport for a trip
   Transport transport;
 
+  /// The trip date
+  DateTime date;
+
   @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'Id': id,
       // trips
       'TripDuration': tripDuration,
-      'Transport': transport
+      'Transport': transport.index,
+      'TripDate': date
     };
   }
 }

@@ -1,0 +1,39 @@
+[
+  {
+    "DateId": "07-04-2020",
+    "TripList": [
+      {
+        "Id": "99c08291-3376-4dc6-a16a-62ac961d9b31",
+        "TripDuration": 1,
+        "TripDate": "2020-04-07T13:15:18Z",
+        "Transport": 2,
+        "MaxSpeed": 54.17,
+        "MinSpeed": 6.74,
+        "AverageSpeed": 21.708421052631575
+      },
+      {
+        "Id": "1bec5cf6-9eb0-431c-913b-9ed8cc963e1b",
+        "TripDuration": 25,
+        "TripDate": "2020-04-07T14:42:32Z",
+        "Transport": 3,
+        "MaxSpeed": 46.02,
+        "MinSpeed": 5.58,
+        "AverageSpeed": 9.8325
+      }
+    ]
+  },
+  {
+    "DateId": "16-04-2020",
+    "TripList": [
+      {
+        "Id": "df704eb4-0972-4de1-9bd6-3983c2f1e945",
+        "TripDuration": 33,
+        "TripDate": "2020-04-16T12:52:09Z",
+        "Transport": 1,
+        "MaxSpeed": 27.91,
+        "MinSpeed": 4.28,
+        "AverageSpeed": 18.41995215311003
+      }
+    ]
+  }
+]
