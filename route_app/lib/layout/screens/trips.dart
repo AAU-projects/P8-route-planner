@@ -132,7 +132,7 @@ class _TripsScreenState extends State<TripsScreen> {
             padding: const EdgeInsets.only(right: 50),
             child: Container(
               child: IconButton(
-                icon: Icon(
+                icon: const Icon(
                   Icons.arrow_back_ios,
                   color: color.Text,
                 ),
