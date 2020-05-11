@@ -596,7 +596,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: FloatingActionButton(
           heroTag: 'near_me',
           backgroundColor: colors.SearchBackground,
-          onPressed: () => {
+          onPressed: () => <void>{
             locationModel.updateCurrentLocation(),
             _centerMap(locationModel.currentLocationObj)},
           child: const Icon(Icons.near_me, size: 25, color: colors.Text),
