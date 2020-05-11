@@ -123,13 +123,30 @@ class _TripsScreenState extends State<TripsScreen> {
     );
   }
 
-  Container buildTitleContainer(BuildContext context) {
-    return Container(
-        alignment: Alignment.bottomCenter,
-        height: 100,
-        width: MediaQuery.of(context).size.width / 1.5,
-        child: const Text('Your recent trips',
-            style: TextStyle(fontSize: 35.0, color: color.Text)));
+  Padding buildTitleContainer(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 40),
+      child: Row(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(right: 50),
+            child: Container(
+              child: IconButton(
+                icon: Icon(
+                  Icons.arrow_back_ios,
+                  color: color.Text,
+                ),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
+          ),
+          Container(
+              alignment: Alignment.bottomCenter,
+              child: const Text('Your recent trips',
+                  style: TextStyle(fontSize: 30, color: color.Text)))
+        ],
+      ),
+    );
   }
 
   GestureDetector _makeCard(BuildContext context, int index) {

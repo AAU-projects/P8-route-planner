@@ -389,9 +389,22 @@ class _HomeScreenState extends State<HomeScreen> {
       child: ListView(
         padding: const EdgeInsets.only(top: 20),
         children: <Widget>[
-          _suggestionsTitle(),
-          _noSuggestionsTile(),
-          _profileSettings(context)
+          _noSuggestionsTile('Trips', Icons.place),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(40, 5, 40, 5),
+            child: RaisedButton(
+                key: const Key('AccessTrips'),
+                color: colors.SearchBackground,
+                onPressed: () => Navigator.pushNamed(context, '/trips'),
+                child: const Text('See your trips',
+                    style: TextStyle(fontSize: 14, color: colors.Text))),
+          ),
+          const Padding(
+            padding: EdgeInsets.only(top: 20),
+            child: Divider(color: colors.Text),
+          ),
+          _noSuggestionsTile('Settings', Icons.settings),
+          _profileSettings(context),
         ],
       ),
     ));
@@ -458,28 +471,18 @@ class _HomeScreenState extends State<HomeScreen> {
     ]);
   }
 
-  Widget _noSuggestionsTile() {
-    return const Padding(
-      padding: EdgeInsets.only(top: 20),
+  Widget _noSuggestionsTile(String titleString, IconData inputIcon) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
       child: ListTile(
         title: Text(
-          'Settings',
-          style: TextStyle(fontSize: 25, color: colors.Text),
+          titleString,
+          style: const TextStyle(fontSize: 25, color: colors.Text),
         ),
         trailing: Icon(
-          Icons.settings,
+          inputIcon,
           color: colors.Text,
         ),
-      ),
-    );
-  }
-
-  Widget _suggestionsTitle() {
-    return const Padding(
-      padding: EdgeInsets.only(left: 35),
-      child: Text(
-        'No route suggestions at this moment.',
-        style: TextStyle(color: colors.Text),
       ),
     );
   }
