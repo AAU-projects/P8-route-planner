@@ -18,12 +18,17 @@ class BackgroundGeolocator {
     _startGeolocator();
     _uploadTime = _generateUploadTime();
     Timer.periodic(
-        const Duration(seconds: 10), (Timer t) => _checkUploadTime());
+        const Duration(minutes: 1), (Timer t) => _checkUploadTime());
   }
 
   DateTime _uploadTime;
   final DatabaseService _db = locator.get<DatabaseService>();
   final LoggingService _loggingService = locator.get<LoggingAPI>();
+
+  /// For forcing a upload of the logs in development.
+  void  uploadLogs() {
+    _uploadTime = DateTime.now().toUtc().add(const Duration(minutes: 1));
+  }
 
   DateTime _generateUploadTime() {
     final DateTime current = DateTime.now().toUtc();
@@ -37,6 +42,7 @@ class BackgroundGeolocator {
     final DateTime current = DateTime.now().toUtc();
     if (current.hour == _uploadTime.hour &&
         current.minute == _uploadTime.minute) {
+      print("UPLOAD TIME! UPLOAD TIME! UPLOAD TIME! UPLOAD TIME!UPLOAD TIME!UPLOAD TIME! UPLOAD TIME!UPLOAD TIME!UPLOAD TIME!UPLOAD TIME!UPLOAD TIME! UPLOAD TIME!UPLOAD TIME!UPLOAD TIME!UPLOAD TIME!");
       _batchUploadToDatabase();
     }
   }
