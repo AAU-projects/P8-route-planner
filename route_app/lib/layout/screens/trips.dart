@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:route_app/core/enums/Transport_Types.dart';
 import 'package:route_app/core/models/trip.dart';
+import 'package:route_app/core/services/interfaces/API/trips.dart';
 import 'package:route_app/layout/constants/colors.dart' as color;
 import 'package:route_app/layout/widgets/dialogs/edit_trip.dart';
 import 'package:intl/intl.dart';
+import 'package:route_app/locator.dart';
+import 'package:route_app/layout/widgets/notifications.dart' as notifications;
 
 ///
 class TripsScreen extends StatefulWidget {
@@ -14,88 +15,19 @@ class TripsScreen extends StatefulWidget {
 }
 
 class _TripsScreenState extends State<TripsScreen> {
-  //final TripsAPI _trips = locator.get<TripsAPI>();
+  final TripsAPI _trips = locator.get<TripsAPI>();
+
+  @override
+  void initState() {
+    _trips.getTrips().then((List<Trip> res) {
+      _tripList.addAll(res);
+      setState(() {});
+    });
+    super.initState();
+  }
 
   // Remove and use backend instead
-  final List<Trip> _tripList = <Trip>[
-    Trip(
-      startDestination: 'Nordkraft',
-      endDestination: 'Cassiopeia',
-      transport: Transport.BIKE,
-      tripDuration: 22,
-      tripPosition: <Position>[Position(timestamp: DateTime.now())],
-    ),
-    Trip(
-      startDestination: 'Ikea',
-      endDestination: 'Aalborg C',
-      transport: Transport.CAR,
-      tripDuration: 37,
-      tripPosition: <Position>[Position(timestamp: DateTime.now())],
-    ),
-    Trip(
-      startDestination: 'Ikea',
-      endDestination: 'Aalborg C',
-      transport: Transport.PUBLIC,
-      tripDuration: 37,
-      tripPosition: <Position>[Position(timestamp: DateTime.now())],
-    ),
-    Trip(
-      startDestination: 'Ikea',
-      endDestination: 'Aalborg C',
-      transport: Transport.WALK,
-      tripDuration: 37,
-      tripPosition: <Position>[Position(timestamp: DateTime.now())],
-    ),
-    Trip(
-      startDestination: 'Ikea',
-      endDestination: 'Aalborg C',
-      transport: Transport.PUBLIC,
-      tripDuration: 37,
-      tripPosition: <Position>[Position(timestamp: DateTime.now())],
-    ),
-    Trip(
-      startDestination: 'Ikea',
-      endDestination: 'Aalborg C',
-      transport: Transport.PUBLIC,
-      tripDuration: 37,
-      tripPosition: <Position>[Position(timestamp: DateTime.now())],
-    ),
-    Trip(
-      startDestination: 'Ikea',
-      endDestination: 'Aalborg C',
-      transport: Transport.PUBLIC,
-      tripDuration: 37,
-      tripPosition: <Position>[Position(timestamp: DateTime.now())],
-    ),
-    Trip(
-      startDestination: 'Ikea',
-      endDestination: 'Aalborg C',
-      transport: Transport.PUBLIC,
-      tripDuration: 37,
-      tripPosition: <Position>[Position(timestamp: DateTime.now())],
-    ),
-    Trip(
-      startDestination: 'Ikea',
-      endDestination: 'Aalborg C',
-      transport: Transport.CAR,
-      tripDuration: 37,
-      tripPosition: <Position>[Position(timestamp: DateTime.now())],
-    ),
-    Trip(
-      startDestination: 'Ikea',
-      endDestination: 'Aalborg C',
-      transport: Transport.WALK,
-      tripDuration: 37,
-      tripPosition: <Position>[Position(timestamp: DateTime.now())],
-    ),
-    Trip(
-      startDestination: 'Herningvej 140',
-      endDestination: 'Alexs lejlighed',
-      transport: Transport.BIKE,
-      tripDuration: 12,
-      tripPosition: <Position>[Position(timestamp: DateTime.now())],
-    )
-  ];
+  final List<Trip> _tripList = <Trip>[];
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +36,8 @@ class _TripsScreenState extends State<TripsScreen> {
     return Scaffold(
       backgroundColor: color.Background,
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           buildTitleContainer(context),
           buildListView(),
@@ -112,7 +46,14 @@ class _TripsScreenState extends State<TripsScreen> {
     );
   }
 
-  Expanded buildListView() {
+  Widget buildListView() {
+    if (_tripList.isEmpty) {
+      return Container(
+        alignment: Alignment.center,
+        child: const Text('No trips found',
+            style: TextStyle(fontSize: 25.0, color: color.Text)),
+      );
+    }
     return Expanded(
       child: ListView.builder(
           itemBuilder: (BuildContext context, int index) =>
@@ -152,7 +93,14 @@ class _TripsScreenState extends State<TripsScreen> {
   GestureDetector _makeCard(BuildContext context, int index) {
     final Trip item = _tripList[index];
     return GestureDetector(
-      onTap: () => editTripDialog(context, item),
+      onTap: () {
+          editTripDialog(context, item).then((bool updated) {
+            if (updated != null) {
+              notifications.success(context, 'Trip updated');
+              setState(() { });
+            }
+        });
+      },
       child: Card(
         color: Colors.transparent,
         elevation: 8.0,
@@ -169,7 +117,7 @@ class _TripsScreenState extends State<TripsScreen> {
 
   ListTile _buildMenu(BuildContext context, int index, Trip item) {
     final DateFormat formatter = DateFormat('H:m dd/MM-yyyy');
-    final String dateString = formatter.format(item.tripPosition[0].timestamp);
+    final String dateString = formatter.format(item.date);
 
     return ListTile(
       contentPadding:
@@ -199,16 +147,6 @@ class _TripsScreenState extends State<TripsScreen> {
                     fontSize: 14,
                     color: color.Text,
                     fontWeight: FontWeight.normal),
-              ),
-              Text(
-                'From: ' + item.startDestination,
-                style:
-                    TextStyle(color: color.Text, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                'To: ' + item.endDestination,
-                style:
-                    TextStyle(color: color.Text, fontWeight: FontWeight.bold),
               ),
               Text(
                 'Duration: ' + item.tripDuration.toString() + ' minutes',
