@@ -7,13 +7,16 @@ import 'package:route_app/core/models/directions_model.dart';
 import 'package:route_app/core/models/user_model.dart';
 import 'package:route_app/core/services/interfaces/API/user.dart';
 import 'package:route_app/core/services/interfaces/gmaps.dart';
-import 'package:route_app/core/services/interfaces/gsuggestions.dart';
+import 'package:route_app/layout/widgets/buttons/custom_button.dart';
+import 'package:route_app/layout/widgets/fields/custom_text_field.dart';
 import 'package:route_app/layout/widgets/route_search.dart';
 import 'package:route_app/layout/constants/colors.dart' as colors;
 import 'package:route_app/core/services/background_geolocator.dart';
 import 'package:route_app/locator.dart';
 import 'package:route_app/layout/widgets/dialogs/logout.dart';
 import 'package:route_app/core/providers/location_provider.dart';
+import 'package:route_app/layout/constants/validators.dart' as validators;
+import 'package:route_app/core/providers/form_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:route_app/layout/widgets/notifications.dart' as notifications;
 
@@ -21,11 +24,11 @@ import 'package:route_app/layout/widgets/notifications.dart' as notifications;
 class HomeScreen extends StatefulWidget {
   ///key is required, otherwise map crashes on hot reload
   HomeScreen() : super(key: UniqueKey());
+
   final GoogleMapsAPI _gMapsService = locator.get<GoogleMapsAPI>();
   final LocationProvider _locationModel = LocationProvider();
-  final GoogleAutocompleteAPI _gSuggestions =
-      locator.get<GoogleAutocompleteAPI>();
-  final UserAPI _userAPI = locator.get<UserAPI>();
+  final UserAPI _userService = locator.get<UserAPI>();
+  final GlobalKey<ScaffoldState> _endDrawerKey = GlobalKey();
 
   /// Start the background geolocator when the HomeScreen is initialized.
   final BackgroundGeolocator bgGeolocator = BackgroundGeolocator();
@@ -38,6 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
   GoogleMapController _controller;
   final TextEditingController _startController = TextEditingController();
   final TextEditingController _endController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final Set<Polyline> _polyline = <Polyline>{};
   final Set<Marker> _markers = <Marker>{};
   Directions driveDirections;
@@ -45,11 +49,31 @@ class _HomeScreenState extends State<HomeScreen> {
   Directions transitDirections;
   LatLng startpoint;
   bool _replaceMyLocation = true;
+  bool co2EmissionEnabled = false;
+  bool priceEnabled = false;
+  bool timeEnabled = false;
+  User _loggedInUser;
+
+  void onSaveClick(BuildContext context) {
+    if (_emailController.text.isNotEmpty) {
+      _loggedInUser.email = _emailController.text;
+
+      widget._userService.updateUser(_loggedInUser.id, _loggedInUser).then((_) {
+        setState(() {
+          widget._endDrawerKey.currentState.openDrawer();
+          notifications.success(context, 'Email updated');
+        });
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     _startController.addListener(_updateSearchFieldsText);
+    widget._userService.activeUser.then((User loggedInUser) {
+      _loggedInUser = loggedInUser;
+    });
   }
 
   @override
@@ -165,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<bool> getPolylines(String startLoc, String input) async {
-    final User currentUser = widget._userAPI.getUserSynchronously();
+    final User currentUser = widget._userService.getUserSynchronously();
     driveDirections = await widget._gMapsService
         .getDirections(origin: startLoc, destination: input);
     driveDirections.icon = Icons.directions_car;
@@ -322,34 +346,141 @@ class _HomeScreenState extends State<HomeScreen> {
         ));
   }
 
-  Stack _buildMainBody(LocationProvider _locationModel, BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        GoogleMap(
-          polylines: _polyline,
-          markers: _markers,
-          mapType: MapType.normal,
-          initialCameraPosition:
-              _initialPosition(_locationModel.currentLocationObj),
-          onMapCreated: onMapCreate,
-          myLocationButtonEnabled: false,
-          myLocationEnabled: true,
-          compassEnabled: false,
-          zoomControlsEnabled: false,
-          onTap: (_) {
-            FocusScope.of(context).requestFocus(FocusNode());
-          },
-        ),
-        GestureDetector(
-          child: RouteSearch(
-            startController: _startController,
-            endController: _endController,
-            startSubmitFunc: _onStartSubmit,
-            endSubmitFunc: _onEndSubmit,
-            backButtonFunc: _onBackButtonPress,
+  Scaffold _buildMainBody(
+      LocationProvider _locationModel, BuildContext context) {
+    return Scaffold(
+      key: widget._endDrawerKey,
+      endDrawer: _createDrawer(context),
+      body: Stack(
+        children: <Widget>[
+          GoogleMap(
+            polylines: _polyline,
+            markers: _markers,
+            mapType: MapType.normal,
+            initialCameraPosition:
+                _initialPosition(_locationModel.currentLocationObj),
+            onMapCreated: onMapCreate,
+            myLocationButtonEnabled: false,
+            myLocationEnabled: true,
+            compassEnabled: false,
+            zoomControlsEnabled: false,
+            onTap: (_) {
+              FocusScope.of(context).requestFocus(FocusNode());
+            },
           ),
+          GestureDetector(
+            child: RouteSearch(
+              startController: _startController,
+              endController: _endController,
+              startSubmitFunc: _onStartSubmit,
+              endSubmitFunc: _onEndSubmit,
+              backButtonFunc: _onBackButtonPress,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _createDrawer(BuildContext context) {
+    return Drawer(
+        child: Container(
+      color: colors.Background,
+      child: ListView(
+        padding: const EdgeInsets.only(top: 20),
+        children: <Widget>[
+          _suggestionsTitle(),
+          _noSuggestionsTile(),
+          _profileSettings(context)
+        ],
+      ),
+    ));
+  }
+
+  Widget _profileSettings(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 35),
+      child: Column(
+        children: <Widget>[
+          _settingsTitle(),
+          _settingsForm(context),
+        ],
+      ),
+    );
+  }
+
+  Widget _settingsForm(BuildContext context) {
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+      return ChangeNotifierProvider<FormProvider>(
+          create: (_) => FormProvider(),
+          child: Consumer<FormProvider>(builder:
+              (BuildContext context, FormProvider formProvider, Widget child) {
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
+              child: Column(
+                children: <Widget>[
+                  CustomTextField(
+                      iconKey: const Key('emailIcon'),
+                      key: const Key('emailField'),
+                      hint: _loggedInUser.email,
+                      icon: Icons.mail,
+                      helper: 'Change email',
+                      validator: validators.email,
+                      errorText: 'Invalid email',
+                      controller: _emailController,
+                      provider: formProvider),
+                  CustomButton(
+                      key: const Key('SaveChanges'),
+                      onPressed: () => onSaveClick(context),
+                      buttonText: 'Save',
+                      provider: formProvider),
+                ],
+              ),
+            );
+          }));
+    });
+  }
+
+  Widget _settingsTitle() {
+    return Row(children: <Widget>[
+      Padding(
+        padding: const EdgeInsets.only(right: 8),
+        child: Icon(
+          Icons.portrait,
+          color: colors.Text,
         ),
-      ],
+      ),
+      const Text(
+        'Profile Settings',
+        style: TextStyle(color: colors.Text),
+      )
+    ]);
+  }
+
+  Widget _noSuggestionsTile() {
+    return const Padding(
+      padding: EdgeInsets.only(top: 20),
+      child: ListTile(
+        title: Text(
+          'Settings',
+          style: TextStyle(fontSize: 25, color: colors.Text),
+        ),
+        trailing: Icon(
+          Icons.settings,
+          color: colors.Text,
+        ),
+      ),
+    );
+  }
+
+  Widget _suggestionsTitle() {
+    return const Padding(
+      padding: EdgeInsets.only(left: 35),
+      child: Text(
+        'No route suggestions at this moment.',
+        style: TextStyle(color: colors.Text),
+      ),
     );
   }
 
@@ -461,8 +592,11 @@ class _HomeScreenState extends State<HomeScreen> {
           heroTag: 'menu',
           backgroundColor: colors.SearchBackground,
           onPressed: () {
-            widget._gSuggestions.getSuggestions(
-                'Aal', widget._locationModel.currentLocationObj);
+            if (widget._endDrawerKey.currentState.isEndDrawerOpen) {
+              widget._endDrawerKey.currentState.openDrawer();
+            } else {
+              widget._endDrawerKey.currentState.openEndDrawer();
+            }
           },
           child: const Icon(Icons.menu, size: 25, color: colors.Text),
         ),

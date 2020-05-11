@@ -23,7 +23,11 @@ class MockLogging extends Mock implements LoggingService {}
 class MockDatabase extends Mock implements DatabaseService {}
 class GoogleMapsServiceMock extends Mock implements GoogleMapsAPI {}
 class SuggestionMock extends Mock implements GoogleAutocompleteAPI {}
-class UserAPIMock extends Mock implements UserAPI {}
+class MockUserApi extends Mock implements UserAPI {
+  @override
+  Future<User> get activeUser =>
+      Future<User>.value(User('1','test@test.test',123,'123',null,null,null));
+}
 
 void main() {
   setUp(() {
@@ -31,7 +35,7 @@ void main() {
     final MockLogging mockLog = MockLogging();
     final MockDatabase db = MockDatabase();
     final SuggestionMock mockSuggestion = SuggestionMock();
-    final UserAPIMock userAPIMock = UserAPIMock();
+    final MockUserApi userAPIMock = MockUserApi();
     locator.reset();
     locator.registerSingleton<AuthAPI>(api);
     locator.registerSingleton<UserAPI>(userAPIMock);

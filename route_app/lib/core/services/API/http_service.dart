@@ -89,14 +89,14 @@ class HttpService implements Http {
   Future<Response> put(String url, [dynamic body]) {
     return _headers.then((Map<String, String> headers) {
       return parseJson(
-          http.post(baseUrl + url, headers: headers, body: parseBody(body)));
+          http.put(baseUrl + url, headers: headers, body: parseBody(body)));
     });
   }
 
   @override
   Future<Response> delete(String url) {
     return _headers.then((Map<String, String> headers) {
-      return parseJson(http.get(baseUrl + url, headers: headers));
+      return parseJson(http.delete(baseUrl + url, headers: headers));
     });
   }
 
@@ -104,7 +104,7 @@ class HttpService implements Http {
   Future<Response> patch(String url, [dynamic body]) {
     return _headers.then((Map<String, String> headers) {
       return parseJson(
-          http.post(baseUrl + url, headers: headers, body: parseBody(body)));
+          http.patch(baseUrl + url, headers: headers, body: parseBody(body)));
     });
   }
 }
