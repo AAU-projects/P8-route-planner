@@ -201,6 +201,13 @@ class DatabaseService {
         await db.rawQuery('SELECT COUNT(*) FROM $table'));
   }
 
+  /// Return the last element of the logs table
+  Future<List<Map<String, dynamic>>> getLastLog() async {
+    final Database db = await database;
+
+    return db.rawQuery('SELECT * FROM logs ORDER BY _id DESC LIMIT 1');
+  }
+
   /// Creates a batch, used for performing multiple operation
   /// in a single atomic operation.
   ///
