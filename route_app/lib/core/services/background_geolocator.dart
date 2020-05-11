@@ -7,7 +7,6 @@ import 'package:route_app/core/models/logging_position.dart';
 import 'package:route_app/core/services/API/logging_service.dart';
 import 'package:route_app/core/services/interfaces/API/logging.dart';
 import 'package:route_app/locator.dart';
-import 'package:sqflite/sqflite.dart';
 import 'database.dart';
 
 /// Service for logging geolocation when the application
@@ -17,17 +16,23 @@ class BackgroundGeolocator {
   BackgroundGeolocator() {
     _startGeolocator();
     _uploadTime = _generateUploadTime();
-    Timer.periodic(
+    _timer = Timer.periodic(
         const Duration(minutes: 1), (Timer t) => _checkUploadTime());
   }
 
   DateTime _uploadTime;
   final DatabaseService _db = locator.get<DatabaseService>();
   final LoggingService _loggingService = locator.get<LoggingAPI>();
+  Timer _timer;
 
   /// For forcing a upload of the logs in development.
-  void  uploadLogs() {
+  void uploadLogs() {
     _uploadTime = DateTime.now().toUtc().add(const Duration(minutes: 1));
+  }
+
+  /// For clearing the timer when the screen is disposed.
+  void clearTimer() {
+    _timer.cancel();
   }
 
   DateTime _generateUploadTime() {
@@ -42,7 +47,6 @@ class BackgroundGeolocator {
     final DateTime current = DateTime.now().toUtc();
     if (current.hour == _uploadTime.hour &&
         current.minute == _uploadTime.minute) {
-      print("UPLOAD TIME! UPLOAD TIME! UPLOAD TIME! UPLOAD TIME!UPLOAD TIME!UPLOAD TIME! UPLOAD TIME!UPLOAD TIME!UPLOAD TIME!UPLOAD TIME!UPLOAD TIME! UPLOAD TIME!UPLOAD TIME!UPLOAD TIME!UPLOAD TIME!");
       _batchUploadToDatabase();
     }
   }

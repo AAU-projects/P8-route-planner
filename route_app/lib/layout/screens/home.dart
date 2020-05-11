@@ -33,7 +33,7 @@ class HomeScreen extends StatefulWidget {
   final GlobalKey<ScaffoldState> _endDrawerKey = GlobalKey();
 
   /// Start the background geolocator when the HomeScreen is initialized.
-  final BackgroundGeolocator bgGeolocator = BackgroundGeolocator();
+  final BackgroundGeolocator _bgGeolocator = BackgroundGeolocator();
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -80,6 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    widget._bgGeolocator.clearTimer();
     super.dispose();
   }
 
@@ -421,7 +422,7 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.only(top: 30),
       child: Button(
         text: 'Upload GPS logs',
-        onPressed: () => widget.bgGeolocator.uploadLogs(),
+        onPressed: () => widget._bgGeolocator.uploadLogs(),
       ));
     }
   }
