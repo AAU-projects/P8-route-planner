@@ -21,16 +21,20 @@ class GoogleMapsServiceMock extends Mock implements GoogleMapsAPI {}
 
 class MockDatabase extends Mock implements DatabaseService {}
 
+class MockUserApi extends Mock implements UserAPI {
+  @override
+  Future<User> get activeUser =>
+      Future<User>.value(User('1','test@test.test',123,'123',null,null,null));
+}
+
 class MockLogging extends Mock implements LoggingService {}
 
 class SuggestionMock extends Mock implements GoogleAutocompleteAPI {}
 
-class UserAPIMock extends Mock implements UserAPI {}
-
 void main() {
   GoogleMapsServiceMock mockGmaps;
   SuggestionMock mockSuggestion;
-  UserAPIMock userAPImock;
+  MockUserApi userApi;
   final Directions testDirections = Directions(
       polyline: 'polystring',
       status: 'OK',
@@ -66,7 +70,7 @@ void main() {
       return Future<List<SuggestionResult>>.value(
           <SuggestionResult>[SuggestionResult(5, 'aalborg')]);
     });
-    when(userAPImock.getUserSynchronously()).thenAnswer((_) {
+    when(userApi.getUserSynchronously()).thenAnswer((_) {
       return testUser;
     });
   }
@@ -77,12 +81,12 @@ void main() {
 
     mockGmaps = GoogleMapsServiceMock();
     mockSuggestion = SuggestionMock();
-    userAPImock = UserAPIMock();
+    userApi = MockUserApi();
     locator.reset();
     locator.registerFactory<GoogleMapsAPI>(() => mockGmaps);
     locator.registerSingleton<DatabaseService>(db);
-    locator.registerSingleton<UserAPI>(userAPImock);
     locator.registerSingleton<LoggingAPI>(mockLog);
+    locator.registerSingleton<UserAPI>(userApi);
     locator.registerSingleton<GoogleAutocompleteAPI>(mockSuggestion);
     _setupServiceCalls();
   });
