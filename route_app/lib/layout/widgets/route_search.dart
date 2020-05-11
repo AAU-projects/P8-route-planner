@@ -39,6 +39,7 @@ class _RouteSearchState extends State<RouteSearch>
   AnimationController _controller;
   SequenceAnimation sequenceAnimation;
   Animation<double> _inputAnimation;
+  bool _toFieldVisible = false;
 
   @override
   void initState() {
@@ -101,6 +102,7 @@ class _RouteSearchState extends State<RouteSearch>
                                 key: const Key('SearchBackButton'),
                                 backgroundColor: colors.SearchBackground,
                                 onPressed: () {
+                                  _toFieldVisible = false;
                                   _controller.reverse();
                                   widget.backButtonFunc();
                                 },
@@ -125,13 +127,16 @@ class _RouteSearchState extends State<RouteSearch>
                               SearchTextField(
                                 key: const Key('OriginTextField'),
                                 textController: widget.startController,
-                                hint: 'Where to?',
+                                hint: _toFieldVisible
+                                    ? 'Where from?'
+                                    : 'Where to?',
                                 icon: Icons.search,
                                 animationController: _controller,
                                 animation: _inputAnimation,
                                 onFocusChange: (bool hasFocus) {
                                   if (hasFocus) {
                                     _controller.forward();
+                                    _toFieldVisible = true;
                                   }
                                 },
                                 onSubmitFunc: widget.startSubmitFunc,
