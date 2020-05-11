@@ -11,7 +11,7 @@ Future<bool> showLogoutDialog(BuildContext context) {
     context: context,
     builder: (BuildContext context) => AlertDialog(
       title: const Text('Confirm Logout'),
-      content: const Text('Are you sure yoi want to logout?'),
+      content: const Text('Are you sure you want to logout?'),
       actions: <Widget>[
         FlatButton(
             onPressed: () {
