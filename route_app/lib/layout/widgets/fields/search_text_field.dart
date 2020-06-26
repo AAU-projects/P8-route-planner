@@ -132,12 +132,15 @@ class _SearchTextFieldState extends State<SearchTextField> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Container(
-            width: 225,
-            child: Text(
-              suggestion.location,
-              style: const TextStyle(fontSize: 12.0, color: colors.Text),
-              overflow: TextOverflow.ellipsis,
+          Padding(
+            padding: const EdgeInsets.only(top: 14, bottom: 14, left: 4),
+            child: Container(
+              width: 225,
+              child: Text(
+                suggestion.location,
+                style: const TextStyle(fontSize: 12.0, color: colors.Text),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
           Text(
