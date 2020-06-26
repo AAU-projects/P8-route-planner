@@ -507,7 +507,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   DraggableScrollableSheet _buildBottomSheet(BuildContext context) {
     return DraggableScrollableSheet(
-      initialChildSize: 0.1,
+      initialChildSize: 0.2,
       maxChildSize: 0.4,
       minChildSize: 0.1,
       expand: false,
@@ -540,6 +540,17 @@ class _HomeScreenState extends State<HomeScreen> {
     final List<IconData> titleList = _getDirectionCardTitles(
         <Directions>[driveDirections, bicyclingDirections, transitDirections]);
     return <Widget>[
+      Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: Container(
+          width: 100,
+          height: 5,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(25),
+            color: colors.Text
+          ),
+        ),
+      ),
       if (driveDirections != null)
         _makeDirectionCard(
             driveDirections, Colors.redAccent, titleList, context),
