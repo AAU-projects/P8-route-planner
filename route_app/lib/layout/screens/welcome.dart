@@ -38,10 +38,12 @@ class WelcomeScreen extends StatelessWidget {
                         Container(
                             alignment: Alignment.center,
                             height: constraints.maxHeight / 2,
-                            width: MediaQuery.of(context).size.width / 2,
-                            child: const Text('Welcome to "App Name"',
+                            width: MediaQuery.of(context).size.width / 1.5,
+                            child: const Text('Welcome to Routeplanner',
                                 style: TextStyle(
-                                    fontSize: 35.0, color: colors.Text))),
+                                    fontSize: 35.0, color: colors.Text),
+                                textAlign: TextAlign.center)),
+                                    
                         Container(
                           alignment: Alignment.center,
                           height: constraints.maxHeight / 2,
