@@ -1,0 +1,5 @@
+{
+    "SERVER_URL": "http://api.myurl.com/api/v1/",
+    "DATABASE_VERSION": 1,
+    "GOOGLE_API_KEY": "MyApiKey"
+}

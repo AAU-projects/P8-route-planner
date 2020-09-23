@@ -1,11 +1,21 @@
 name: Flutter-CI
-on: [push]
+on: 
+  pull_request:
+    branches:
+      - develop
+      - master
 jobs: 
   test-and-build: 
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+    - name: Rename Debug Enviroment File
+      working-directory: route_app/assets
+      run: mv environments_example.json environments.json
+    - name: Rename Prod Enviroment File
+      working-directory: route_app/assets
+      run: mv environments.prod_example.json environments.prod.json
     - name: Java Setup
       uses: actions/setup-java@v1
       with:
